@@ -1,9 +1,5 @@
-# clubgame
-(2026year)이번학기 동아리에서 만들게임
-
-##
-Proprietary License
 Copyright (c) 2026 [richanddan]
+
 All rights reserved.
 
 This code is provided for viewing purposes only.
