@@ -1,18 +1,23 @@
 using UnityEngine;
 
-public class NewMonoBehaviourScript : MonoBehaviour
-{
-    /// <summary>
-    /// 게임 시작 시 1번만 실행되는 초기 설정 함수
-    /// </summary>
+public class PlayerMovement : MonoBehaviour
+    {
+        /// <summary>
+        /// 게임 시작 시 1번만 실행되는 초기 설정 함수
+        /// </summary>
 
-    [Header("이동 설정")]
-    public float speed = 5f;
-    public float jumpForce = 7f;
+        [Header("이동 설정")]
+        public float speed = 5f;
+        public float jumpForce = 7f;
+        
+        public float Speed => speed;
 
-    private Rigidbody2D rb;
-    private float moveInput;
-    private bool isGrounded;
+        private Rigidbody2D rb;
+        private float moveInput;
+        private bool isGrounded;
+
+        public float MoveInput => moveInput;
+        public bool IsGrounded => isGrounded;
 
     private static readonly KeyCode[] leftKeys  = { KeyCode.A, KeyCode.LeftArrow };
     private static readonly KeyCode[] rightKeys = { KeyCode.D, KeyCode.RightArrow };
