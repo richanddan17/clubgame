@@ -38,11 +38,11 @@ public class NewMonoBehaviourScript : MonoBehaviour
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
 
         // 애니메이션 파라미터 설정
-        animator.SetFloat("AnimState", Mathf.Abs(moveInput));
+        animator.SetFloat("Speed", Mathf.Abs(moveInput) * speed);
         animator.SetBool("Grounded", isGrounded);
         
         // 디버그
-        Debug.Log("AnimState: " + Mathf.Abs(moveInput) + ", Grounded: " + isGrounded);
+        Debug.Log("Speed: " + (Mathf.Abs(moveInput) * speed) + ", Grounded: " + isGrounded);
     }
 
     /// <summary>
