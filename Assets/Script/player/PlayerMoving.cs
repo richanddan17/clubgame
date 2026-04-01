@@ -11,7 +11,6 @@ public class NewMonoBehaviourScript : MonoBehaviour
     public float jumpForce = 7f;
 
     private Rigidbody2D rb;
-    private Animator animator;
     private float moveInput;
     private bool isGrounded;
 
@@ -22,7 +21,6 @@ public class NewMonoBehaviourScript : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        animator = GetComponent<Animator>();
     }
 
     /// <summary>
@@ -37,10 +35,6 @@ public class NewMonoBehaviourScript : MonoBehaviour
         if (isGrounded && AnyKeyDown(jumpKeys))
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
 
-        // 애니메이션 파라미터 설정
-        animator.SetFloat("Speed", Mathf.Abs(moveInput) * speed);
-        animator.SetBool("Grounded", isGrounded);
-        
         // 디버그
         Debug.Log("Speed: " + (Mathf.Abs(moveInput) * speed) + ", Grounded: " + isGrounded);
     }
