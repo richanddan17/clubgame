@@ -1,11 +1,12 @@
 using UnityEngine;
 
-public class NewMonoBehaviourScript : MonoBehaviour
-{
-    /// <summary>
-    /// 게임 시작 시 1번만 실행되는 초기 설정 함수
-    /// </summary>
+public class PlayerMovement : MonoBehaviour
+    {
+        /// <summary>
+        /// 게임 시작 시 1번만 실행되는 초기 설정 함수
+        /// </summary>
 
+<<<<<<< HEAD
     [Header("이동 설정")]
     public float speed = 5f;
     public float runSpeed = 10f;
@@ -20,6 +21,24 @@ public class NewMonoBehaviourScript : MonoBehaviour
     private float rightHoldTime = 0f;
     private bool isRunningLeft = false;
     private bool isRunningRight = false;
+=======
+        [Header("이동 설정")]
+        public float speed = 5f;
+        public float jumpForce = 7f;
+        
+        public float Speed => speed;
+
+        private Rigidbody2D rb;
+        private float moveInput;
+        private bool isGrounded;
+
+        public float MoveInput => moveInput;
+        public bool IsGrounded => isGrounded;
+
+    private static readonly KeyCode[] leftKeys  = { KeyCode.A, KeyCode.LeftArrow };
+    private static readonly KeyCode[] rightKeys = { KeyCode.D, KeyCode.RightArrow };
+    private static readonly KeyCode[] jumpKeys  = { KeyCode.W, KeyCode.Space };
+>>>>>>> origin/animationcode
 
     void Start()
     {
