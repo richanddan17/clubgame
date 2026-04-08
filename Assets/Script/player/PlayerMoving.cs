@@ -8,8 +8,8 @@ public class PlayerMovement : MonoBehaviour
 
 
         [Header("이동 설정")]
-        public float speed = 5f;
-        public float jumpForce = 7f;
+        public float speed = 40f;
+        public float jumpForce = 45f;
         
         public float Speed => speed;
 
@@ -19,10 +19,11 @@ public class PlayerMovement : MonoBehaviour
         private bool isCrouching;
         private bool isRunningLeft;
         private bool isRunningRight;
+        private bool crouchBlocked;
         private float leftHoldTime;
         private float rightHoldTime;
 
-        public float runSpeed = 8f;
+        public float runSpeed = 55f;
         public float crouchScale = 0.5f;
 
         public float MoveInput => moveInput;
@@ -44,7 +45,16 @@ public class PlayerMovement : MonoBehaviour
     void Update()
     {
         // 웅크리기
-        if (Input.GetKey(KeyCode.LeftShift))
+        bool crouchKeyHeld = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.DownArrow);
+        if (crouchBlocked)
+        {
+            if (!crouchKeyHeld)
+                crouchBlocked = false;
+
+            isCrouching = false;
+            transform.localScale = Vector3.one;
+        }
+        else if (crouchKeyHeld)
         {
             isCrouching = true;
             transform.localScale = new Vector3(1, crouchScale, 1);
@@ -83,7 +93,12 @@ public class PlayerMovement : MonoBehaviour
 
         // 점프
         if (isGrounded && (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.Space)))
+        {
+            isCrouching = false;
+            crouchBlocked = true;
+            transform.localScale = Vector3.one;
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
+        }
 
         // 디버그
         float currentSpeed = speed;
