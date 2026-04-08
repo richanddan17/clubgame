@@ -6,22 +6,7 @@ public class PlayerMovement : MonoBehaviour
         /// 게임 시작 시 1번만 실행되는 초기 설정 함수
         /// </summary>
 
-<<<<<<< HEAD
-    [Header("이동 설정")]
-    public float speed = 5f;
-    public float runSpeed = 10f;
-    public float jumpForce = 7f;
-    public float crouchScale = 0.5f;
 
-    private Rigidbody2D rb;
-    private float moveInput;
-    private bool isGrounded;
-    private bool isCrouching = false;
-    private float leftHoldTime = 0f;
-    private float rightHoldTime = 0f;
-    private bool isRunningLeft = false;
-    private bool isRunningRight = false;
-=======
         [Header("이동 설정")]
         public float speed = 5f;
         public float jumpForce = 7f;
@@ -31,6 +16,14 @@ public class PlayerMovement : MonoBehaviour
         private Rigidbody2D rb;
         private float moveInput;
         private bool isGrounded;
+        private bool isCrouching;
+        private bool isRunningLeft;
+        private bool isRunningRight;
+        private float leftHoldTime;
+        private float rightHoldTime;
+
+        public float runSpeed = 8f;
+        public float crouchScale = 0.5f;
 
         public float MoveInput => moveInput;
         public bool IsGrounded => isGrounded;
@@ -38,7 +31,7 @@ public class PlayerMovement : MonoBehaviour
     private static readonly KeyCode[] leftKeys  = { KeyCode.A, KeyCode.LeftArrow };
     private static readonly KeyCode[] rightKeys = { KeyCode.D, KeyCode.RightArrow };
     private static readonly KeyCode[] jumpKeys  = { KeyCode.W, KeyCode.Space };
->>>>>>> origin/animationcode
+
 
     void Start()
     {
