@@ -1,16 +1,16 @@
 fileFormatVersion: 2
-guid: fcd752355fbeba243a903451f9a762ba
+guid: 2cf729732857ec243b9f703136a81dcf
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -5580780052323153567
-    second: staying MOTION  (1)_0
+      213: 8530477062226032744
+    second: staying MOTION  (1) 1_0
   - first:
-      213: 1820106852489970915
-    second: staying MOTION  (1)_1
+      213: 3002979349681259469
+    second: staying MOTION  (1) 1_1
   - first:
-      213: -629593598066422616
-    second: staying MOTION  (1)_2
+      213: 3681484182748365660
+    second: staying MOTION  (1) 1_2
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -106,7 +106,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: staying MOTION  (1)_0
+      name: staying MOTION  (1) 1_0
       rect:
         serializedVersion: 2
         x: 5
@@ -121,14 +121,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 16941b35c161d82b0800000000000000
-      internalID: -5580780052323153567
+      spriteID: 868b99211b7526670800000000000000
+      internalID: 8530477062226032744
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: staying MOTION  (1)_1
+      name: staying MOTION  (1) 1_1
       rect:
         serializedVersion: 2
         x: 37
@@ -143,14 +143,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 3e44bebf981524910800000000000000
-      internalID: 1820106852489970915
+      spriteID: dc3c59ddec9bca920800000000000000
+      internalID: 3002979349681259469
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: staying MOTION  (1)_2
+      name: staying MOTION  (1) 1_2
       rect:
         serializedVersion: 2
         x: 5
@@ -165,8 +165,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 8ac046255fb3347f0800000000000000
-      internalID: -629593598066422616
+      spriteID: c538feedb52471330800000000000000
+      internalID: 3681484182748365660
       vertices: []
       indices: 
       edges: []
@@ -185,9 +185,9 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      staying MOTION  (1)_0: -5580780052323153567
-      staying MOTION  (1)_1: 1820106852489970915
-      staying MOTION  (1)_2: -629593598066422616
+      staying MOTION  (1) 1_0: 8530477062226032744
+      staying MOTION  (1) 1_1: 3002979349681259469
+      staying MOTION  (1) 1_2: 3681484182748365660
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

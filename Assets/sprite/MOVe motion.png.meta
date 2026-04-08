@@ -1,22 +1,31 @@
 fileFormatVersion: 2
-guid: b45b7593b5e44d046b17587b2f7dcb5d
+guid: 1c8f4d6b1034c694a831f8dfa54615d9
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -4044313344225638276
-    second: DROP MOTION _0
+      213: 3846500936847008703
+    second: MOVe motion_0
   - first:
-      213: -1739309974829680088
-    second: DROP MOTION _1
+      213: 7308900503798272654
+    second: MOVe motion_1
   - first:
-      213: -1226175004222126351
-    second: DROP MOTION _2
+      213: 2802831426179202074
+    second: MOVe motion_2
   - first:
-      213: -6250878575191574813
-    second: DROP MOTION _3
+      213: -1301251001911685214
+    second: MOVe motion_3
   - first:
-      213: 6766771550507007566
-    second: DROP MOTION _4
+      213: -563702965427405677
+    second: MOVe motion_4
+  - first:
+      213: 9191649319782319133
+    second: MOVe motion_5
+  - first:
+      213: -2261694034406140578
+    second: MOVe motion_6
+  - first:
+      213: -7269110680658984696
+    second: MOVe motion_7
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -112,7 +121,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: DROP MOTION _0
+      name: MOVe motion_0
       rect:
         serializedVersion: 2
         x: 5
@@ -127,20 +136,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: c780f0de076bfd7c0800000000000000
-      internalID: -4044313344225638276
+      spriteID: fb329f0f834816530800000000000000
+      internalID: 3846500936847008703
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: DROP MOTION _1
+      name: MOVe motion_1
       rect:
         serializedVersion: 2
-        x: 37
-        y: 70
-        width: 20
-        height: 25
+        x: 38
+        y: 67
+        width: 19
+        height: 28
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -149,19 +158,63 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 82abbfb0bcabcd7e0800000000000000
-      internalID: -1739309974829680088
+      spriteID: e82d193b84e6e6560800000000000000
+      internalID: 7308900503798272654
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: DROP MOTION _2
+      name: MOVe motion_2
       rect:
         serializedVersion: 2
-        x: 5
+        x: 71
+        y: 67
+        width: 17
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a1c76b20558a5e620800000000000000
+      internalID: 2802831426179202074
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MOVe motion_3
+      rect:
+        serializedVersion: 2
+        x: 7
+        y: 35
+        width: 17
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2afce6bab1701fde0800000000000000
+      internalID: -1301251001911685214
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MOVe motion_4
+      rect:
+        serializedVersion: 2
+        x: 39
         y: 37
-        width: 20
+        width: 17
         height: 26
       alignment: 0
       pivot: {x: 0, y: 0}
@@ -171,20 +224,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 1f680e88450cbfee0800000000000000
-      internalID: -1226175004222126351
+      spriteID: 39c7ddab3235d28f0800000000000000
+      internalID: -563702965427405677
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: DROP MOTION _3
+      name: MOVe motion_5
       rect:
         serializedVersion: 2
-        x: 37
-        y: 38
-        width: 20
-        height: 25
+        x: 71
+        y: 37
+        width: 17
+        height: 26
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -193,19 +246,19 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 3e63b9fed0b6049a0800000000000000
-      internalID: -6250878575191574813
+      spriteID: d14069d5b5c4f8f70800000000000000
+      internalID: 9191649319782319133
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: DROP MOTION _4
+      name: MOVe motion_6
       rect:
         serializedVersion: 2
-        x: 6
+        x: 7
         y: 4
-        width: 19
+        width: 17
         height: 27
       alignment: 0
       pivot: {x: 0, y: 0}
@@ -215,8 +268,30 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: e4e70309fd668ed50800000000000000
-      internalID: 6766771550507007566
+      spriteID: e551a983249dc90e0800000000000000
+      internalID: -2261694034406140578
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MOVe motion_7
+      rect:
+        serializedVersion: 2
+        x: 37
+        y: 3
+        width: 20
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 801c25e695eee1b90800000000000000
+      internalID: -7269110680658984696
       vertices: []
       indices: 
       edges: []
@@ -235,11 +310,14 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      DROP MOTION _0: -4044313344225638276
-      DROP MOTION _1: -1739309974829680088
-      DROP MOTION _2: -1226175004222126351
-      DROP MOTION _3: -6250878575191574813
-      DROP MOTION _4: 6766771550507007566
+      MOVe motion_0: 3846500936847008703
+      MOVe motion_1: 7308900503798272654
+      MOVe motion_2: 2802831426179202074
+      MOVe motion_3: -1301251001911685214
+      MOVe motion_4: -563702965427405677
+      MOVe motion_5: 9191649319782319133
+      MOVe motion_6: -2261694034406140578
+      MOVe motion_7: -7269110680658984696
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
