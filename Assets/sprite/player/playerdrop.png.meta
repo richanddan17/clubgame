@@ -49,7 +49,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -60,7 +60,7 @@ TextureImporter:
   compressionQuality: 50
   spriteMode: 2
   spriteExtrude: 1
-  spriteMeshType: 1
+  spriteMeshType: 0
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
   spritePixelsToUnits: 100
@@ -112,111 +112,111 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: DROP MOTION _0
-      rect:
-        serializedVersion: 2
-        x: 5
-        y: 67
-        width: 20
-        height: 28
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: c780f0de076bfd7c0800000000000000
-      internalID: -4044313344225638276
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: DROP MOTION _1
-      rect:
-        serializedVersion: 2
-        x: 37
-        y: 70
-        width: 20
-        height: 25
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 82abbfb0bcabcd7e0800000000000000
-      internalID: -1739309974829680088
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: DROP MOTION _2
-      rect:
-        serializedVersion: 2
-        x: 5
-        y: 37
-        width: 20
-        height: 26
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 1f680e88450cbfee0800000000000000
-      internalID: -1226175004222126351
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: DROP MOTION _3
-      rect:
-        serializedVersion: 2
-        x: 37
-        y: 38
-        width: 20
-        height: 25
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 3e63b9fed0b6049a0800000000000000
-      internalID: -6250878575191574813
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: DROP MOTION _4
+      name: playerdrop_0
       rect:
         serializedVersion: 2
         x: 6
-        y: 4
-        width: 19
-        height: 27
+        y: 68
+        width: 18
+        height: 26
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e4e70309fd668ed50800000000000000
-      internalID: 6766771550507007566
+      spriteID: 4daec3d5f1897284b910129d71336cb3
+      internalID: 738558243
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: playerdrop_1
+      rect:
+        serializedVersion: 2
+        x: 38
+        y: 71
+        width: 18
+        height: 23
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 044f5e24bf7714d4cb802bc181b028ef
+      internalID: 1481058303
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: playerdrop_2
+      rect:
+        serializedVersion: 2
+        x: 6
+        y: 38
+        width: 18
+        height: 24
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 99e2057ae45d7f14b91b86b9fd5bd1d4
+      internalID: 1248583259
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: playerdrop_3
+      rect:
+        serializedVersion: 2
+        x: 38
+        y: 39
+        width: 18
+        height: 23
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fe890ddef2701aa44840e66a2b2d0ed8
+      internalID: -527529206
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: playerdrop_4
+      rect:
+        serializedVersion: 2
+        x: 7
+        y: 5
+        width: 17
+        height: 25
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 015dbb8d55495674a9f7af4fd7d8f43a
+      internalID: -2139928862
       vertices: []
       indices: 
       edges: []
@@ -225,7 +225,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: e53d499fa5ec91c45a85c09ca398f304
     internalID: 0
     vertices: []
     indices: 
@@ -233,13 +233,15 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries: []
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":5.0,"y":64.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":0,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
-      DROP MOTION _0: -4044313344225638276
-      DROP MOTION _1: -1739309974829680088
-      DROP MOTION _2: -1226175004222126351
-      DROP MOTION _3: -6250878575191574813
-      DROP MOTION _4: 6766771550507007566
+      playerdrop_0: 738558243
+      playerdrop_1: 1481058303
+      playerdrop_2: 1248583259
+      playerdrop_3: -527529206
+      playerdrop_4: -2139928862
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
