@@ -207,7 +207,7 @@ Transform:
   m_GameObject: {fileID: 449425066}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -10}
+  m_LocalPosition: {x: 0, y: -0.8, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -287,6 +287,7 @@ GameObject:
   - component: {fileID: 632967969}
   - component: {fileID: 632967973}
   - component: {fileID: 632967974}
+  - component: {fileID: 632967975}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -380,10 +381,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c699075d4441bfe4ea53e1b0458cebb3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NewMonoBehaviourScript
-  speed: 5
-  jumpForce: 7
-  runSpeed: 55
-  crouchScale: 0.5
 --- !u!70 &632967970
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -460,10 +457,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c699075d4441bfe4ea53e1b0458cebb3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NewMonoBehaviourScript
-  speed: 5
-  jumpForce: 7
-  runSpeed: 55
-  crouchScale: 0.5
 --- !u!95 &632967974
 Animator:
   serializedVersion: 7
@@ -486,6 +479,18 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &632967975
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 632967966}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1fc7aaa9492cbdc409f43c1b4dfccea4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Player
 --- !u!1 &1911288212
 GameObject:
   m_ObjectHideFlags: 0
