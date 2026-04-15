@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 2cf729732857ec243b9f703136a81dcf
+guid: f316e61cd6dc9734eb201c6d4b051586
 TextureImporter:
   internalIDToNameTable:
   - first:
@@ -106,94 +106,23 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-<<<<<<<< HEAD:Assets/sprite/player/playeridle.png.meta
-      name: playeridle_0
-========
-      name: staying MOTION  (1) 1_0
->>>>>>>> origin/bugfixing:Assets/sprite/staying MOTION  (1) 1.png.meta
+      name: 
       rect:
         serializedVersion: 2
-        x: 6
-        y: 36
-        width: 18
-        height: 26
+        x: 0
+        y: 0
+        width: 0
+        height: 0
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-<<<<<<<< HEAD:Assets/sprite/player/playeridle.png.meta
-      spriteID: 3bbb0641c23b9764c92d527a279ea823
-      internalID: -1254234379
-========
-      spriteID: 868b99211b7526670800000000000000
-      internalID: 8530477062226032744
->>>>>>>> origin/bugfixing:Assets/sprite/staying MOTION  (1) 1.png.meta
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-<<<<<<<< HEAD:Assets/sprite/player/playeridle.png.meta
-      name: playeridle_1
-========
-      name: staying MOTION  (1) 1_1
->>>>>>>> origin/bugfixing:Assets/sprite/staying MOTION  (1) 1.png.meta
-      rect:
-        serializedVersion: 2
-        x: 38
-        y: 36
-        width: 18
-        height: 26
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-<<<<<<<< HEAD:Assets/sprite/player/playeridle.png.meta
-      spriteID: 769cf560033cdea43bf89df3c8c52361
-      internalID: 1957255808
-========
-      spriteID: dc3c59ddec9bca920800000000000000
-      internalID: 3002979349681259469
->>>>>>>> origin/bugfixing:Assets/sprite/staying MOTION  (1) 1.png.meta
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-<<<<<<<< HEAD:Assets/sprite/player/playeridle.png.meta
-      name: playeridle_2
-========
-      name: staying MOTION  (1) 1_2
->>>>>>>> origin/bugfixing:Assets/sprite/staying MOTION  (1) 1.png.meta
-      rect:
-        serializedVersion: 2
-        x: 6
-        y: 4
-        width: 17
-        height: 26
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-<<<<<<<< HEAD:Assets/sprite/player/playeridle.png.meta
-      spriteID: 1eea5e1cb900da743aaffb3126db99aa
-      internalID: 530628443
-========
-      spriteID: c538feedb52471330800000000000000
-      internalID: 3681484182748365660
->>>>>>>> origin/bugfixing:Assets/sprite/staying MOTION  (1) 1.png.meta
+      spriteID: 5e97eb03825dee720800000000000000
+      internalID: 2877471580529523173
       vertices: []
       indices: 
       edges: []
@@ -202,7 +131,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: dcdcd1f8f521cba4baeb79853f0a2391
+    spriteID: 
     internalID: 0
     vertices: []
     indices: 
@@ -210,19 +139,9 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries:
-      - key: SpriteEditor.SliceSettings
-        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":5.0,"y":64.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":0,"keepEmptyRects":false,"isAlternate":false}'
+      entries: []
     nameFileIdTable:
-<<<<<<<< HEAD:Assets/sprite/player/playeridle.png.meta
-      playeridle_0: -1254234379
-      playeridle_1: 1957255808
-      playeridle_2: 530628443
-========
-      staying MOTION  (1) 1_0: 8530477062226032744
-      staying MOTION  (1) 1_1: 3002979349681259469
-      staying MOTION  (1) 1_2: 3681484182748365660
->>>>>>>> origin/bugfixing:Assets/sprite/staying MOTION  (1) 1.png.meta
+      : 2877471580529523173
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
