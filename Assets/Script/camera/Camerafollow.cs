@@ -9,22 +9,33 @@ public class CameraFollow : MonoBehaviour
     [Header("추적 설정")]
     public Transform target;
     public float smoothSpeed = 0.125f;
-    public Vector3 offset = new Vector3(0, 2, -10);
+    public Vector3 offset = new Vector3(-7, 9.5f, 0);
 
     private Vector3 desiredPosition;
 
-    /// <summary>
-    /// 물리 연산 후 카메라 위치 업데이트
-    /// LateUpdate 사용시 플레이어 이동 후 카메라가 따라와서 더 부드러움
-    /// </summary>
+    void Awake()
+    {
+        Debug.Log("CameraFollow script initialized on: " + gameObject.name);
+    }
+
+    void Start()
+    {
+        Debug.Log("CameraFollow Start called. Target: " + (target != null ? target.name : "null"));
+    }
     void LateUpdate()
     {
-        if (target == null) return;
+        if (target == null) 
+        {
+            Debug.Log("Target is null!");
+            return;
+        }
 
-        desiredPosition.x = target.position.x + offset.x;
+        float direction = target.localScale.x > 0 ? 1 : -1;
+        desiredPosition.x = target.position.x + offset.x * direction;
         desiredPosition.y = target.position.y + offset.y;
         desiredPosition.z = offset.z; // z는 항상 고정
 
+        Debug.Log("Camera position updated to: " + desiredPosition);
         transform.position = Vector3.Lerp(transform.position, desiredPosition, smoothSpeed);
     }
 }
