@@ -1,16 +1,22 @@
 fileFormatVersion: 2
-guid: 2cf729732857ec243b9f703136a81dcf
+guid: 14b739ffa26033944a94f6c5a8b0ce7e
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 8530477062226032744
-    second: staying MOTION  (1) 1_0
+      213: -7426847380423246006
+    second: gumball yellow_0
   - first:
-      213: 3002979349681259469
-    second: staying MOTION  (1) 1_1
+      213: 2015305148100190081
+    second: gumball yellow_1
   - first:
-      213: 3681484182748365660
-    second: staying MOTION  (1) 1_2
+      213: -716053102397515277
+    second: gumball yellow_2
+  - first:
+      213: 4552053437793216008
+    second: gumball yellow_3
+  - first:
+      213: 8389388839022602928
+    second: gumball yellow_4
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -43,7 +49,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 0
+    filterMode: 1
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -54,7 +60,7 @@ TextureImporter:
   compressionQuality: 50
   spriteMode: 2
   spriteExtrude: 1
-  spriteMeshType: 0
+  spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
   spritePixelsToUnits: 100
@@ -106,94 +112,111 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-<<<<<<<< HEAD:Assets/sprite/player/playeridle.png.meta
-      name: playeridle_0
-========
-      name: staying MOTION  (1) 1_0
->>>>>>>> origin/bugfixing:Assets/sprite/staying MOTION  (1) 1.png.meta
+      name: gumball yellow_0
       rect:
         serializedVersion: 2
         x: 6
-        y: 36
-        width: 18
-        height: 26
+        y: 69
+        width: 21
+        height: 21
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-<<<<<<<< HEAD:Assets/sprite/player/playeridle.png.meta
-      spriteID: 3bbb0641c23b9764c92d527a279ea823
-      internalID: -1254234379
-========
-      spriteID: 868b99211b7526670800000000000000
-      internalID: 8530477062226032744
->>>>>>>> origin/bugfixing:Assets/sprite/staying MOTION  (1) 1.png.meta
+      spriteID: a4ff4d818a98ee890800000000000000
+      internalID: -7426847380423246006
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-<<<<<<<< HEAD:Assets/sprite/player/playeridle.png.meta
-      name: playeridle_1
-========
-      name: staying MOTION  (1) 1_1
->>>>>>>> origin/bugfixing:Assets/sprite/staying MOTION  (1) 1.png.meta
+      name: gumball yellow_1
       rect:
         serializedVersion: 2
         x: 38
-        y: 36
-        width: 18
-        height: 26
+        y: 70
+        width: 21
+        height: 19
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-<<<<<<<< HEAD:Assets/sprite/player/playeridle.png.meta
-      spriteID: 769cf560033cdea43bf89df3c8c52361
-      internalID: 1957255808
-========
-      spriteID: dc3c59ddec9bca920800000000000000
-      internalID: 3002979349681259469
->>>>>>>> origin/bugfixing:Assets/sprite/staying MOTION  (1) 1.png.meta
+      spriteID: 18f178aca5dc7fb10800000000000000
+      internalID: 2015305148100190081
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-<<<<<<<< HEAD:Assets/sprite/player/playeridle.png.meta
-      name: playeridle_2
-========
-      name: staying MOTION  (1) 1_2
->>>>>>>> origin/bugfixing:Assets/sprite/staying MOTION  (1) 1.png.meta
+      name: gumball yellow_2
       rect:
         serializedVersion: 2
         x: 6
-        y: 4
-        width: 17
-        height: 26
+        y: 40
+        width: 21
+        height: 17
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-<<<<<<<< HEAD:Assets/sprite/player/playeridle.png.meta
-      spriteID: 1eea5e1cb900da743aaffb3126db99aa
-      internalID: 530628443
-========
-      spriteID: c538feedb52471330800000000000000
-      internalID: 3681484182748365660
->>>>>>>> origin/bugfixing:Assets/sprite/staying MOTION  (1) 1.png.meta
+      spriteID: 3f997474f711016f0800000000000000
+      internalID: -716053102397515277
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: gumball yellow_3
+      rect:
+        serializedVersion: 2
+        x: 38
+        y: 38
+        width: 21
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 806a24edb742c2f30800000000000000
+      internalID: 4552053437793216008
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: gumball yellow_4
+      rect:
+        serializedVersion: 2
+        x: 6
+        y: 5
+        width: 21
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0baa19043b81d6470800000000000000
+      internalID: 8389388839022602928
       vertices: []
       indices: 
       edges: []
@@ -202,7 +225,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: dcdcd1f8f521cba4baeb79853f0a2391
+    spriteID: 
     internalID: 0
     vertices: []
     indices: 
@@ -210,19 +233,13 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries:
-      - key: SpriteEditor.SliceSettings
-        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":5.0,"y":64.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":0,"keepEmptyRects":false,"isAlternate":false}'
+      entries: []
     nameFileIdTable:
-<<<<<<<< HEAD:Assets/sprite/player/playeridle.png.meta
-      playeridle_0: -1254234379
-      playeridle_1: 1957255808
-      playeridle_2: 530628443
-========
-      staying MOTION  (1) 1_0: 8530477062226032744
-      staying MOTION  (1) 1_1: 3002979349681259469
-      staying MOTION  (1) 1_2: 3681484182748365660
->>>>>>>> origin/bugfixing:Assets/sprite/staying MOTION  (1) 1.png.meta
+      gumball yellow_0: -7426847380423246006
+      gumball yellow_1: 2015305148100190081
+      gumball yellow_2: -716053102397515277
+      gumball yellow_3: 4552053437793216008
+      gumball yellow_4: 8389388839022602928
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
