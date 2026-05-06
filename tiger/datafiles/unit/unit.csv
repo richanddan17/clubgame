@@ -1,0 +1,4 @@
+ID,Name,HP,Speed,Damage,DetectionRange,AttackInterval
+101,YellowSlime,60,1.8,7,5.5,2.0
+103,Bat,30,4.0,10,8.0,1.5
+104,Orc,200,1.2,25,10.0,3.0

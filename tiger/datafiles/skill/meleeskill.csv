@@ -1,0 +1,4 @@
+ID,Name,Damage,ManaCost,Cooldown
+201,Slash,10,0,0.5
+202,HeavyStrike,25,10,2.0
+203,Whirlwind,15,15,3.0

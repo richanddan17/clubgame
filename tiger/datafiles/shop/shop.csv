@@ -1,0 +1,5 @@
+ID,Name,Price,Description
+301,SmallHPotion,50,Recover 20 HP
+302,LargeHPotion,150,Recover 100 HP
+303,ManaPotion,100,Recover 50 MP
+304,IronSword,500,Simple iron sword

@@ -1,0 +1,4 @@
+ID,Name,Damage,ManaCost,Cooldown
+221,FireBall,30,15,1.5
+222,IceBlast,25,20,2.0
+223,ThunderBolt,45,35,4.0

@@ -1,0 +1,5 @@
+ID,Name,Damage,ManaCost,Cooldown
+211,GumShot,12,2,0.4
+212,StickyBlob,20,8,1.5
+213,BigBubble,45,15,3.0
+214,PopTrap,30,12,2.5
