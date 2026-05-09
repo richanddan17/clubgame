@@ -19,16 +19,20 @@
 
 ### Player
 
-- `Assets/Script/player/PlayerController.cs`
-  - 현재 플레이어의 주 컨트롤러로 보입니다.
-  - 이동, 달리기, 점프, 방향 전환, 애니메이션 파라미터, 스킬 발사 뼈대가 들어있습니다.
-  - 최근 추가된 웅크리기 기능도 여기에 있습니다.
-  - gumball 발사, 색 교체 같은 플레이어 입력 기능을 붙일 때 가장 먼저 볼 파일입니다.
+- `Assets/Script/player/PlayerController.cs` (Refactored: Pro Version)
+  - 프로젝트의 핵심 컨트롤러입니다. 
+  - **구조**: `MovementSettings`와 `CombatSettings` 내부 클래스를 통해 데이터를 체계적으로 관리합니다.
+  - **최적화**: Animator Hash를 사용하여 성능을 높였으며, `#region`을 통해 구역을 나누어 가독성을 확보했습니다.
+  - **물리**: 코드로 생성된 `Frictionless` 재질을 통해 벽 붙기 현상을 방지하며, `OverlapBox` 기반의 정밀한 지면 감지 로직이 탑재되어 있습니다.
+  - **기능**: 3색 gumball 교체 및 발사, 웅크리기, 달리기 기능이 통합되어 있습니다.
 
-- `Assets/Script/player/PlayerMoving.cs`
-  - 별도/이전 버전 플레이어 이동 스크립트로 보입니다.
-  - 이동, 점프, 웅크리기, 콜라이더 크기 변경 로직이 있습니다.
-  - `DataImportMenu`와 `EmergencyFixer`에서 legacy로 제거하는 코드가 있어, 현재 메인 플레이어에는 안 쓰는 쪽일 가능성이 큽니다.
+## 코딩 컨벤션 및 표준 (Pro Standard)
+
+1. **관심사 분리**: 데이터(Settings)와 로직(Methods)을 분리하여 인스펙터에서의 관리 효율을 높입니다.
+2. **성능 최적화**: 애니메이션 파라미터는 반드시 `Animator.StringToHash`를 통한 static readonly ID를 사용합니다.
+3. **가독성**: `#region`을 사용하여 Lifecycle, Core Logic, Helpers 등을 명확히 구분합니다.
+4. **안전성**: `[RequireComponent]`를 적극 활용하여 런타임 에러를 방지합니다.
+5. **물리 자동화**: 가능한 경우 `PhysicsMaterial2D` 등을 코드로 자동 할당하여 에셋 누락으로 인한 버그를 차단합니다.
 
 ### Camera
 
