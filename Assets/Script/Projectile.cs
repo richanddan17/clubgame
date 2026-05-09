@@ -26,28 +26,31 @@ public class Projectile : MonoBehaviour
 
     private void Update()
     {
-        transform.Translate(Vector2.right * speed * Time.deltaTime);
+        // Vector2.right 대신 transform.right를 사용하여 현재 총알이 바라보는 방향(회전값)으로 이동
+        transform.Translate(transform.right * speed * Time.deltaTime, Space.World);
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        // Slime 스크립트가 있는지 확인
-        Slime slime = collision.GetComponent<Slime>();
-        if (slime != null)
+        // 1. 공통 Health 컴포넌트 확인
+        Health health = collision.GetComponent<Health>();
+        if (health != null)
         {
-            slime.TakeDamage(damage);
+            health.TakeDamage(damage);
             Destroy(gameObject);
             return;
         }
 
-        // 기존 EnemyController가 있는지 확인
+        // 2. 레거시/특수 처리 (필요시 유지)
         if (collision.CompareTag("Enemy"))
         {
+            // 이제 대부분 Health 컴포넌트에서 처리되지만, 만약 없다면 기존 방식 시도
             EnemyController enemy = collision.GetComponent<EnemyController>();
-            if (enemy != null)
-            {
-                enemy.TakeDamage(damage);
-            }
+            if (enemy != null) enemy.TakeDamage(damage);
+            
+            Slime slime = collision.GetComponent<Slime>();
+            if (slime != null) slime.TakeDamage(damage);
+            
             Destroy(gameObject);
         }
         else if (collision.gameObject.layer == LayerMask.NameToLayer("Ground"))

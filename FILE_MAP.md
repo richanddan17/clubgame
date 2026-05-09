@@ -1,186 +1,44 @@
-# clubgame File Map
+# clubgame File Map (Update: 2026-05-09)
 
-이 문서는 `D:\coding\github c\clubgame` Unity 프로젝트에서 자주 건드릴 파일과 역할을 빠르게 찾기 위한 지도입니다.
+이 문서는 프로젝트의 핵심 시스템과 파일 구조를 정의합니다. 오늘 추가된 프로급 시스템들이 반영되었습니다.
 
-## 프로젝트 루트
+## 핵심 시스템 (Core Systems)
 
-- `Assets/`
-  - 실제 게임 코드, 프리팹, 리소스, 스프라이트가 들어있는 핵심 폴더입니다.
-- `Packages/`
-  - Unity 패키지 의존성 설정 폴더입니다.
-- `ProjectSettings/`
-  - Unity 프로젝트 설정 폴더입니다. 태그, 레이어, 입력/렌더링 설정 등이 들어갑니다.
-- `tiger/datafiles/`
-  - CSV 원본 데이터 폴더입니다. 에디터 툴이 이 데이터를 읽어서 `Assets/Resources`의 ScriptableObject asset을 만듭니다.
-- `Library/`, `Temp/`, `Logs/`, `UserSettings/`
-  - Unity가 자동 생성/관리하는 폴더입니다. 일반 기능 구현 때는 보통 직접 수정하지 않습니다.
+### 1. 체력 및 전투 (Health & Combat)
+- `Assets/Script/Health.cs` (New)
+  - **역할**: 모든 생명체(플레이어, 적)의 근본이 되는 모듈형 체력 시스템.
+  - **기능**: 데미지/회복 처리, 사망 이벤트, 체력 변경 알림(Event) 제공.
+- `Assets/Script/Projectile.cs` (Updated)
+  - **역할**: 마우스 방향으로 날아가는 지능형 발사체.
+  - **기능**: `Health` 컴포넌트 자동 감지 및 데미지 전달, 5프레임 애니메이션 적용.
+- `Assets/Script/HealthBar.cs` (New)
+  - **역할**: 시각적 피드백을 위한 UI 컨트롤러.
+  - **기능**: HP 슬라이더 연동 및 숫자(TextMeshPro) 표시.
 
-## 핵심 스크립트
+### 2. 플레이어 컨트롤 (Advanced Player)
+- `Assets/Script/player/PlayerController.cs` (Updated: Pro Version)
+  - **조준**: 마우스 커서 위치에 따른 캐릭터 자동 회전 및 360도 전방향 발사 시스템.
+  - **리스폰**: 사망 시 시작 지점으로 자동 복귀 및 상태 초기화 기능.
+  - **최적화**: Animator Hash 및 계층적 데이터 구조(Movement/Combat Settings) 적용.
 
-### Player
+### 3. 적 AI (Enemy AI)
+- `Assets/Script/Slime.cs` (Updated)
+  - **역할**: 추격 및 공격 지능형 슬라임.
+  - **기능**: 2D 거리 기반 공격 판정, 8~15번 프레임 공격 애니메이션 적용, 씬 뷰 시각적 디버깅(보라색 선).
 
-- `Assets/Script/player/PlayerController.cs` (Refactored: Pro Version)
-  - 프로젝트의 핵심 컨트롤러입니다. 
-  - **구조**: `MovementSettings`와 `CombatSettings` 내부 클래스를 통해 데이터를 체계적으로 관리합니다.
-  - **최적화**: Animator Hash를 사용하여 성능을 높였으며, `#region`을 통해 구역을 나누어 가독성을 확보했습니다.
-  - **물리**: 코드로 생성된 `Frictionless` 재질을 통해 벽 붙기 현상을 방지하며, `OverlapBox` 기반의 정밀한 지면 감지 로직이 탑재되어 있습니다.
-  - **기능**: 3색 gumball 교체 및 발사, 웅크리기, 달리기 기능이 통합되어 있습니다.
+## 에디터 툴 (Advanced Editor Tools)
+
+- `Assets/Editor/EmergencyFixer.cs` (Major Update)
+  - **역할**: 프로젝트의 "만능 수리 도구".
+  - **기능**: 태그(Player/Enemy) 자동 생성, UI 레이아웃(HP바 왼쪽 상단) 교정, 레이어 및 프리팹 연결 자동 복구.
+- `Assets/Editor/SlimeAnimationHelper.cs` (New)
+  - **역할**: 슬라임 전용 애니메이션 생성기.
+  - **기능**: 특정 프레임(8~15)을 추출하여 공격 애니메이션 클립(`Slime_Attack.anim`) 자동 생성.
 
 ## 코딩 컨벤션 및 표준 (Pro Standard)
 
-1. **관심사 분리**: 데이터(Settings)와 로직(Methods)을 분리하여 인스펙터에서의 관리 효율을 높입니다.
-2. **성능 최적화**: 애니메이션 파라미터는 반드시 `Animator.StringToHash`를 통한 static readonly ID를 사용합니다.
-3. **가독성**: `#region`을 사용하여 Lifecycle, Core Logic, Helpers 등을 명확히 구분합니다.
-4. **안전성**: `[RequireComponent]`를 적극 활용하여 런타임 에러를 방지합니다.
-5. **물리 자동화**: 가능한 경우 `PhysicsMaterial2D` 등을 코드로 자동 할당하여 에셋 누락으로 인한 버그를 차단합니다.
-
-### Camera
-
-- `Assets/Script/camera/Camerafollow.cs`
-  - 실제 클래스 이름은 `CameraFollow`입니다.
-  - 카메라가 `target`을 따라가도록 `LateUpdate`에서 위치를 보간합니다.
-
-### Enemy
-
-- `Assets/Script/EnemyController.cs`
-  - 적 기본 컨트롤러입니다.
-  - `EnemyData`를 받아 HP, 속도, 감지 거리 등을 세팅하고 플레이어를 추적합니다.
-  - `TakeDamage()`와 `Die()`가 있습니다.
-
-- `Assets/Script/EnemySpawner.cs`
-  - 주기적으로 적을 생성합니다.
-  - `Resources/EnemyData`의 데이터를 읽고, 가능한 경우 전용 프리팹을 찾아 생성합니다.
-
-- `Assets/Script/EnemyMarker.cs`
-  - 씬에 배치한 마커가 특정 enemy ID에 맞는 적을 생성한 뒤 자기 자신을 삭제합니다.
-  - 에디터에서 적 배치용으로 쓰는 스크립트로 보입니다.
-
-- `Assets/Script/Slime.cs`
-  - 슬라임 전용 추적/애니메이션 스크립트입니다.
-  - 플레이어 방향으로 이동하고 `Walk`, `Attack` 애니메이션 파라미터를 사용합니다.
-
-### Data
-
-- `Assets/Script/EnemyData.cs`
-  - 적 데이터 ScriptableObject입니다.
-  - ID, 이름, HP, 속도, 데미지, 감지 거리, 공격 간격을 가집니다.
-
-- `Assets/Script/SkillData.cs`
-  - 스킬 데이터 ScriptableObject입니다.
-  - ID, 이름, 데미지, 마나 비용, 쿨다운을 가집니다.
-
-- `Assets/Script/ShopItemData.cs`
-  - 상점 아이템 데이터 ScriptableObject입니다.
-  - ID, 이름, 가격, 설명을 가집니다.
-
-## 에디터 툴
-
-- `Assets/Editor/DataImportMenu.cs`
-  - Unity 메뉴 `Custom Tools/tiger/...`에 기능을 추가합니다.
-  - CSV 데이터 import, 적 마커 생성, 플레이어 애니메이션 세팅, 게임 씬 초기화 기능이 있습니다.
-  - `tiger/datafiles`의 CSV를 읽어서 `Assets/Resources` asset을 만드는 역할이 있습니다.
-
-- `Assets/Editor/EmergencyFixer.cs`
-  - Unity 메뉴 `Custom Tools/tiger/EMERGENCY FIX ALL`에 긴급 복구 기능을 추가합니다.
-  - Enemy 태그, Ground 레이어, Slime 프리팹, EnemySpawner 연결 등을 자동 세팅하려는 도구입니다.
-
-## 프리팹
-
-- `Assets/Prefabs/Player.prefab`
-  - 플레이어 프리팹입니다. `FirePoint`가 연결되어 있고, 3색 발사체 프리팹 리스트를 가지고 있습니다.
-
-- `Assets/Prefabs/BubbleProjectile_blue.prefab`, `_red.prefab`, `_yellow.prefab`
-  - 색상별 버블껌 발사체 프리팹입니다. 각각 애니메이션이 포함되어 있습니다.
-
-- `Assets/Prefabs/BaseEnemy.prefab`
-  - 기본 적 프리팹입니다.
-  - `EnemyMarker`가 기본 적을 생성할 때 사용합니다.
-
-- `Assets/Prefabs/Slime.prefab`
-  - 슬라임 적 프리팹입니다. 거대화 설정과 AI 스크립트가 적용되어 있습니다.
-
-## 데이터 리소스
-
-- `Assets/Resources/EnemyData/`
-  - 적 데이터 asset들이 있습니다.
-  - 예: `101_YellowSlime.asset`, `103_Bat.asset`, `104_Orc.asset`
-
-- `Assets/Resources/SkillData/Melee/`
-  - 근접 스킬 데이터 asset들이 있습니다.
-  - 예: `201_Slash.asset`, `202_GreatSwing.asset`, `203_Stab.asset`
-
-- `Assets/Resources/SkillData/Ranged/`
-  - 원거리 스킬 데이터 asset들이 있습니다.
-  - 예: `211_ArrowShot.asset`, `212_SniperShot.asset`, `213_TripleShot.asset`
-
-- `Assets/Resources/SkillData/Magic/`
-  - 마법 스킬 데이터 asset들이 있습니다.
-  - 예: `221_FireBall.asset`, `222_IceBlast.asset`, `223_ThunderBolt.asset`
-
-- `Assets/Resources/ShopItemData/`
-  - 상점 아이템 데이터 asset들이 있습니다.
-  - 예: `301_SmallHPotion.asset`, `302_LargeHPotion.asset`, `303_ManaPotion.asset`, `304_IronSword.asset`
-
-## 입력과 애니메이션
-
-- `Assets/InputSystem_Actions.inputactions`
-  - Unity Input System 액션 설정 파일입니다.
-  - `PlayerInput`이 이 파일을 사용할 수 있습니다.
-
-- `Assets/Animation/Player/PlayerController.controller`
-  - 플레이어 애니메이터 컨트롤러입니다.
-  - `PlayerController.cs`는 `Speed`, `isGrounded`, `isRunning` 파라미터를 세팅합니다.
-
-## gumball 관련 파일
-
-- `Assets/Sprite/gumball blue.png`
-  - 파란 gumball 스프라이트 시트입니다.
-  - 내부 sprite 이름은 `gumball blue_0`부터 여러 개로 slice되어 있습니다.
-
-- `Assets/Sprite/gumball red.png`
-  - 빨간 gumball 스프라이트 시트입니다.
-  - 내부 sprite 이름은 `gumball red_0`부터 여러 개로 slice되어 있습니다.
-
-- `Assets/Sprite/gumball yellow.png`
-  - 노란 gumball 스프라이트 시트입니다.
-  - 내부 sprite 이름은 `gumball yellow_0`부터 여러 개로 slice되어 있습니다.
-
-- `Assets/Sprite/gumball blue_0.controller`
-- `Assets/Sprite/gumball red_0.controller`
-- `Assets/Sprite/gumball yellow_0.controller`
-  - gumball sprite import 과정에서 생성된 animator controller로 보입니다.
-
-## 외부/샘플 에셋
-
-- `Assets/Sprite/FreePixelMob/`
-  - 슬라임 관련 외부/샘플 몬스터 에셋입니다.
-  - `Mobs.cs`, `StateRandom.cs`, `SlimeA.png`, `Slime.controller` 등이 있습니다.
-
-- `Assets/Sprite/Hero Knight - Pixel Art/`
-  - 히어로 나이트 외부 에셋과 데모 코드/프리팹입니다.
-
-- `Assets/Sprite/SPUM/`
-  - SPUM 캐릭터 생성/샘플/리소스 패키지입니다.
-  - 프로젝트 고유 로직보다 외부 패키지 성격이 강하므로 기능 구현 때는 필요한 경우만 봅니다.
-
-- `Assets/Sprite/Evil Wizard 2/`, `Assets/Sprite/Evil Wizard 3/`, `Assets/Sprite/Martial Hero/`, `Assets/Sprite/Monsters Creatures Fantasy/`, `Assets/Sprite/karsiori/`, `Assets/Sprite/Pixel Skies DEMO/`
-  - 캐릭터, 몬스터, 배경, 타일맵 등의 외부 에셋 폴더입니다.
-
-## 기능 추가할 때 먼저 볼 곳
-
-- 플레이어 이동/점프/달리기/웅크리기: `Assets/Script/player/PlayerController.cs`
-- 플레이어 프리팹 연결 상태: `Assets/Prefabs/Player.prefab`
-- gumball 이미지: `Assets/Sprite/gumball blue.png`, `gumball red.png`, `gumball yellow.png`
-- 좌클릭 발사/색 변경 구현 예정 위치: `Assets/Script/player/PlayerController.cs`
-- 발사 위치를 정확히 만들려면: `Player.prefab`의 `firePoint` 연결 필요
-- 적 피격 처리: `Assets/Script/EnemyController.cs`
-- 적 생성/스폰: `Assets/Script/EnemySpawner.cs`, `Assets/Script/EnemyMarker.cs`
-- 데이터 import/자동 세팅: `Assets/Editor/DataImportMenu.cs`, `Assets/Editor/EmergencyFixer.cs`
-
-## 주의할 점
-
-- `Library/`, `Temp/`, `Logs/`는 Unity 자동 생성 폴더라 일반적으로 직접 수정하지 않습니다.
-- `Assets/Sprite/SPUM/`, `Hero Knight - Pixel Art/` 같은 폴더는 외부 에셋/샘플 코드가 많습니다. 프로젝트 기능을 고칠 때는 먼저 `Assets/Script/`와 `Assets/Prefabs/`를 봅니다.
-- 현재 일부 한글 주석/문자열이 깨져 보입니다. 기능 수정할 때 기존 주석을 대량으로 정리하지 말고, 필요한 변경 주변에만 새 주석을 추가하는 편이 안전합니다.
-Sprite/SPUM/`, `Hero Knight - Pixel Art/` 같은 폴더는 외부 에셋/샘플 코드가 많습니다. 프로젝트 기능을 고칠 때는 먼저 `Assets/Script/`와 `Assets/Prefabs/`를 봅니다.
-- 현재 일부 한글 주석/문자열이 깨져 보입니다. 기능 수정할 때 기존 주석을 대량으로 정리하지 말고, 필요한 변경 주변에만 새 주석을 추가하는 편이 안전합니다.
+1. **관심사 분리**: 기능별로 스크립트를 쪼개어 재사용성을 높임 (예: 이동은 Controller, 생존은 Health).
+2. **이벤트 기반 설계**: 체력이 변할 때 UI를 직접 부르지 않고 이벤트를 던져서 처리함.
+3. **자동화**: 반복적인 세팅은 반드시 `EmergencyFixer`를 통해 클릭 한 번으로 해결하도록 함.
+4. **성능 최적화**: 매 프레임 문자열 검색 지양, Animator Hash 사용 생활화.
+5. **마찰력 제어**: 벽 붙기 현상을 방지하기 위해 코드로 `Frictionless` 재질을 자동 관리함.

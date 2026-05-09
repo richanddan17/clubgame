@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEditor;
+using UnityEngine.UI;
 using System.Collections.Generic;
 using System.IO;
 
@@ -12,82 +13,135 @@ public class EmergencyFixer : EditorWindow
 
         // 1. 태그 및 레이어 생성
         CreateTag("Enemy");
+        CreateTag("Player");
         CreateLayer("Ground");
         AssetDatabase.SaveAssets();
 
-        // 2. 슬라임 프리팹 생성
-        CreateSlimePrefab();
-
-        // 3. 씬 오브젝트 정리
-        GameObject player = GameObject.FindGameObjectWithTag("Player") ?? GameObject.Find("Player");
-        if (player != null)
+        // 2. 플레이어 태그 강제 할당
+        GameObject playerObj = GameObject.Find("Player") ?? GameObject.FindGameObjectWithTag("Player");
+        if (playerObj != null)
         {
-            var legacy = player.GetComponent("PlayerMoving");
-            if (legacy != null) { DestroyImmediate(legacy); Debug.Log("낡은 스크립트 제거 완료."); }
+            playerObj.tag = "Player";
+            Debug.Log("플레이어 태그를 'Player'로 설정했습니다.");
         }
 
-        // 4. 스포너 연결
+        // 3. 플레이어 설정 복구
+        FixPlayerSettings();
+
+        // 4. 슬라임 프리팹 및 스포너 복구
+        FixEnemySettings();
+
+        // 5. UI 레이아웃 복구
+        FixUILayout();
+
+        AssetDatabase.Refresh();
+        EditorUtility.DisplayDialog("FIX COMPLETE", "모든 설정이 복구되었습니다!\n1. 점프/발사/태그 복구\n2. HP바 빨간색 및 위치 고정", "확인");
+        Debug.Log("--- [End] 긴급 복구 완료 ---");
+    }
+
+    private static void FixUILayout()
+    {
+        GameObject hpBar = GameObject.Find("Player_HP_Bar");
+        if (hpBar == null) return;
+
+        RectTransform rect = hpBar.GetComponent<RectTransform>();
+        if (rect != null)
+        {
+            rect.anchorMin = new Vector2(0, 1);
+            rect.anchorMax = new Vector2(0, 1);
+            rect.pivot = new Vector2(0, 1);
+            rect.anchoredPosition = new Vector2(20, -20);
+            rect.sizeDelta = new Vector2(250, 35);
+        }
+
+        Image[] images = hpBar.GetComponentsInChildren<Image>(true);
+        foreach (var img in images)
+        {
+            if (img.gameObject.name == "Fill")
+            {
+                img.color = Color.red;
+                img.type = Image.Type.Filled;
+                img.fillMethod = Image.FillMethod.Horizontal;
+            }
+            else if (img.gameObject.name == "Background")
+            {
+                img.color = new Color(0.2f, 0.2f, 0.2f, 1f);
+            }
+        }
+
+        RectTransform fillArea = hpBar.transform.Find("Fill Area")?.GetComponent<RectTransform>();
+        if (fillArea != null)
+        {
+            fillArea.offsetMin = Vector2.zero;
+            fillArea.offsetMax = Vector2.zero;
+        }
+    }
+
+    private static void FixPlayerSettings()
+    {
+        PlayerController player = Object.FindAnyObjectByType<PlayerController>();
+        if (player == null) return;
+
+        if (player.GetComponent<Health>() == null)
+        {
+            player.gameObject.AddComponent<Health>();
+        }
+
+        SerializedObject so = new SerializedObject(player);
+        int groundLayerIndex = LayerMask.NameToLayer("Ground");
+
+        SerializedProperty moveSettings = so.FindProperty("moveSettings");
+        if (moveSettings != null)
+        {
+            moveSettings.FindPropertyRelative("GroundLayer").intValue = 1 << groundLayerIndex;
+            moveSettings.FindPropertyRelative("WalkSpeed").floatValue = 6f;
+            moveSettings.FindPropertyRelative("RunSpeed").floatValue = 10f;
+            moveSettings.FindPropertyRelative("JumpForce").floatValue = 14f;
+            moveSettings.FindPropertyRelative("CrouchScaleMultiplier").floatValue = 0.5f;
+        }
+
+        SerializedProperty combatSettings = so.FindProperty("combatSettings");
+        if (combatSettings != null)
+        {
+            if (combatSettings.FindPropertyRelative("FirePoint").objectReferenceValue == null)
+            {
+                Transform fp = player.transform.Find("FirePoint") ?? player.transform.Find("firePoint");
+                combatSettings.FindPropertyRelative("FirePoint").objectReferenceValue = fp;
+            }
+
+            SerializedProperty projectileArray = combatSettings.FindPropertyRelative("ColorProjectilePrefabs");
+            projectileArray.arraySize = 3;
+            projectileArray.GetArrayElementAtIndex(0).objectReferenceValue = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/BubbleProjectile_blue.prefab");
+            projectileArray.GetArrayElementAtIndex(1).objectReferenceValue = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/BubbleProjectile_red.prefab");
+            projectileArray.GetArrayElementAtIndex(2).objectReferenceValue = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/BubbleProjectile_yellow.prefab");
+
+            SerializedProperty skills = combatSettings.FindPropertyRelative("EquippedSkills");
+            if (skills.arraySize == 0)
+            {
+                SkillData[] allSkills = Resources.LoadAll<SkillData>("SkillData");
+                if (allSkills.Length > 0)
+                {
+                    skills.arraySize = 1;
+                    skills.GetArrayElementAtIndex(0).objectReferenceValue = allSkills[0];
+                }
+            }
+        }
+        so.ApplyModifiedProperties();
+    }
+
+    private static void FixEnemySettings()
+    {
         EnemySpawner spawner = Object.FindAnyObjectByType<EnemySpawner>();
         GameObject slimePrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Slime.prefab");
         if (spawner != null && slimePrefab != null)
         {
             spawner.enemyPrefab = slimePrefab;
-            Debug.Log("스포너에 슬라임 연결 완료.");
         }
 
-        AssetDatabase.Refresh();
-        EditorUtility.DisplayDialog("FIX COMPLETE", "슬라임 프리팹 생성 및 설정을 완료했습니다! \nAssets/Prefabs 폴더를 확인해 보세요.", "확인");
-        Debug.Log("--- [End] 긴급 복구 완료 ---");
-    }
-
-    private static void CreateSlimePrefab()
-    {
-        string path = "Assets/Prefabs/Slime.prefab";
-        if (!AssetDatabase.IsValidFolder("Assets/Prefabs"))
+        EnemyController[] enemies = Object.FindObjectsByType<EnemyController>(FindObjectsSortMode.None);
+        foreach (var enemy in enemies)
         {
-            if (!AssetDatabase.IsValidFolder("Assets")) AssetDatabase.CreateFolder("Assets", "Prefabs");
-            else AssetDatabase.CreateFolder("Assets", "Prefabs");
-        }
-
-        GameObject tempSlime = new GameObject("Slime_Temp");
-        try
-        {
-            var sr = tempSlime.AddComponent<SpriteRenderer>();
-            sr.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Sprite/FreePixelMob/SlimeA.png");
-            
-            var anim = tempSlime.AddComponent<Animator>();
-            anim.runtimeAnimatorController = AssetDatabase.LoadAssetAtPath<RuntimeAnimatorController>("Assets/Sprite/FreePixelMob/Slime.controller");
-
-            var rb = tempSlime.AddComponent<Rigidbody2D>();
-            rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
-            rb.freezeRotation = true;
-
-            tempSlime.AddComponent<CapsuleCollider2D>();
-            tempSlime.AddComponent<CanvasGroup>();
-            
-            // Mobs 스크립트 추가
-            // 파일 시스템에서 Mobs 스크립트가 있는지 확인 후 추가
-            if (AssetDatabase.LoadAssetAtPath<MonoScript>("Assets/Sprite/FreePixelMob/Mobs.cs") != null)
-            {
-                // Mobs는 클래스 이름이 Mobs이므로 문자열로 컴포넌트 추가 시도
-                tempSlime.AddComponent<Mobs>();
-            }
-            else
-            {
-                Debug.LogWarning("Mobs.cs 스크립트 파일을 Assets/Sprite/FreePixelMob/ 에서 찾을 수 없습니다.");
-            }
-
-            // 프리팹 저장
-            PrefabUtility.SaveAsPrefabAsset(tempSlime, path);
-            Debug.Log($"슬라임 프리팹 생성 성공: {path}");
-        }
-        catch (System.Exception e)
-        {
-            Debug.LogError($"프리팹 생성 중 오류: {e.Message}");
-        }
-        finally
-        {
-            DestroyImmediate(tempSlime);
+            if (enemy.GetComponent<Health>() == null) enemy.gameObject.AddComponent<Health>();
         }
     }
 
@@ -95,22 +149,18 @@ public class EmergencyFixer : EditorWindow
     {
         Object[] assets = AssetDatabase.LoadAllAssetsAtPath("ProjectSettings/TagManager.asset");
         if (assets == null || assets.Length == 0) return;
-
         SerializedObject tagManager = new SerializedObject(assets[0]);
         SerializedProperty tagsProp = tagManager.FindProperty("tags");
-
         bool exists = false;
         for (int i = 0; i < tagsProp.arraySize; i++)
         {
             if (tagsProp.GetArrayElementAtIndex(i).stringValue == tagName) { exists = true; break; }
         }
-
         if (!exists)
         {
             tagsProp.InsertArrayElementAtIndex(0);
             tagsProp.GetArrayElementAtIndex(0).stringValue = tagName;
             tagManager.ApplyModifiedProperties();
-            Debug.Log($"태그 생성 완료: {tagName}");
         }
     }
 
@@ -118,10 +168,8 @@ public class EmergencyFixer : EditorWindow
     {
         Object[] assets = AssetDatabase.LoadAllAssetsAtPath("ProjectSettings/TagManager.asset");
         if (assets == null || assets.Length == 0) return;
-
         SerializedObject tagManager = new SerializedObject(assets[0]);
         SerializedProperty layersProp = tagManager.FindProperty("layers");
-
         for (int i = 8; i < layersProp.arraySize; i++)
         {
             SerializedProperty sp = layersProp.GetArrayElementAtIndex(i);
@@ -130,7 +178,6 @@ public class EmergencyFixer : EditorWindow
             {
                 sp.stringValue = layerName;
                 tagManager.ApplyModifiedProperties();
-                Debug.Log($"레이어 생성 완료: {layerName}");
                 return;
             }
         }
