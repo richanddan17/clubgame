@@ -66,21 +66,32 @@ public class ShootingSetupHelper : EditorWindow
 
                 SerializedObject so = new SerializedObject(pc);
                 
-                // firePoint 연결
-                so.FindProperty("firePoint").objectReferenceValue = fp;
+                // 1. FirePoint 연결 (field: combatSettings.FirePoint)
+                SerializedProperty firePointProp = so.FindProperty("combatSettings.FirePoint");
+                if (firePointProp != null) firePointProp.objectReferenceValue = fp;
                 
-                // colorProjectilePrefabs 리스트 채우기
-                SerializedProperty prefabsProp = so.FindProperty("colorProjectilePrefabs");
-                prefabsProp.ClearArray();
-                for (int i = 0; i < projectilePrefabs.Length; i++)
+                // 2. 발사체 프리팹 연결 (field: combatSettings.ColorProjectilePrefabs)
+                SerializedProperty prefabsProp = so.FindProperty("combatSettings.ColorProjectilePrefabs");
+                if (prefabsProp != null)
                 {
-                    prefabsProp.InsertArrayElementAtIndex(i);
-                    prefabsProp.GetArrayElementAtIndex(i).objectReferenceValue = projectilePrefabs[i];
+                    prefabsProp.ClearArray();
+                    for (int i = 0; i < projectilePrefabs.Length; i++)
+                    {
+                        prefabsProp.InsertArrayElementAtIndex(i);
+                        prefabsProp.GetArrayElementAtIndex(i).objectReferenceValue = projectilePrefabs[i];
+                    }
                 }
 
-                // 스킬 데이터 확인 (비어있으면 기본 스킬 추가)
-                SerializedProperty skillsProp = so.FindProperty("equippedSkills");
-                if (skillsProp.arraySize == 0)
+                // 3. GroundLayer 자동 설정 (field: moveSettings.GroundLayer)
+                SerializedProperty groundLayerProp = so.FindProperty("moveSettings.GroundLayer");
+                if (groundLayerProp != null && groundLayerProp.intValue == 0)
+                {
+                    groundLayerProp.intValue = LayerMask.GetMask("Default", "Ground");
+                }
+
+                // 4. 스킬 데이터 확인 (field: combatSettings.EquippedSkills)
+                SerializedProperty skillsProp = so.FindProperty("combatSettings.EquippedSkills");
+                if (skillsProp != null && skillsProp.arraySize == 0)
                 {
                     string[] skillGuids = AssetDatabase.FindAssets("t:SkillData");
                     if (skillGuids.Length > 0)
