@@ -12,7 +12,11 @@ public class Projectile : MonoBehaviour
         damage = damageAmount;
         isFacingRight = facingRight;
         
-        // 초기화 시 추가적인 회전 처리가 필요하다면 여기서 수행 (현재는 Instantiate의 회전값을 유지함)
+        // 방향에 따라 스프라이트 뒤집기 또는 회전
+        if (!isFacingRight)
+        {
+            transform.rotation = Quaternion.Euler(0, 0, 180);
+        }
     }
 
     private void Start()
