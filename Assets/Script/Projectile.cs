@@ -19,43 +19,35 @@ public class Projectile : MonoBehaviour
         }
     }
 
-    private void Start()
+    private void OnEnable()
     {
-        Destroy(gameObject, lifeTime);
+        CancelInvoke(nameof(Deactivate));
+        Invoke(nameof(Deactivate), lifeTime);
+    }
+
+    private void Deactivate()
+    {
+        gameObject.SetActive(false);
     }
 
     private void Update()
     {
-        // Vector2.right 대신 transform.right를 사용하여 현재 총알이 바라보는 방향(회전값)으로 이동
         transform.Translate(transform.right * speed * Time.deltaTime, Space.World);
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        // 1. 공통 Health 컴포넌트 확인
         Health health = collision.GetComponent<Health>();
         if (health != null)
         {
             health.TakeDamage(damage);
-            Destroy(gameObject);
+            Deactivate();
             return;
         }
 
-        // 2. 레거시/특수 처리 (필요시 유지)
-        if (collision.CompareTag("Enemy"))
+        if (collision.CompareTag("Enemy") || collision.gameObject.layer == LayerMask.NameToLayer("Ground"))
         {
-            // 이제 대부분 Health 컴포넌트에서 처리되지만, 만약 없다면 기존 방식 시도
-            EnemyController enemy = collision.GetComponent<EnemyController>();
-            if (enemy != null) enemy.TakeDamage(damage);
-            
-            Slime slime = collision.GetComponent<Slime>();
-            if (slime != null) slime.TakeDamage(damage);
-            
-            Destroy(gameObject);
-        }
-        else if (collision.gameObject.layer == LayerMask.NameToLayer("Ground"))
-        {
-            Destroy(gameObject);
+            Deactivate();
         }
     }
 }
