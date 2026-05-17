@@ -103,6 +103,10 @@ public class PlayerController : MonoBehaviour
         _rb.freezeRotation = true;
         _rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
 
+        // 마찰력이 0인 물리 재질 적용 (벽에 달라붙는 현상 방지)
+        PhysicsMaterial2D mat = new PhysicsMaterial2D("Frictionless") { friction = 0, bounciness = 0 };
+        if (_collider != null) _collider.sharedMaterial = mat;
+
         if (moveSettings.GroundLayer.value == 0)
             moveSettings.GroundLayer = LayerMask.GetMask("Ground");
     }
