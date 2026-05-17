@@ -3,11 +3,7 @@ using UnityEngine.InputSystem;
 using System.Collections.Generic;
 
 /// <summary>
-/// 프로페셔널 버전의 플레이어 컨트롤러
-/// - 관심사 분리 (이동/전투)
-/// - 성능 최적화 (애니메이션 해시)
-/// - Health 시스템 연동 및 리스폰 기능
-/// - 마우스 방향 조준 발사 시스템
+/// 최적화 및 기능이 개선된 플레이어 컨트롤러
 /// </summary>
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(Collider2D))]
@@ -15,7 +11,7 @@ using System.Collections.Generic;
 [RequireComponent(typeof(Health))]
 public class PlayerController : MonoBehaviour
 {
-    #region Internal Classes & Enums
+    #region Settings
     [System.Serializable]
     public class MovementSettings
     {
@@ -36,13 +32,10 @@ public class PlayerController : MonoBehaviour
     }
     #endregion
 
-    #region Serialized Fields
-    [Header("설정 데이터")]
+    #region Fields
     [SerializeField] private MovementSettings moveSettings;
     [SerializeField] private CombatSettings combatSettings;
-    #endregion
 
-    #region Private Variables
     private Rigidbody2D _rb;
     private Animator _animator;
     private Collider2D _collider;
@@ -60,14 +53,13 @@ public class PlayerController : MonoBehaviour
     private int _currentColorIndex = 0;
     private float _lastFireTime;
 
-    // 애니메이션 해시 (성능 최적화)
     private static readonly int AnimSpeed = Animator.StringToHash("Speed");
     private static readonly int AnimIsGrounded = Animator.StringToHash("isGrounded");
     private static readonly int AnimIsRunning = Animator.StringToHash("isRunning");
     private static readonly int AnimDie = Animator.StringToHash("Die");
     #endregion
 
-    #region Lifecycle Methods
+    #region Lifecycle
     private void Awake()
     {
         _rb = GetComponent<Rigidbody2D>();
@@ -79,10 +71,11 @@ public class PlayerController : MonoBehaviour
 
         SetupPhysics();
         
+        if (combatSettings.FirePoint == null)
+            combatSettings.FirePoint = transform.Find("FirePoint") ?? transform;
+
         if (_health != null)
-        {
             _health.OnDie.AddListener(OnDeath);
-        }
     }
 
     private void Update()
@@ -91,7 +84,7 @@ public class PlayerController : MonoBehaviour
 
         UpdateGroundStatus();
         HandleInput();
-        ApplyRotationToMouse(); // 마우스 방향에 따른 캐릭터 회전
+        HandleFacingDirection();
         ApplyCrouch();
         UpdateAnimations();
     }
@@ -103,19 +96,15 @@ public class PlayerController : MonoBehaviour
     }
     #endregion
 
-    #region Core Logic
+    #region Mechanics
     private void SetupPhysics()
     {
-        if (_rb == null) return;
         _rb.gravityScale = 3.5f;
         _rb.freezeRotation = true;
         _rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
 
-        if (_collider != null)
-        {
-            PhysicsMaterial2D mat = new PhysicsMaterial2D("Frictionless") { friction = 0, bounciness = 0 };
-            _collider.sharedMaterial = mat;
-        }
+        if (moveSettings.GroundLayer.value == 0)
+            moveSettings.GroundLayer = LayerMask.GetMask("Ground");
     }
 
     private void HandleInput()
@@ -140,18 +129,16 @@ public class PlayerController : MonoBehaviour
 
     private void UpdateGroundStatus()
     {
-        if (_collider == null) return;
+        int layerMask = moveSettings.GroundLayer.value & ~(1 << gameObject.layer);
         Bounds b = _collider.bounds;
         Vector2 checkPos = new Vector2(b.center.x, b.min.y);
-        _isGrounded = Physics2D.OverlapBox(checkPos, new Vector2(b.size.x * 0.9f, 0.2f), 0f, moveSettings.GroundLayer);
+        _isGrounded = Physics2D.OverlapBox(checkPos, new Vector2(b.size.x * 0.8f, 0.1f), 0f, layerMask);
     }
 
     private void Jump()
     {
         if (_isGrounded)
-        {
             _rb.linearVelocity = new Vector2(_rb.linearVelocity.x, moveSettings.JumpForce);
-        }
     }
 
     private void CycleColor()
@@ -159,53 +146,75 @@ public class PlayerController : MonoBehaviour
         _currentColorIndex = (_currentColorIndex + 1) % 3;
     }
 
-    private void ApplyRotationToMouse()
+    private void HandleFacingDirection()
     {
-        // 마우스 월드 좌표 계산
-        Vector3 mousePos = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
-        
-        // 캐릭터와 마우스 사이의 방향 벡터
-        float directionX = mousePos.x - transform.position.x;
+        // 발사 직후 0.3초 동안은 방향 전환 유예
+        if (Time.time < _lastFireTime + 0.3f) return;
 
-        // 마우스 위치에 따른 좌우 반전
-        if (directionX > 0.1f && !_isFacingRight) Flip();
-        else if (directionX < -0.1f && _isFacingRight) Flip();
+        if (!Mouse.current.leftButton.isPressed && Mathf.Abs(_moveInput.x) > 0.1f)
+        {
+            if (_moveInput.x > 0 && !_isFacingRight) Flip();
+            else if (_moveInput.x < 0 && _isFacingRight) Flip();
+        }
     }
 
     private void Flip()
     {
         _isFacingRight = !_isFacingRight;
-        // 캐릭터를 180도 회전
-        transform.Rotate(0f, 180f, 0f);
+        transform.rotation = Quaternion.Euler(0, _isFacingRight ? 0 : 180, 0);
     }
 
     private void TryFire()
     {
-        if (combatSettings.EquippedSkills.Count == 0) return;
-        
-        SkillData skill = combatSettings.EquippedSkills[_currentSkillIndex];
-        if (Time.time < _lastFireTime + skill.Cooldown) return;
+        float damage = 10f;
+        float cooldown = 0.2f;
 
-        GameObject prefab = (combatSettings.ColorProjectilePrefabs.Length > _currentColorIndex) 
-            ? combatSettings.ColorProjectilePrefabs[_currentColorIndex] 
-            : skill.ProjectilePrefab;
-
-        if (prefab && combatSettings.FirePoint)
+        if (combatSettings.EquippedSkills.Count > 0)
         {
-            // 마우스 방향으로 각도 계산
-            Vector3 mousePos = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
-            mousePos.z = 0f;
+            var skill = combatSettings.EquippedSkills[_currentSkillIndex];
+            damage = skill.Damage;
+            cooldown = skill.Cooldown;
+        }
+
+        if (Time.time < _lastFireTime + cooldown) return;
+
+        // 조준 방향으로 즉시 회전
+        Vector3 mousePos = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
+        mousePos.z = 0f;
+        float directionX = mousePos.x - transform.position.x;
+        if (directionX > 0.1f && !_isFacingRight) Flip();
+        else if (directionX < -0.1f && _isFacingRight) Flip();
+
+        string[] tags = { "Blue", "Red", "Yellow" };
+        string poolTag = tags[_currentColorIndex];
+
+        if (ObjectPooler.Instance != null && combatSettings.FirePoint != null)
+        {
             Vector2 direction = (mousePos - combatSettings.FirePoint.position).normalized;
             float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
 
-            // 총알 생성 시 계산된 각도 적용
-            var obj = Instantiate(prefab, combatSettings.FirePoint.position, Quaternion.Euler(0, 0, angle));
-            if (obj.TryGetComponent<Projectile>(out var proj))
+            var obj = ObjectPooler.Instance.SpawnFromPool(poolTag, combatSettings.FirePoint.position, Quaternion.Euler(0, 0, angle));
+            if (obj != null && obj.TryGetComponent<Projectile>(out var proj))
             {
-                proj.Initialize(skill.Damage, _isFacingRight);
+                proj.Initialize(damage, _isFacingRight);
+            }
+            _lastFireTime = Time.time;
+        }
+        else
+        {
+            // 풀러가 없으면 기존 방식(Instantiate)으로 폴백
+            GameObject prefab = (combatSettings.ColorProjectilePrefabs != null && combatSettings.ColorProjectilePrefabs.Length > _currentColorIndex) 
+                ? combatSettings.ColorProjectilePrefabs[_currentColorIndex] : null;
+
+            if (prefab && combatSettings.FirePoint)
+            {
+                Vector2 direction = (mousePos - combatSettings.FirePoint.position).normalized;
+                float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+                var obj = Instantiate(prefab, combatSettings.FirePoint.position, Quaternion.Euler(0, 0, angle));
+                if (obj.TryGetComponent<Projectile>(out var proj)) proj.Initialize(damage, _isFacingRight);
+                _lastFireTime = Time.time;
             }
         }
-        _lastFireTime = Time.time;
     }
 
     private void OnDeath()
@@ -221,21 +230,9 @@ public class PlayerController : MonoBehaviour
         _health.Initialize(_health.MaxHealth);
         _isFacingRight = true;
         transform.rotation = Quaternion.Euler(0, 0, 0);
-        
-        if (_animator != null)
-        {
-            _animator.Rebind();
-            _animator.Update(0f);
-        }
+        _animator?.Rebind();
     }
     #endregion
-
-    #region Helpers & Polish
-    private void ApplyCrouch()
-    {
-        float targetY = _isCrouching ? _originalScale.y * moveSettings.CrouchScaleMultiplier : _originalScale.y;
-        transform.localScale = new Vector3(_originalScale.x, targetY, _originalScale.z);
-    }
 
     private void UpdateAnimations()
     {
@@ -244,14 +241,17 @@ public class PlayerController : MonoBehaviour
         _animator.SetBool(AnimIsRunning, _isRunning && Mathf.Abs(_moveInput.x) > 0.1f);
     }
 
+    private void ApplyCrouch()
+    {
+        float targetY = _isCrouching ? _originalScale.y * moveSettings.CrouchScaleMultiplier : _originalScale.y;
+        transform.localScale = new Vector3(_originalScale.x, targetY, _originalScale.z);
+    }
+
     private void OnDrawGizmos()
     {
-        if (!_collider) _collider = GetComponent<Collider2D>();
         if (!_collider) return;
-
         Gizmos.color = _isGrounded ? Color.green : Color.red;
         Bounds b = _collider.bounds;
-        Gizmos.DrawWireCube(new Vector2(b.center.x, b.min.y), new Vector2(b.size.x * 0.9f, 0.2f));
+        Gizmos.DrawWireCube(new Vector2(b.center.x, b.min.y), new Vector2(b.size.x * 0.8f, 0.1f));
     }
-    #endregion
 }
