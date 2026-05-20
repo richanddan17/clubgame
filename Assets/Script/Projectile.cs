@@ -37,6 +37,9 @@ public class Projectile : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
+        // 플레이어 자신의 투사체에 데미지를 입지 않도록 플레이어 태그 무시
+        if (collision.CompareTag("Player")) return;
+
         Health health = collision.GetComponent<Health>();
         if (health != null)
         {
