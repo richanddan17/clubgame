@@ -23,19 +23,25 @@ public class ParallaxBackground : MonoBehaviour
             // 실제 월드 크기 너비 계산
             length = sr.bounds.size.x;
 
-            // [사용자 제안 반영] 레이어마다 복제본을 하나 더 만들어 옆에 붙임
-            GameObject secondBg = new GameObject(gameObject.name + "_Pair");
-            secondBg.transform.SetParent(this.transform);
-            secondBg.transform.localScale = Vector3.one;
-            // 부모의 스케일을 고려하여 로컬 좌표로 정확히 너비만큼 이동
-            secondBg.transform.localPosition = new Vector3(length / transform.localScale.x, 0, 0);
-
-            var sr2 = secondBg.AddComponent<SpriteRenderer>();
-            sr2.sprite = sr.sprite;
-            sr2.sortingLayerID = sr.sortingLayerID;
-            sr2.sortingOrder = sr.sortingOrder;
-            sr2.color = sr.color;
+            // [개선] 양옆으로 배경을 복제하여 무한 루프 시 빈 공간 방지
+            CreateDuplicate(sr, -1, "Left");
+            CreateDuplicate(sr, 1, "Right");
         }
+    }
+
+    private void CreateDuplicate(SpriteRenderer originalSr, int side, string suffix)
+    {
+        GameObject duplicate = new GameObject(gameObject.name + "_" + suffix);
+        duplicate.transform.SetParent(this.transform);
+        duplicate.transform.localScale = Vector3.one;
+        // 부모의 스케일을 고려하여 로컬 좌표로 정확히 너비만큼 이동 (side: -1 또는 1)
+        duplicate.transform.localPosition = new Vector3((length * side) / transform.localScale.x, 0, 0);
+
+        var sr2 = duplicate.AddComponent<SpriteRenderer>();
+        sr2.sprite = originalSr.sprite;
+        sr2.sortingLayerID = originalSr.sortingLayerID;
+        sr2.sortingOrder = originalSr.sortingOrder;
+        sr2.color = originalSr.color;
     }
 
     void LateUpdate()
@@ -49,7 +55,7 @@ public class ParallaxBackground : MonoBehaviour
 
         transform.position = new Vector3(startpos + dist, transform.position.y, transform.position.z);
 
-        // 무한 루프: 화면을 완전히 벗어나면 시작 지점 갱신
+        // 무한 루프: 화면을 완전히 벗어나면 시작 지점 갱신 (오른쪽/왼쪽 대응)
         if (temp > startpos + length) startpos += length;
         else if (temp < startpos - length) startpos -= length;
     }
