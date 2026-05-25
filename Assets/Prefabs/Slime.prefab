@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 429819787476727730}
   - component: {fileID: 3607736453419601063}
   - component: {fileID: 4723172899507307449}
+  - component: {fileID: 8654817058228324389}
   m_Layer: 0
   m_Name: Slime
   m_TagString: Enemy
@@ -211,3 +212,32 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 4294967295
   groundCheckDistance: 0.2
+  attackRange: 1.5
+  attackDamage: 10
+  attackCooldown: 1.2
+--- !u!114 &8654817058228324389
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3149794797059673567}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 63e1ec1262f034b4c867fc49675831ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Health
+  maxHealth: 100
+  currentHealth: 0
+  OnHealthChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  OnDamaged:
+    m_PersistentCalls:
+      m_Calls: []
+  OnHealed:
+    m_PersistentCalls:
+      m_Calls: []
+  OnDie:
+    m_PersistentCalls:
+      m_Calls: []

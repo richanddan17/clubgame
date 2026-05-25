@@ -21,6 +21,7 @@ public class EnemyController : MonoBehaviour
     private Health _health;
     private Transform _target;
     private bool _isDead = false;
+    private Vector3 _initialScale;
 
     // 애니메이션 해시
     private static readonly int AnimWalk = Animator.StringToHash("Walk");
@@ -37,6 +38,7 @@ public class EnemyController : MonoBehaviour
         _health = GetComponent<Health>();
 
         SetupPhysics();
+        _initialScale = transform.localScale;
         
         // Health 이벤트 연결
         if (_health != null)
@@ -119,8 +121,8 @@ public class EnemyController : MonoBehaviour
 
     private void ApplyFlip(float horizontalDirection)
     {
-        if (horizontalDirection > 0.01f) transform.localScale = new Vector3(-1, 1, 1);
-        else if (horizontalDirection < -0.01f) transform.localScale = new Vector3(1, 1, 1);
+        if (horizontalDirection > 0.01f) transform.localScale = new Vector3(-_initialScale.x, _initialScale.y, _initialScale.z);
+        else if (horizontalDirection < -0.01f) transform.localScale = new Vector3(_initialScale.x, _initialScale.y, _initialScale.z);
     }
 
     private void UpdateAnimation(bool isMoving)
