@@ -11,6 +11,26 @@ public class WizardSetupHelper : EditorWindow
         string prefabPath = "Assets/Prefabs/Wizard2.prefab";
         string spritePath = "Assets/Sprite/Evil Wizard 2/Sprites/Idle.png";
         string controllerPath = "Assets/Sprite/Evil Wizard 2/Animations/Wizard2Controller.controller";
+        string dataPath = "Assets/Resources/EnemyData/105_Wizard2.asset";
+
+        // 0. 전용 데이터 에셋 생성 및 업데이트
+        EnemyData wizardData = AssetDatabase.LoadAssetAtPath<EnemyData>(dataPath);
+        if (wizardData == null)
+        {
+            wizardData = ScriptableObject.CreateInstance<EnemyData>();
+            if (!Directory.Exists("Assets/Resources/EnemyData")) Directory.CreateDirectory("Assets/Resources/EnemyData");
+            AssetDatabase.CreateAsset(wizardData, dataPath);
+        }
+        
+        // 항상 최신 값으로 업데이트
+        wizardData.ID = 105;
+        wizardData.EnemyName = "Wizard2";
+        wizardData.HP = 80f;
+        wizardData.Damage = 15f;
+        wizardData.Speed = 2.5f;
+        wizardData.DetectionRange = 12f;
+        wizardData.AttackInterval = 2.5f;
+        EditorUtility.SetDirty(wizardData);
 
         // 1. 기본 오브젝트 생성
         GameObject wizard = new GameObject("Wizard2");
@@ -26,43 +46,33 @@ public class WizardSetupHelper : EditorWindow
         rb.freezeRotation = true;
         rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
 
-        wizard.AddComponent<CapsuleCollider2D>();
+        var col = wizard.AddComponent<CapsuleCollider2D>();
+        col.size = new Vector2(0.5f, 1.2f); // 대략적인 마법사 크기
+
         wizard.AddComponent<Health>();
         
-        // 3. 애니메이터 컨트롤러 생성 및 설정
+        // 3. 애니메이터 컨트롤러 설정
         if (!File.Exists(controllerPath))
         {
             var controller = AnimatorController.CreateAnimatorControllerAtPath(controllerPath);
             var rootStateMachine = controller.layers[0].stateMachine;
 
-            // 스테이트 추가
             var idleClip = AssetDatabase.LoadAssetAtPath<AnimationClip>("Assets/Sprite/Evil Wizard 2/Animations/Idle.anim");
             var walkClip = AssetDatabase.LoadAssetAtPath<AnimationClip>("Assets/Sprite/Evil Wizard 2/Animations/Run.anim");
             var attackClip = AssetDatabase.LoadAssetAtPath<AnimationClip>("Assets/Sprite/Evil Wizard 2/Animations/Attack1.anim");
             var dieClip = AssetDatabase.LoadAssetAtPath<AnimationClip>("Assets/Sprite/Evil Wizard 2/Animations/Death.anim");
 
-            var idleState = rootStateMachine.AddState("Idle");
-            idleState.motion = idleClip;
+            var idleState = rootStateMachine.AddState("Idle"); idleState.motion = idleClip;
+            var walkState = rootStateMachine.AddState("Walk"); walkState.motion = walkClip;
+            var attackState = rootStateMachine.AddState("Attack"); attackState.motion = attackClip;
+            var dieState = rootStateMachine.AddState("Die"); dieState.motion = dieClip;
 
-            var walkState = rootStateMachine.AddState("Walk");
-            walkState.motion = walkClip;
-
-            var attackState = rootStateMachine.AddState("Attack");
-            attackState.motion = attackClip;
-
-            var dieState = rootStateMachine.AddState("Die");
-            dieState.motion = dieClip;
-
-            // 파라미터 추가
             controller.AddParameter("Walk", AnimatorControllerParameterType.Bool);
             controller.AddParameter("Attack", AnimatorControllerParameterType.Trigger);
             controller.AddParameter("Die", AnimatorControllerParameterType.Trigger);
 
-            // 트랜지션 설정
             idleState.AddTransition(walkState).AddCondition(AnimatorConditionMode.If, 0, "Walk");
             walkState.AddTransition(idleState).AddCondition(AnimatorConditionMode.IfNot, 0, "Walk");
-            
-            // AnyState 트랜지션
             rootStateMachine.AddAnyStateTransition(attackState).AddCondition(AnimatorConditionMode.If, 0, "Attack");
             attackState.AddTransition(idleState).hasExitTime = true;
             rootStateMachine.AddAnyStateTransition(dieState).AddCondition(AnimatorConditionMode.If, 0, "Die");
@@ -74,19 +84,22 @@ public class WizardSetupHelper : EditorWindow
             anim.runtimeAnimatorController = AssetDatabase.LoadAssetAtPath<RuntimeAnimatorController>(controllerPath);
         }
 
-        // 4. RangedEnemy 스크립트 추가 및 설정
+        // 4. RangedEnemy 스크립트 추가 및 데이터 연결
         var rangedEnemy = wizard.GetComponent<RangedEnemy>() ?? wizard.AddComponent<RangedEnemy>();
         rangedEnemy.projectilePrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/BubbleProjectile_red.prefab");
+        rangedEnemy.data = wizardData;
         
-        // 데이터 에셋 로드 (Orc나 다른 원거리 데이터를 임시로 사용하거나 새로 생성 필요)
-        rangedEnemy.data = AssetDatabase.LoadAssetAtPath<EnemyData>("Assets/Resources/EnemyData/104_Orc.asset"); 
+        // 근접 공격 능력치 설정
+        rangedEnemy.meleeDamage = 25f;
+        rangedEnemy.meleeRange = 2.0f;
+        rangedEnemy.meleeOffset = new Vector2(1.2f, 0.5f);
 
         // 5. 프리팹으로 저장
         PrefabUtility.SaveAsPrefabAsset(wizard, prefabPath);
         DestroyImmediate(wizard);
 
         AssetDatabase.Refresh();
-        Debug.Log("Wizard2 프리팹 생성 및 기본 설정 완료!");
-        EditorUtility.DisplayDialog("Success", "Wizard2 프리팹이 Assets/Prefabs/Wizard2.prefab에 생성되었습니다.", "OK");
+        Debug.Log("Wizard2 프리팹 및 전용 데이터(HP 80, DMG 15) 설정 완료!");
+        EditorUtility.DisplayDialog("Success", "Wizard2 설정 완료!\nHP: 80, Damage: 15", "OK");
     }
 }

@@ -180,7 +180,7 @@ CapsuleCollider2D:
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
-  m_Size: {x: 2.5, y: 2.5}
+  m_Size: {x: 0.5, y: 1.2}
   m_Direction: 0
 --- !u!114 &8816103276310667633
 MonoBehaviour:
@@ -220,6 +220,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e77c9858c5ced134294972be0c3f2b25, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RangedEnemy
-  data: {fileID: 11400000, guid: 4fd9232fcead0e147a9f1019255f306b, type: 2}
+  data: {fileID: 11400000, guid: 20fa613fafb9a034991935e642c903e1, type: 2}
   projectilePrefab: {fileID: 1413877270453038819, guid: 5f347889b1933514b8a2d9418ae2c5ee, type: 3}
   firePoint: {fileID: 0}

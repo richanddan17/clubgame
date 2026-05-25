@@ -77,6 +77,34 @@ public class RangedEnemy : MonoBehaviour
     }
 
     // 애니메이션 이벤트에서 호출할 함수
+    [Header("근접 공격(휘두르기) 설정")]
+    public float meleeDamage = 25f;
+    public float meleeRange = 2.0f;
+    public Vector2 meleeOffset = new Vector2(1.2f, 0.5f);
+
+    public void MeleeSwing()
+    {
+        if (_isDead || _player == null) return;
+
+        // 현재 바라보는 방향 (localScale.x가 양수면 오른쪽)
+        float side = transform.localScale.x > 0 ? 1f : -1f;
+        Vector2 checkPos = (Vector2)transform.position + new Vector2(side * meleeOffset.x, meleeOffset.y);
+        
+        // 전방 범위 내 플레이어 체크
+        Collider2D[] colliders = Physics2D.OverlapCircleAll(checkPos, meleeRange);
+        foreach (var col in colliders)
+        {
+            if (col.CompareTag("Player"))
+            {
+                if (col.TryGetComponent<Health>(out var h))
+                {
+                    h.TakeDamage(meleeDamage);
+                    Debug.Log($"<color=orange>[Wizard Melee]</color> 지팡이 휘두르기 적중! 데미지: {meleeDamage}");
+                }
+            }
+        }
+    }
+
     public void Shoot()
     {
         if (_isDead || projectilePrefab == null || firePoint == null || _player == null) return;
@@ -87,10 +115,18 @@ public class RangedEnemy : MonoBehaviour
         GameObject projectile = Instantiate(projectilePrefab, firePoint.position, Quaternion.Euler(0, 0, angle));
         if (projectile.TryGetComponent<Projectile>(out var proj))
         {
-            // 현재 스케일에 따른 방향 판정 (음수면 오른쪽, 양수면 왼쪽을 바라보는 리소스 특성 반영)
-            bool facingRight = transform.localScale.x < 0;
-            proj.Initialize(data.Damage, facingRight);
+            // 이제 Projectile.cs에서 회전을 건드리지 않으므로 정확한 각도로 발사됨
+            proj.Initialize(data.Damage, transform.localScale.x > 0, gameObject);
         }
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        // 근접 공격 범위 시각화
+        float side = transform.localScale.x > 0 ? 1f : -1f;
+        Vector2 checkPos = (Vector2)transform.position + new Vector2(side * meleeOffset.x, meleeOffset.y);
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(checkPos, meleeRange);
     }
 
     private void ApplyFlip(float x)
