@@ -52,11 +52,10 @@ public class WizardSetupHelper : EditorWindow
         wizard.AddComponent<Health>();
         
         // 3. 애니메이터 컨트롤러 설정
-        RuntimeAnimatorController controller;
-        if (true) // 항상 새로 생성하거나 업데이트하도록 변경 (기존 파일이 깨졌을 수 있음)
+        if (!File.Exists(controllerPath))
         {
-            var animController = AnimatorController.CreateAnimatorControllerAtPath(controllerPath);
-            var rootStateMachine = animController.layers[0].stateMachine;
+            var controller = AnimatorController.CreateAnimatorControllerAtPath(controllerPath);
+            var rootStateMachine = controller.layers[0].stateMachine;
 
             var idleClip = AssetDatabase.LoadAssetAtPath<AnimationClip>("Assets/Sprite/Evil Wizard 2/Animations/Idle.anim");
             var walkClip = AssetDatabase.LoadAssetAtPath<AnimationClip>("Assets/Sprite/Evil Wizard 2/Animations/Run.anim");
@@ -68,9 +67,9 @@ public class WizardSetupHelper : EditorWindow
             var attackState = rootStateMachine.AddState("Attack"); attackState.motion = attackClip;
             var dieState = rootStateMachine.AddState("Die"); dieState.motion = dieClip;
 
-            animController.AddParameter("Walk", AnimatorControllerParameterType.Bool);
-            animController.AddParameter("Attack", AnimatorControllerParameterType.Trigger);
-            animController.AddParameter("Die", AnimatorControllerParameterType.Trigger);
+            controller.AddParameter("Walk", AnimatorControllerParameterType.Bool);
+            controller.AddParameter("Attack", AnimatorControllerParameterType.Trigger);
+            controller.AddParameter("Die", AnimatorControllerParameterType.Trigger);
 
             idleState.AddTransition(walkState).AddCondition(AnimatorConditionMode.If, 0, "Walk");
             walkState.AddTransition(idleState).AddCondition(AnimatorConditionMode.IfNot, 0, "Walk");
@@ -78,10 +77,12 @@ public class WizardSetupHelper : EditorWindow
             attackState.AddTransition(idleState).hasExitTime = true;
             rootStateMachine.AddAnyStateTransition(dieState).AddCondition(AnimatorConditionMode.If, 0, "Die");
 
-            controller = animController;
+            anim.runtimeAnimatorController = controller;
         }
-        
-        anim.runtimeAnimatorController = controller;
+        else
+        {
+            anim.runtimeAnimatorController = AssetDatabase.LoadAssetAtPath<RuntimeAnimatorController>(controllerPath);
+        }
 
         // 4. RangedEnemy 스크립트 추가 및 데이터 연결
         var rangedEnemy = wizard.GetComponent<RangedEnemy>() ?? wizard.AddComponent<RangedEnemy>();
