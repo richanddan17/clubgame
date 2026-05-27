@@ -246,7 +246,11 @@ public class PlayerController : MonoBehaviour
             var obj = ObjectPooler.Instance.SpawnFromPool(poolTag, combatSettings.FirePoint.position, Quaternion.Euler(0, 0, angle));
             if (obj != null && obj.TryGetComponent<Projectile>(out var proj))
             {
+<<<<<<< HEAD
                 proj.Initialize(finalDamage, _isFacingRight, finalSpeed, projectileScale);
+=======
+                proj.Initialize(damage, _isFacingRight, gameObject);
+>>>>>>> origin/PBE
             }
             _lastFireTime = Time.time;
         }
@@ -261,8 +265,12 @@ public class PlayerController : MonoBehaviour
                 Vector2 direction = (mousePos - combatSettings.FirePoint.position).normalized;
                 float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
                 var obj = Instantiate(prefab, combatSettings.FirePoint.position, Quaternion.Euler(0, 0, angle));
+<<<<<<< HEAD
                 if (obj.TryGetComponent<Projectile>(out var proj)) 
                     proj.Initialize(finalDamage, _isFacingRight, finalSpeed, projectileScale);
+=======
+                if (obj.TryGetComponent<Projectile>(out var proj)) proj.Initialize(damage, _isFacingRight, gameObject);
+>>>>>>> origin/PBE
                 _lastFireTime = Time.time;
             }
         }
