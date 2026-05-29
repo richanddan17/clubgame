@@ -3,7 +3,7 @@ using UnityEngine.InputSystem;
 using System.Collections.Generic;
 
 /// <summary>
-/// 최적화된 플레이어 컨트롤러 (차징 및 색상 전환 기능 포함)
+/// 최적화된 플레이어 컨트롤러 (Q키 토글 차징 모드 + 가변 속도/크기 적용)
 /// </summary>
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(Collider2D))]
@@ -53,7 +53,7 @@ public class PlayerController : MonoBehaviour
     private int _currentColorIndex = 0;
     private float _lastFireTime;
     private float _chargeStartTime;
-    private bool _isCharging;
+    private bool _isChargeMode = false; // Q키 토글 상태
 
     private static readonly int AnimSpeed = Animator.StringToHash("Speed");
     private static readonly int AnimIsGrounded = Animator.StringToHash("isGrounded");
@@ -124,18 +124,34 @@ public class PlayerController : MonoBehaviour
 
         if (Keyboard.current.rKey.wasPressedThisFrame) CycleColor();
 
-        // 차징 로직
-        if (Mouse.current.leftButton.wasPressedThisFrame)
+        // Q키 토글
+        if (Keyboard.current.qKey.wasPressedThisFrame)
         {
-            _isCharging = true;
-            _chargeStartTime = Time.time;
+            _isChargeMode = !_isChargeMode;
+            Debug.Log("<color=cyan>[Mode]</color> Charge Mode: " + (_isChargeMode ? "ON" : "OFF"));
         }
 
-        if (Mouse.current.leftButton.wasReleasedThisFrame && _isCharging)
+        // 발사 핸들링
+        if (_isChargeMode)
         {
-            float chargeDuration = Time.time - _chargeStartTime;
-            TryFire(chargeDuration);
-            _isCharging = false;
+            // [차징 모드] 누를 때 시작, 뗄 때 발사
+            if (Mouse.current.leftButton.wasPressedThisFrame)
+            {
+                _chargeStartTime = Time.time;
+            }
+            if (Mouse.current.leftButton.wasReleasedThisFrame)
+            {
+                float duration = Time.time - _chargeStartTime;
+                TryFire(duration);
+            }
+        }
+        else
+        {
+            // [일반 모드] 클릭 즉시 발사
+            if (Mouse.current.leftButton.wasPressedThisFrame)
+            {
+                TryFire(0f);
+            }
         }
     }
 
@@ -143,11 +159,11 @@ public class PlayerController : MonoBehaviour
     {
         float targetSpeed = _isRunning ? moveSettings.RunSpeed : moveSettings.WalkSpeed;
         
-        // 차징을 시작한 지 0.2초가 지났을 때만 실제 차징 속도(느림)를 적용
-        bool isActuallyCharging = _isCharging && (Time.time - _chargeStartTime > 0.2f);
+        // [중요] 차징 모드이면서 실제로 마우스를 누르고 있을 때만 느려짐
+        bool isActivelyCharging = _isChargeMode && Mouse.current.leftButton.isPressed;
 
-        if (isActuallyCharging && _isCrouching) targetSpeed = 1f;
-        else if (isActuallyCharging) targetSpeed = 2f;
+        if (isActivelyCharging && _isCrouching) targetSpeed = 1f;
+        else if (isActivelyCharging) targetSpeed = 2f;
         else if (_isCrouching) targetSpeed = 4f;
 
         _rb.linearVelocity = new Vector2(_moveInput.x * targetSpeed, _rb.linearVelocity.y);
@@ -170,7 +186,7 @@ public class PlayerController : MonoBehaviour
     private void CycleColor()
     {
         _currentColorIndex = (_currentColorIndex + 1) % 3;
-        Debug.Log("Bullet Color Switched: " + ( (ColorIndex)_currentColorIndex ).ToString());
+        Debug.Log("Bullet Color: " + ( (ColorIndex)_currentColorIndex ).ToString());
     }
 
     private enum ColorIndex { Blue = 0, Red = 1, Yellow = 2 }
@@ -179,8 +195,20 @@ public class PlayerController : MonoBehaviour
     {
         if (Time.time < _lastFireTime + 0.3f) return;
 
-        if (!Mouse.current.leftButton.isPressed && Mathf.Abs(_moveInput.x) > 0.1f)
+        bool isPressingFire = Mouse.current.leftButton.isPressed;
+
+        if (isPressingFire)
         {
+            // 차징 중일 때는 마우스 위치를 바라봄
+            Vector3 mousePos = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
+            float directionX = mousePos.x - transform.position.x;
+
+            if (directionX > 0.1f && !_isFacingRight) Flip();
+            else if (directionX < -0.1f && _isFacingRight) Flip();
+        }
+        else if (Mathf.Abs(_moveInput.x) > 0.1f)
+        {
+            // 평소 이동 중일 때는 이동 방향을 바라봄
             if (_moveInput.x > 0 && !_isFacingRight) Flip();
             else if (_moveInput.x < 0 && _isFacingRight) Flip();
         }
@@ -208,12 +236,16 @@ public class PlayerController : MonoBehaviour
 
         if (Time.time < _lastFireTime + cooldown) return;
 
-        // 차징 효과 계산
+        // 데미지 및 크기 계산
         float chargeRatio = Mathf.Clamp01(chargeTime / 5f);
-        float finalDamage = Mathf.Lerp(baseDamage, 50f, chargeRatio);
-        float finalScale = Mathf.Lerp(1.0f, 2.5f, chargeRatio); 
+        float finalDamage = Mathf.Lerp(baseDamage, 60f, chargeRatio);
+        
+        // [수정] 일반 모드(또는 차징 시작) 크기를 1.5f로 설정, 최대 3.5f까지 커짐
+        float baseScale = 1.5f;
+        float finalScale = _isChargeMode ? Mathf.Lerp(baseScale, 3.5f, chargeRatio) : baseScale;
+        
         Vector3 projectileScale = new Vector3(finalScale, finalScale, 1f);
-        float finalSpeed = Mathf.Lerp(15f, 10f, chargeRatio);
+        float finalSpeed = _isChargeMode ? Mathf.Lerp(15f, 10f, chargeRatio) : 18f; // 일반 모드는 조금 더 빠르게
 
         Vector3 mousePos = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
         mousePos.z = 0f;
@@ -232,6 +264,21 @@ public class PlayerController : MonoBehaviour
                 proj.Initialize(finalDamage, _isFacingRight, finalSpeed, projectileScale, gameObject);
             }
             _lastFireTime = Time.time;
+        }
+        else
+        {
+            GameObject prefab = (combatSettings.ColorProjectilePrefabs != null && combatSettings.ColorProjectilePrefabs.Length > _currentColorIndex) 
+                ? combatSettings.ColorProjectilePrefabs[_currentColorIndex] : null;
+
+            if (prefab && combatSettings.FirePoint)
+            {
+                Vector2 direction = (mousePos - combatSettings.FirePoint.position).normalized;
+                float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+                var obj = Instantiate(prefab, combatSettings.FirePoint.position, Quaternion.Euler(0, 0, angle));
+                if (obj.TryGetComponent<Projectile>(out var proj)) 
+                    proj.Initialize(finalDamage, _isFacingRight, finalSpeed, projectileScale, gameObject);
+                _lastFireTime = Time.time;
+            }
         }
     }
 
@@ -268,13 +315,5 @@ public class PlayerController : MonoBehaviour
         {
             _health.DamageMultiplier = _isCrouching ? 0.5f : 1.0f;
         }
-    }
-
-    private void OnDrawGizmos()
-    {
-        if (!_collider) return;
-        Gizmos.color = _isGrounded ? Color.green : Color.red;
-        Bounds b = _collider.bounds;
-        Gizmos.DrawWireCube(new Vector2(b.center.x, b.min.y), new Vector2(b.size.x * 0.8f, 0.1f));
     }
 }
