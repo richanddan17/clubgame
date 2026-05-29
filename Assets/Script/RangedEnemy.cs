@@ -116,7 +116,7 @@ public class RangedEnemy : MonoBehaviour
         if (projectile.TryGetComponent<Projectile>(out var proj))
         {
             // 이제 Projectile.cs에서 회전을 건드리지 않으므로 정확한 각도로 발사됨
-            proj.Initialize(data.Damage, transform.localScale.x > 0, gameObject);
+            proj.Initialize(data.Damage, transform.localScale.x > 0, shooter: gameObject);
         }
     }
 

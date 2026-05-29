@@ -3,7 +3,7 @@ using UnityEngine.InputSystem;
 using System.Collections.Generic;
 
 /// <summary>
-/// 최적화된 플레이어 컨트롤러 (차징 및 색상 전환 기능 포함)
+/// 최적화 및 기능이 개선된 플레이어 컨트롤러
 /// </summary>
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(Collider2D))]
@@ -105,6 +105,7 @@ public class PlayerController : MonoBehaviour
         _rb.freezeRotation = true;
         _rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
 
+        // 마찰력이 0인 물리 재질 적용 (벽에 달라붙는 현상 방지)
         PhysicsMaterial2D mat = new PhysicsMaterial2D("Frictionless") { friction = 0, bounciness = 0 };
         if (_collider != null) _collider.sharedMaterial = mat;
 
@@ -143,12 +144,19 @@ public class PlayerController : MonoBehaviour
     {
         float targetSpeed = _isRunning ? moveSettings.RunSpeed : moveSettings.WalkSpeed;
         
-        // 차징을 시작한 지 0.2초가 지났을 때만 실제 차징 속도(느림)를 적용
-        bool isActuallyCharging = _isCharging && (Time.time - _chargeStartTime > 0.2f);
-
-        if (isActuallyCharging && _isCrouching) targetSpeed = 1f;
-        else if (isActuallyCharging) targetSpeed = 2f;
-        else if (_isCrouching) targetSpeed = 4f;
+        // 속도 우선순위: 차징+웅크리기(1.0) > 차징(2.0) > 웅크리기(4.0)
+        if (_isCharging && _isCrouching)
+        {
+            targetSpeed = 1f;
+        }
+        else if (_isCharging)
+        {
+            targetSpeed = 2f;
+        }
+        else if (_isCrouching)
+        {
+            targetSpeed = 4f;
+        }
 
         _rb.linearVelocity = new Vector2(_moveInput.x * targetSpeed, _rb.linearVelocity.y);
     }
@@ -170,13 +178,11 @@ public class PlayerController : MonoBehaviour
     private void CycleColor()
     {
         _currentColorIndex = (_currentColorIndex + 1) % 3;
-        Debug.Log("Bullet Color Switched: " + ( (ColorIndex)_currentColorIndex ).ToString());
     }
-
-    private enum ColorIndex { Blue = 0, Red = 1, Yellow = 2 }
 
     private void HandleFacingDirection()
     {
+        // 발사 직후 0.3초 동안은 방향 전환 유예
         if (Time.time < _lastFireTime + 0.3f) return;
 
         if (!Mouse.current.leftButton.isPressed && Mathf.Abs(_moveInput.x) > 0.1f)
@@ -194,6 +200,7 @@ public class PlayerController : MonoBehaviour
 
     private void TryFire(float chargeTime = 0f)
     {
+        // 웅크리기 중에는 공격 불가 (차징은 가능하지만 발사는 서서 해야 함)
         if (_isCrouching) return;
         
         float baseDamage = 10f;
@@ -208,15 +215,25 @@ public class PlayerController : MonoBehaviour
 
         if (Time.time < _lastFireTime + cooldown) return;
 
-        // 차징 효과 계산
+        // 차징 효과 계산 (최대 5초 차징 기준)
         float chargeRatio = Mathf.Clamp01(chargeTime / 5f);
+        
+        // 데미지: 기본 데미지 ~ 50
         float finalDamage = Mathf.Lerp(baseDamage, 50f, chargeRatio);
-        float finalScale = Mathf.Lerp(1.0f, 2.5f, chargeRatio); 
+        
+        // 크기: 2.0 ~ 1.0 (더 크게 상향)
+        float finalScale = Mathf.Lerp(2.0f, 1.0f, chargeRatio);
         Vector3 projectileScale = new Vector3(finalScale, finalScale, 1f);
-        float finalSpeed = Mathf.Lerp(15f, 10f, chargeRatio);
 
+        // 속도: 15 (기본) ~ 8 (너무 느리지 않게)
+        float finalSpeed = Mathf.Lerp(15f, 8f, chargeRatio);
+
+        // 조준 방향으로 즉시 회전
         Vector3 mousePos = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
         mousePos.z = 0f;
+        float directionX = mousePos.x - transform.position.x;
+        if (directionX > 0.1f && !_isFacingRight) Flip();
+        else if (directionX < -0.1f && _isFacingRight) Flip();
 
         string[] tags = { "Blue", "Red", "Yellow" };
         string poolTag = tags[_currentColorIndex];
@@ -229,9 +246,25 @@ public class PlayerController : MonoBehaviour
             var obj = ObjectPooler.Instance.SpawnFromPool(poolTag, combatSettings.FirePoint.position, Quaternion.Euler(0, 0, angle));
             if (obj != null && obj.TryGetComponent<Projectile>(out var proj))
             {
-                proj.Initialize(finalDamage, _isFacingRight, finalSpeed, projectileScale, gameObject);
+                proj.Initialize(finalDamage, _isFacingRight, finalSpeed, projectileScale);
             }
             _lastFireTime = Time.time;
+        }
+        else
+        {
+            // 풀러가 없으면 기존 방식(Instantiate)으로 폴백
+            GameObject prefab = (combatSettings.ColorProjectilePrefabs != null && combatSettings.ColorProjectilePrefabs.Length > _currentColorIndex) 
+                ? combatSettings.ColorProjectilePrefabs[_currentColorIndex] : null;
+
+            if (prefab && combatSettings.FirePoint)
+            {
+                Vector2 direction = (mousePos - combatSettings.FirePoint.position).normalized;
+                float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+                var obj = Instantiate(prefab, combatSettings.FirePoint.position, Quaternion.Euler(0, 0, angle));
+                if (obj.TryGetComponent<Projectile>(out var proj)) 
+                    proj.Initialize(finalDamage, _isFacingRight, finalSpeed, projectileScale);
+                _lastFireTime = Time.time;
+            }
         }
     }
 
@@ -264,6 +297,7 @@ public class PlayerController : MonoBehaviour
         float targetY = _isCrouching ? _originalScale.y * moveSettings.CrouchScaleMultiplier : _originalScale.y;
         transform.localScale = new Vector3(_originalScale.x, targetY, _originalScale.z);
 
+        // 웅크리기 시 데미지 50% 절감 (Health 컴포넌트의 DamageMultiplier 활용)
         if (_health != null)
         {
             _health.DamageMultiplier = _isCrouching ? 0.5f : 1.0f;

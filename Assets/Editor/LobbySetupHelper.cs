@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEditor;
 using TMPro;
 using UnityEngine.UI;
+using System.Collections.Generic;
 
 public class LobbySetupHelper : EditorWindow
 {
@@ -66,5 +67,48 @@ public class LobbySetupHelper : EditorWindow
 
         Undo.RegisterCreatedObjectUndo(canvasObj, "Setup Portal UI");
         Debug.Log(selected.name + " 포탈 UI 설정 완료!");
+    }
+
+    [MenuItem("Custom Tools/Lobby/Setup ObjectPooler")]
+    public static void SetupObjectPooler()
+    {
+        // 1. 이미 존재하는지 확인
+        if (ObjectPooler.Instance != null || GameObject.Find("ObjectPooler") != null)
+        {
+            Debug.LogWarning("이미 ObjectPooler가 씬에 존재합니다.");
+            return;
+        }
+
+        // 2. ObjectPooler 생성
+        GameObject poolerObj = new GameObject("ObjectPooler");
+        ObjectPooler pooler = poolerObj.AddComponent<ObjectPooler>();
+
+        // 3. 풀 리스트 설정 (Blue, Red, Yellow)
+        pooler.pools = new List<ObjectPooler.Pool>();
+
+        string[] colors = { "blue", "red", "yellow" };
+        string[] tags = { "Blue", "Red", "Yellow" };
+
+        for (int i = 0; i < 3; i++)
+        {
+            ObjectPooler.Pool newPool = new ObjectPooler.Pool();
+            newPool.tag = tags[i];
+            
+            // 프리팹 찾기
+            string prefabPath = $"Assets/Prefabs/BubbleProjectile_{colors[i]}.prefab";
+            GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
+            
+            if (prefab == null)
+            {
+                Debug.LogError($"{prefabPath} 경로에서 프리팹을 찾을 수 없습니다! 경로를 확인해주세요.");
+            }
+            
+            newPool.prefab = prefab;
+            newPool.size = 20; // 기본 20개 생성
+            pooler.pools.Add(newPool);
+        }
+
+        Undo.RegisterCreatedObjectUndo(poolerObj, "Setup ObjectPooler");
+        Debug.Log("Lobby Scene에 ObjectPooler 설정 완료! (Blue, Red, Yellow)");
     }
 }
