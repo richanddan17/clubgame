@@ -52,13 +52,45 @@
 ### 4.2 SkillData
 - `ID`, `SkillName`, `Damage`, `ManaCost`, `Cooldown`
 
-### 4.3 ShopItemData
-- `ID`, `ItemName`, `Price`, `Description`
+### ---
+
+## 6. 전투 및 슈팅 시스템 (`Projectile.cs`, `PlayerController.cs`)
+### 6.1 3색 버블껌 슈팅
+- **전환**: `R` 키를 눌러 파랑 -> 빨강 -> 노랑 순으로 탄종 교체.
+- **발사**: 마우스 조준 방향으로 발사. 발사 시 캐릭터가 조준 방향을 바라봄.
+- **조준 보정**: 발사 직후 짧은 시간(0.3s) 동안 회전을 고정하여 조준 안정성 확보.
+- **투사체 로직**:
+  - `Owner` 태그 확인을 통한 자폭 방지.
+  - 적 충돌 시 데미지 처리 및 소멸.
 
 ---
 
-## 5. 작업 흐름 (Workflow)
-1. **데이터 수정**: `tiger/datafiles/` 내부의 CSV 파일을 엑셀로 수정 후 저장.
-2. **데이터 반영**: 유니티에서 `Open Import Window` 실행 후 `IMPORT ALL` 클릭.
-3. **확인**: `Assets/Resources/` 폴더 내의 `.asset` 파일 수치가 변경되었는지 확인.
-4. **사용**: 게임 로직에서 `Resources.Load<T>()`를 통해 데이터 호출.
+## 7. 배경 시스템 (`ParallaxBackground.cs`)
+### 7.1 5단계 레이어 패럴랙스
+- 카메라의 이동 속도에 비례하여 각 배경 레이어가 서로 다른 속도로 이동.
+- **무한 루프**: 좌우 양방향으로 복제본을 생성하여 끊김 없는 무한 루핑 구현.
+
+---
+
+## 8. 적(Enemy) 시스템
+### 8.1 기본 AI (`EnemyController.cs`, `Slime.cs`)
+- 플레이어 감지 시 추격 및 기본 공격.
+- 거대 슬라임: 총알 한 방에 처치되는 기믹 적용.
+
+### 8.2 마법사 AI (`RangedEnemy.cs`)
+- **하이브리드 패턴**: 원거리 마법 공격과 근접 지팡이 공격 병행.
+- **애니메이션 이벤트**: 마법 구체가 생성되는 타이밍을 애니메이션 모션과 동기화.
+
+---
+
+## 9. 에디터 자동화 도구 (Custom Tools)
+### 9.1 주요 헬퍼 클래스
+- `ShootingSetupHelper.cs`: 플레이어 슈팅 프리팹 및 총구 설정 자동화.
+- `WizardSetupHelper.cs`: 마법사 적 프리팹 및 데이터 자동 세팅.
+- `TilemapSetupHelper.cs`: Ground 레이어 및 타일맵 환경 구축.
+---
+
+## 10. 향후 과제 및 개선 사항 (Pending Tasks)
+- **비주얼**: 
+  - Mole(두더지) 몹 색상 변경 필요 (검은 배경과 겹쳐서 가시성 저하 문제 해결).
+
