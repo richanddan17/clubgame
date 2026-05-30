@@ -21,6 +21,7 @@ public class Health : MonoBehaviour
     public float CurrentHealth => currentHealth;
     public float MaxHealth => maxHealth;
     public bool IsDead => _isDead;
+    public float DamageMultiplier { get; set; } = 1f;
 
     private void Awake()
     {
@@ -45,7 +46,8 @@ public class Health : MonoBehaviour
     {
         if (_isDead) return;
 
-        currentHealth -= amount;
+        float finalDamage = amount * DamageMultiplier;
+        currentHealth -= finalDamage;
         currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
 
         OnDamaged?.Invoke();

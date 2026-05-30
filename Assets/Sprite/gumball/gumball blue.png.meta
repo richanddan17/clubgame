@@ -1,22 +1,7 @@
 fileFormatVersion: 2
-guid: 93d43716a7a627649b87aec248b47e47
+guid: ceebfc6d0ded8e042acb74ca4f289c19
 TextureImporter:
-  internalIDToNameTable:
-  - first:
-      213: -165806697048413886
-    second: gumball blue_0
-  - first:
-      213: 4792310738988531709
-    second: gumball blue_1
-  - first:
-      213: 5160666495138768530
-    second: gumball blue_2
-  - first:
-      213: -6297901027932352792
-    second: gumball blue_3
-  - first:
-      213: 1881266934070016928
-    second: gumball blue_4
+  internalIDToNameTable: []
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -49,18 +34,18 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
     wrapV: 1
-    wrapW: 1
+    wrapW: 0
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
   spriteMode: 2
   spriteExtrude: 1
-  spriteMeshType: 1
+  spriteMeshType: 0
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
   spritePixelsToUnits: 100
@@ -78,16 +63,16 @@ TextureImporter:
   compressionQualitySet: 0
   textureFormatSet: 0
   ignorePngGamma: 0
-  applyGammaDecoding: 0
+  applyGammaDecoding: 1
   swizzle: 50462976
-  cookieLightType: 0
+  cookieLightType: 2
   platformSettings:
   - serializedVersion: 4
     buildTarget: DefaultTexturePlatform
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -100,7 +85,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -115,20 +100,20 @@ TextureImporter:
       name: gumball blue_0
       rect:
         serializedVersion: 2
-        x: 6
-        y: 69
-        width: 21
-        height: 21
+        x: 7
+        y: 70
+        width: 19
+        height: 19
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 2496c0100bfe2bdf0800000000000000
-      internalID: -165806697048413886
+      spriteID: 2770587ce11ebc94ba818b2e14dd07dc
+      internalID: -1558418590
       vertices: []
       indices: 
       edges: []
@@ -137,20 +122,20 @@ TextureImporter:
       name: gumball blue_1
       rect:
         serializedVersion: 2
-        x: 38
-        y: 70
-        width: 21
-        height: 19
+        x: 39
+        y: 71
+        width: 19
+        height: 17
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: dff73b2f935b18240800000000000000
-      internalID: 4792310738988531709
+      spriteID: 2e6cd890af48f9b428e937d4bb24a048
+      internalID: 631214497
       vertices: []
       indices: 
       edges: []
@@ -159,20 +144,20 @@ TextureImporter:
       name: gumball blue_2
       rect:
         serializedVersion: 2
-        x: 6
-        y: 40
-        width: 21
-        height: 17
+        x: 7
+        y: 41
+        width: 19
+        height: 15
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 296a10fb5de5e9740800000000000000
-      internalID: 5160666495138768530
+      spriteID: 9432dbf02bbe109449cfed34b01e9748
+      internalID: -1548499960
       vertices: []
       indices: 
       edges: []
@@ -181,20 +166,20 @@ TextureImporter:
       name: gumball blue_3
       rect:
         serializedVersion: 2
-        x: 38
-        y: 38
-        width: 21
-        height: 19
+        x: 39
+        y: 39
+        width: 19
+        height: 17
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 8ee468ff16c5998a0800000000000000
-      internalID: -6297901027932352792
+      spriteID: ed9ed006f2d22d04d873d8bedf7813ad
+      internalID: -1512595835
       vertices: []
       indices: 
       edges: []
@@ -203,20 +188,20 @@ TextureImporter:
       name: gumball blue_4
       rect:
         serializedVersion: 2
-        x: 6
-        y: 5
-        width: 21
-        height: 21
+        x: 7
+        y: 6
+        width: 19
+        height: 19
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 0ab7ee42f4a9b1a10800000000000000
-      internalID: 1881266934070016928
+      spriteID: c36b5a49718ceef4388a4a59771d3027
+      internalID: -937236517
       vertices: []
       indices: 
       edges: []
@@ -225,7 +210,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 0e6f4bfc9475d9648b5d7570c889234a
     internalID: 0
     vertices: []
     indices: 
@@ -233,13 +218,15 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries: []
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":64.0,"y":64.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":0,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
-      gumball blue_0: -165806697048413886
-      gumball blue_1: 4792310738988531709
-      gumball blue_2: 5160666495138768530
-      gumball blue_3: -6297901027932352792
-      gumball blue_4: 1881266934070016928
+      gumball blue_0: -1558418590
+      gumball blue_1: 631214497
+      gumball blue_2: -1548499960
+      gumball blue_3: -1512595835
+      gumball blue_4: -937236517
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
