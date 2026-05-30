@@ -82,6 +82,11 @@ public class HUDSetupHelper : EditorWindow
         GameObject textObj = new GameObject("HP_Text");
         textObj.transform.SetParent(sliderObj.transform, false);
         TextMeshProUGUI tmpText = textObj.AddComponent<TextMeshProUGUI>();
+        
+        // 폰트 설정
+        TMP_FontAsset font = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>("Assets/fonts/Paperlogy-5Medium SDF.asset");
+        if (font != null) tmpText.font = font;
+
         tmpText.fontSize = 20;
         tmpText.alignment = TextAlignmentOptions.Center;
         tmpText.color = Color.white;

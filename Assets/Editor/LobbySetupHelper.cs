@@ -53,6 +53,11 @@ public class LobbySetupHelper : EditorWindow
         textObj.transform.localPosition = Vector3.zero;
 
         TextMeshProUGUI tmp = textObj.AddComponent<TextMeshProUGUI>();
+        
+        // 폰트 설정
+        TMP_FontAsset font = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>("Assets/fonts/Paperlogy-5Medium SDF.asset");
+        if (font != null) tmp.font = font;
+
         tmp.text = "Press E to Enter";
         tmp.fontSize = 24;
         tmp.alignment = TextAlignmentOptions.Center;
