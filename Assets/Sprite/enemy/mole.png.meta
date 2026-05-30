@@ -70,7 +70,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -81,7 +81,7 @@ TextureImporter:
   compressionQuality: 50
   spriteMode: 2
   spriteExtrude: 1
-  spriteMeshType: 1
+  spriteMeshType: 0
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
   spritePixelsToUnits: 100
@@ -136,12 +136,12 @@ TextureImporter:
       name: mole_0
       rect:
         serializedVersion: 2
-        x: 11
-        y: 134
-        width: 10
-        height: 24
+        x: 0
+        y: 128
+        width: 32
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -158,12 +158,12 @@ TextureImporter:
       name: mole_1
       rect:
         serializedVersion: 2
-        x: 43
-        y: 134
-        width: 10
-        height: 23
+        x: 32
+        y: 128
+        width: 32
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -180,12 +180,12 @@ TextureImporter:
       name: mole_2
       rect:
         serializedVersion: 2
-        x: 75
-        y: 134
-        width: 10
-        height: 23
+        x: 64
+        y: 128
+        width: 32
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -202,12 +202,12 @@ TextureImporter:
       name: mole_3
       rect:
         serializedVersion: 2
-        x: 107
-        y: 134
-        width: 10
-        height: 19
+        x: 96
+        y: 128
+        width: 32
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -224,12 +224,12 @@ TextureImporter:
       name: mole_4
       rect:
         serializedVersion: 2
-        x: 11
-        y: 102
-        width: 10
-        height: 19
+        x: 0
+        y: 96
+        width: 32
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -246,12 +246,12 @@ TextureImporter:
       name: mole_5
       rect:
         serializedVersion: 2
-        x: 41
-        y: 102
-        width: 14
-        height: 17
+        x: 32
+        y: 96
+        width: 32
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -268,12 +268,12 @@ TextureImporter:
       name: mole_6
       rect:
         serializedVersion: 2
-        x: 73
-        y: 102
-        width: 14
-        height: 17
+        x: 64
+        y: 96
+        width: 32
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -290,12 +290,12 @@ TextureImporter:
       name: mole_7
       rect:
         serializedVersion: 2
-        x: 104
-        y: 102
-        width: 16
-        height: 14
+        x: 96
+        y: 96
+        width: 32
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -312,12 +312,12 @@ TextureImporter:
       name: mole_8
       rect:
         serializedVersion: 2
-        x: 5
-        y: 6
-        width: 117
-        height: 74
+        x: 0
+        y: 64
+        width: 32
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -334,12 +334,12 @@ TextureImporter:
       name: mole_9
       rect:
         serializedVersion: 2
-        x: 8
-        y: 70
-        width: 16
-        height: 14
+        x: 32
+        y: 64
+        width: 32
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -356,12 +356,12 @@ TextureImporter:
       name: mole_10
       rect:
         serializedVersion: 2
-        x: 40
-        y: 70
-        width: 16
-        height: 14
+        x: 64
+        y: 64
+        width: 32
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -378,12 +378,12 @@ TextureImporter:
       name: mole_11
       rect:
         serializedVersion: 2
-        x: 69
-        y: 70
-        width: 21
-        height: 10
+        x: 96
+        y: 64
+        width: 32
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -396,11 +396,121 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
+    - serializedVersion: 2
+      name: mole_12
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 32
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 00f9de98f048a4b468d78a1a866d4fd7
+      internalID: -2130595095
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: mole_13
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 32
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8e81b7e949b3d11468cdcf8b31e63a85
+      internalID: -1906243279
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: mole_14
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 32
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3ded2a6a825e9ce4bba3e478c2eb622f
+      internalID: 258400420
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: mole_15
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 32
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 81f3732a2cf5d71428b58d792bca179c
+      internalID: -697817150
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: mole_16
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9ccf9d3bd0a15584db3d029fc0ee43d5
+      internalID: -642478547
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 9f4ca2b344cd9774996487e6784c8d18
     internalID: 0
     vertices: []
     indices: 
@@ -408,12 +518,19 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries: []
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":32.0,"y":32.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":1,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
       mole_0: -5427164653334127848
       mole_1: -1624529387857557253
       mole_10: -5877533592933265320
       mole_11: -3075275920005687394
+      mole_12: -2130595095
+      mole_13: -1906243279
+      mole_14: 258400420
+      mole_15: -697817150
+      mole_16: -642478547
       mole_2: 3862573926363885855
       mole_3: -917211211792395375
       mole_4: 19339098287276804
