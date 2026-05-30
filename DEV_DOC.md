@@ -88,4 +88,9 @@
 - `ShootingSetupHelper.cs`: 플레이어 슈팅 프리팹 및 총구 설정 자동화.
 - `WizardSetupHelper.cs`: 마법사 적 프리팹 및 데이터 자동 세팅.
 - `TilemapSetupHelper.cs`: Ground 레이어 및 타일맵 환경 구축.
-- `EnemyFixHelper.cs`: 기존 적 프리팹의 컴포넌트 누락 및 데이터 복구.
+---
+
+## 10. 향후 과제 및 개선 사항 (Pending Tasks)
+- **비주얼**: 
+  - Mole(두더지) 몹 색상 변경 필요 (검은 배경과 겹쳐서 가시성 저하 문제 해결).
+
