@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEditor;
 using UnityEngine.UI;
+using TMPro;
 using System.Collections.Generic;
 using System.IO;
 
@@ -34,9 +35,67 @@ public class EmergencyFixer : EditorWindow
         // 5. UI 레이아웃 복구
         FixUILayout();
 
+        // 6. 폰트 복구
+        FixFonts();
+
         AssetDatabase.Refresh();
-        EditorUtility.DisplayDialog("FIX COMPLETE", "모든 설정이 복구되었습니다!\n1. 점프/발사/태그 복구\n2. HP바 빨간색 및 위치 고정", "확인");
+        EditorUtility.DisplayDialog("FIX COMPLETE", "모든 설정이 복구되었습니다!\n1. 점프/발사/태그 복구\n2. HP바 빨간색 및 위치 고정\n3. 모든 텍스트 폰트 교체 (한글 깨짐 방지)", "확인");
         Debug.Log("--- [End] 긴급 복구 완료 ---");
+    }
+
+    private static void FixFonts()
+    {
+        TMP_FontAsset targetFont = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>("Assets/fonts/Paperlogy-5Medium SDF.asset");
+        if (targetFont == null)
+        {
+            Debug.LogError("교체할 폰트를 찾을 수 없습니다: Assets/fonts/Paperlogy-5Medium SDF.asset");
+            return;
+        }
+
+        int count = 0;
+
+        // 1. 현재 씬 내의 모든 TMP_Text 찾기
+        TMP_Text[] allText = Object.FindObjectsByType<TMP_Text>(FindObjectsSortMode.None);
+        foreach (var text in allText)
+        {
+            if (text.font != targetFont)
+            {
+                Undo.RecordObject(text, "Fix Font");
+                text.font = targetFont;
+                EditorUtility.SetDirty(text);
+                count++;
+            }
+        }
+
+        // 2. 프로젝트 내의 모든 프리팹 찾기 및 수정
+        string[] prefabGuids = AssetDatabase.FindAssets("t:Prefab", new[] { "Assets/Prefabs" });
+        foreach (string guid in prefabGuids)
+        {
+            string path = AssetDatabase.GUIDToAssetPath(guid);
+            GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(path);
+            if (prefab == null) continue;
+
+            TMP_Text[] prefabTexts = prefab.GetComponentsInChildren<TMP_Text>(true);
+            bool isDirty = false;
+
+            foreach (var pText in prefabTexts)
+            {
+                if (pText.font != targetFont)
+                {
+                    pText.font = targetFont;
+                    isDirty = true;
+                    count++;
+                }
+            }
+
+            if (isDirty)
+            {
+                EditorUtility.SetDirty(prefab);
+                AssetDatabase.SaveAssetIfDirty(prefab);
+            }
+        }
+
+        Debug.Log($"폰트 복구 완료: 총 {count}개의 오브젝트(씬+프리팹)를 '{targetFont.name}'으로 교체했습니다.");
     }
 
     private static void FixUILayout()
