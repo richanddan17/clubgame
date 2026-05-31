@@ -55,6 +55,11 @@ public class PlayerController : MonoBehaviour
     private float _chargeStartTime;
     private bool _isChargeMode = false; // Q키 토글 상태
 
+    // 특수 능력 및 쿨타임
+    private float[] _abilityCooldowns = { 5f, 5f, 8f }; // Blue, Red, Yellow
+    private float[] _lastUsedTime = { -10f, -10f, -10f };
+    private float _speedBoostTimer = 0f;
+
     private static readonly int AnimSpeed = Animator.StringToHash("Speed");
     private static readonly int AnimIsGrounded = Animator.StringToHash("isGrounded");
     private static readonly int AnimIsRunning = Animator.StringToHash("isRunning");
@@ -89,6 +94,9 @@ public class PlayerController : MonoBehaviour
         HandleFacingDirection();
         ApplyCrouch();
         UpdateAnimations();
+
+        // 스피드 부스트 타이머 감소
+        if (_speedBoostTimer > 0) _speedBoostTimer -= Time.deltaTime;
     }
 
     private void FixedUpdate()
@@ -159,6 +167,9 @@ public class PlayerController : MonoBehaviour
     {
         float targetSpeed = _isRunning ? moveSettings.RunSpeed : moveSettings.WalkSpeed;
         
+        // 파랑 버블 특수 능력: 스피드 부스트
+        if (_speedBoostTimer > 0) targetSpeed *= 1.5f;
+
         // [중요] 차징 모드이면서 실제로 마우스를 누르고 있을 때만 느려짐
         bool isActivelyCharging = _isChargeMode && Mouse.current.leftButton.isPressed;
 
@@ -186,7 +197,8 @@ public class PlayerController : MonoBehaviour
     private void CycleColor()
     {
         _currentColorIndex = (_currentColorIndex + 1) % 3;
-        Debug.Log("Bullet Color: " + ( (ColorIndex)_currentColorIndex ).ToString());
+        float remainingCooldown = Mathf.Max(0, (_lastUsedTime[_currentColorIndex] + _abilityCooldowns[_currentColorIndex]) - Time.time);
+        Debug.Log($"Bullet Color: {((ColorIndex)_currentColorIndex)} | Cooldown: {remainingCooldown:F1}s");
     }
 
     private enum ColorIndex { Blue = 0, Red = 1, Yellow = 2 }
@@ -236,10 +248,34 @@ public class PlayerController : MonoBehaviour
 
         if (Time.time < _lastFireTime + cooldown) return;
 
+        // 특수 능력 사용 가능 여부 체크
+        bool canUseSpecial = Time.time >= _lastUsedTime[_currentColorIndex] + _abilityCooldowns[_currentColorIndex];
+        bool isSpecialShot = false;
+
+        if (canUseSpecial)
+        {
+            isSpecialShot = true;
+            _lastUsedTime[_currentColorIndex] = Time.time;
+
+            // 즉발 효과 (파랑: 스피드 부스트)
+            if (_currentColorIndex == (int)ColorIndex.Blue)
+            {
+                _speedBoostTimer = 2f;
+                Debug.Log("<color=blue>[Ability]</color> SPEED BOOST activated for 2s");
+            }
+        }
+
         // 데미지 및 크기 계산
         float chargeRatio = Mathf.Clamp01(chargeTime / 5f);
         float finalDamage = Mathf.Lerp(baseDamage, 60f, chargeRatio);
         
+        // 빨강 특수 능력: 데미지 1.5배
+        if (isSpecialShot && _currentColorIndex == (int)ColorIndex.Red)
+        {
+            finalDamage *= 1.5f;
+            Debug.Log("<color=red>[Ability]</color> POWER SHOT! Damage increased by 1.5x");
+        }
+
         // [수정] 일반 모드(또는 차징 시작) 크기를 1.5f로 설정, 최대 3.5f까지 커짐
         float baseScale = 1.5f;
         float finalScale = _isChargeMode ? Mathf.Lerp(baseScale, 3.5f, chargeRatio) : baseScale;
@@ -252,6 +288,7 @@ public class PlayerController : MonoBehaviour
 
         string[] tags = { "Blue", "Red", "Yellow" };
         string poolTag = tags[_currentColorIndex];
+        Projectile.BubbleType bubbleType = (Projectile.BubbleType)_currentColorIndex;
 
         if (ObjectPooler.Instance != null && combatSettings.FirePoint != null)
         {
@@ -261,7 +298,7 @@ public class PlayerController : MonoBehaviour
             var obj = ObjectPooler.Instance.SpawnFromPool(poolTag, combatSettings.FirePoint.position, Quaternion.Euler(0, 0, angle));
             if (obj != null && obj.TryGetComponent<Projectile>(out var proj))
             {
-                proj.Initialize(finalDamage, _isFacingRight, finalSpeed, projectileScale, gameObject);
+                proj.Initialize(finalDamage, _isFacingRight, finalSpeed, projectileScale, gameObject, bubbleType, isSpecialShot);
             }
             _lastFireTime = Time.time;
         }
@@ -276,7 +313,7 @@ public class PlayerController : MonoBehaviour
                 float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
                 var obj = Instantiate(prefab, combatSettings.FirePoint.position, Quaternion.Euler(0, 0, angle));
                 if (obj.TryGetComponent<Projectile>(out var proj)) 
-                    proj.Initialize(finalDamage, _isFacingRight, finalSpeed, projectileScale, gameObject);
+                    proj.Initialize(finalDamage, _isFacingRight, finalSpeed, projectileScale, gameObject, bubbleType, isSpecialShot);
                 _lastFireTime = Time.time;
             }
         }

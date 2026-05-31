@@ -23,6 +23,10 @@ public class EnemyController : MonoBehaviour
     private bool _isDead = false;
     private Vector3 _initialScale;
 
+    // 상태 이상 타이머
+    private float _slowTimer = 0f;
+    private float _stunTimer = 0f;
+
     // 애니메이션 해시
     private static readonly int AnimWalk = Animator.StringToHash("Walk");
     private static readonly int AnimAttack = Animator.StringToHash("Attack");
@@ -52,6 +56,23 @@ public class EnemyController : MonoBehaviour
         if (autoInitialize && data != null)
         {
             Initialize(data);
+        }
+    }
+
+    private void Update()
+    {
+        if (_isDead) return;
+
+        // 타이머 감소
+        if (_slowTimer > 0) _slowTimer -= Time.deltaTime;
+        if (_stunTimer > 0) _stunTimer -= Time.deltaTime;
+
+        // 시각적 피드백 (상태에 따른 색상 변화)
+        if (_sr != null)
+        {
+            if (_stunTimer > 0) _sr.color = Color.gray; // 스턴: 회색
+            else if (_slowTimer > 0) _sr.color = new Color(0.5f, 0f, 0.5f); // 슬로우: 보라색
+            else ApplyVisualSettings(); // 평소
         }
     }
 
@@ -89,20 +110,33 @@ public class EnemyController : MonoBehaviour
         if (_sr == null || data == null) return;
         if (data.EnemyName.Contains("Yellow")) _sr.color = Color.yellow;
         else if (data.EnemyName.Contains("Red")) _sr.color = Color.red;
+        else _sr.color = Color.white;
     }
     #endregion
 
     #region Core Logic
     private void HandleMovement()
     {
+        // 스턴 상태면 움직임 중지
+        if (_stunTimer > 0)
+        {
+            _rb.linearVelocity = new Vector2(0, _rb.linearVelocity.y);
+            UpdateAnimation(false);
+            return;
+        }
+
         float distance = Vector2.Distance(transform.position, _target.position);
 
         if (distance <= data.DetectionRange)
         {
             Vector2 direction = (_target.position - transform.position).normalized;
+            
+            // 슬로우 상태면 속도 50% 감소
+            float currentSpeed = _slowTimer > 0 ? data.Speed * 0.5f : data.Speed;
+
             if (distance > 0.5f)
             {
-                _rb.linearVelocity = new Vector2(direction.x * data.Speed, _rb.linearVelocity.y);
+                _rb.linearVelocity = new Vector2(direction.x * currentSpeed, _rb.linearVelocity.y);
                 UpdateAnimation(true);
             }
             else
@@ -116,6 +150,21 @@ public class EnemyController : MonoBehaviour
         {
             _rb.linearVelocity = new Vector2(0, _rb.linearVelocity.y);
             UpdateAnimation(false);
+        }
+    }
+
+    public void ApplyEffect(Projectile.BubbleType type)
+    {
+        switch (type)
+        {
+            case Projectile.BubbleType.Red:
+                _slowTimer = 3f;
+                Debug.Log($"<color=red>[Effect]</color> {gameObject.name} SLOWED for 3s");
+                break;
+            case Projectile.BubbleType.Yellow:
+                _stunTimer = 1f;
+                Debug.Log($"<color=yellow>[Effect]</color> {gameObject.name} STUNNED for 1s");
+                break;
         }
     }
 
