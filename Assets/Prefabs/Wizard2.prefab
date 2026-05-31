@@ -32,7 +32,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 3, y: 3, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -223,3 +223,6 @@ MonoBehaviour:
   data: {fileID: 11400000, guid: 20fa613fafb9a034991935e642c903e1, type: 2}
   projectilePrefab: {fileID: 1413877270453038819, guid: 5f347889b1933514b8a2d9418ae2c5ee, type: 3}
   firePoint: {fileID: 0}
+  meleeDamage: 25
+  meleeRange: 2
+  meleeOffset: {x: 1.2, y: 0.5}
