@@ -161,7 +161,7 @@ public class RangedEnemy : MonoBehaviour
             {
                 if (col.TryGetComponent<Health>(out var h))
                 {
-                    h.TakeDamage(meleeDamage);
+                    h.TakeDamage(meleeDamage, transform.position);
                     Debug.Log($"<color=orange>[Wizard Melee]</color> 지팡이 휘두르기 적중! 데미지: {meleeDamage}");
                 }
             }

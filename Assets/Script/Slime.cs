@@ -152,7 +152,7 @@ public class Slime : MonoBehaviour
         Health playerHealth = player.GetComponent<Health>();
         if (playerHealth != null && !playerHealth.IsDead)
         {
-            playerHealth.TakeDamage(attackDamage);
+            playerHealth.TakeDamage(attackDamage, transform.position);
             PlayAttackAnimation();
             _nextAttackTime = Time.time + attackCooldown;
         }

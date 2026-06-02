@@ -64,7 +64,7 @@ public class Projectile : MonoBehaviour
 
         if (health != null)
         {
-            health.TakeDamage(damage);
+            health.TakeDamage(damage, transform.position);
 
             // 특수 효과 적용
             if (isSpecial)

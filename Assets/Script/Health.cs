@@ -39,12 +39,29 @@ public class Health : MonoBehaviour
         OnHealthChanged?.Invoke(currentHealth, maxHealth);
     }
 
+    public bool IsParrying { get; set; } = false;
+    [System.Serializable] public class Vector2Event : UnityEvent<Vector2> { }
+    public Vector2Event OnParry;
+
     /// <summary>
     /// 데미지를 입힙니다.
     /// </summary>
-    public void TakeDamage(float amount)
+    public void TakeDamage(float amount, Vector2? damageSourcePos = null)
     {
         if (_isDead) return;
+
+        bool currentFacingRight = transform.localScale.x > 0;
+
+        if (IsParrying)
+        {
+            Vector2 dir = damageSourcePos.HasValue ? ((Vector2)transform.position - (Vector2)damageSourcePos.Value).normalized : (currentFacingRight ? Vector2.left : Vector2.right);
+            // 대각선 위로 살짝 뜨게 설정
+            dir = (dir + Vector2.up * 0.5f).normalized;
+            
+            OnParry?.Invoke(dir);
+            Debug.Log("<color=green>[Parry]</color> Damage Negated!");
+            return;
+        }
 
         float finalDamage = amount * DamageMultiplier;
         currentHealth -= finalDamage;
