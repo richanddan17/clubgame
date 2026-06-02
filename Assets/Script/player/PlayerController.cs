@@ -137,8 +137,19 @@ public class PlayerController : MonoBehaviour
     private float _lastParryTime = -10f;
     private float _parryDuration = 0.3f;
 
+    [Header("Inventory Settings")]
+    public GameObject inventoryPanel; // 인스펙터에서 할당 필요
+    private bool _isInventoryOpen = false;
+
     private void HandleInput()
     {
+        if (Keyboard.current.eKey.wasPressedThisFrame) ToggleInventory();
+        if (_isInventoryOpen) 
+        {
+            _moveInput = Vector2.zero;
+            return;
+        }
+
         float h = Input.GetAxisRaw("Horizontal");
         _moveInput.x = Mathf.Abs(h) > 0.01f ? h : 0f;
 
@@ -159,6 +170,39 @@ public class PlayerController : MonoBehaviour
             Debug.Log("<color=cyan>[Mode]</color> Charge Mode: " + (_isChargeMode ? "ON" : "OFF"));
         }
         // ... rest of input handling
+    }
+
+    private void ToggleInventory()
+    {
+        if (inventoryPanel == null)
+        {
+            var canvas = FindFirstObjectByType<Canvas>();
+            if (canvas != null)
+            {
+                Transform t = canvas.transform.Find("InventoryPanel");
+                if (t != null) inventoryPanel = t.gameObject;
+            }
+        }
+
+        if (inventoryPanel != null)
+        {
+            _isInventoryOpen = !_isInventoryOpen;
+            inventoryPanel.SetActive(_isInventoryOpen);
+            
+            // 게임 일시 정지 / 재개
+            Time.timeScale = _isInventoryOpen ? 0f : 1f;
+            
+            Cursor.visible = _isInventoryOpen;
+            Cursor.lockState = _isInventoryOpen ? CursorLockMode.None : CursorLockMode.Confined;
+
+            // UI 강제 갱신 시도
+            if (_isInventoryOpen && inventoryPanel.TryGetComponent<InventoryUI>(out var invUI))
+            {
+                invUI.UpdateUI();
+            }
+
+            Debug.Log("<color=yellow>[Inventory]</color> " + (_isInventoryOpen ? "Opened (Paused)" : "Closed (Resumed)"));
+        }
     }
 
     private void TryParry()
