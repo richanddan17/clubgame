@@ -8,5 +8,6 @@ public class SkillData : ScriptableObject
     public float Damage;
     public float ManaCost;
     public float Cooldown;
+    public Sprite Icon;
     public GameObject ProjectilePrefab;
 }
