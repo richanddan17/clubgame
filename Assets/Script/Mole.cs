@@ -150,7 +150,7 @@ public class Mole : MonoBehaviour
             Health playerHealth = _player.GetComponent<Health>();
             if (playerHealth != null)
             {
-                playerHealth.TakeDamage(attackDamage);
+                playerHealth.TakeDamage(attackDamage, transform.position);
                 Debug.Log("Mole Attacked Player!");
             }
         }

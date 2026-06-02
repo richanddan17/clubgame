@@ -82,7 +82,19 @@ public class PlayerController : MonoBehaviour
             combatSettings.FirePoint = transform.Find("FirePoint") ?? transform;
 
         if (_health != null)
+        {
             _health.OnDie.AddListener(OnDeath);
+            _health.OnParry.AddListener(ApplyParryKnockback);
+        }
+    }
+
+    private float _knockbackTimer = 0f;
+
+    private void ApplyParryKnockback(Vector2 direction)
+    {
+        _knockbackTimer = 0.2f; // 0.2초 동안 이동 입력 무시
+        _rb.linearVelocity = Vector2.zero;
+        _rb.AddForce(direction * 15f, ForceMode2D.Impulse);
     }
 
     private void Update()
@@ -95,8 +107,9 @@ public class PlayerController : MonoBehaviour
         ApplyCrouch();
         UpdateAnimations();
 
-        // 스피드 부스트 타이머 감소
+        // 타이머 감소
         if (_speedBoostTimer > 0) _speedBoostTimer -= Time.deltaTime;
+        if (_knockbackTimer > 0) _knockbackTimer -= Time.deltaTime;
     }
 
     private void FixedUpdate()
@@ -120,6 +133,10 @@ public class PlayerController : MonoBehaviour
             moveSettings.GroundLayer = LayerMask.GetMask("Ground");
     }
 
+    private float _parryCooldown = 1f;
+    private float _lastParryTime = -10f;
+    private float _parryDuration = 0.3f;
+
     private void HandleInput()
     {
         float h = Input.GetAxisRaw("Horizontal");
@@ -132,39 +149,46 @@ public class PlayerController : MonoBehaviour
 
         if (Keyboard.current.rKey.wasPressedThisFrame) CycleColor();
 
+        // F키 패링
+        if (Keyboard.current.fKey.wasPressedThisFrame) TryParry();
+
         // Q키 토글
         if (Keyboard.current.qKey.wasPressedThisFrame)
         {
             _isChargeMode = !_isChargeMode;
             Debug.Log("<color=cyan>[Mode]</color> Charge Mode: " + (_isChargeMode ? "ON" : "OFF"));
         }
-
-        // 발사 핸들링
-        if (_isChargeMode)
-        {
-            // [차징 모드] 누를 때 시작, 뗄 때 발사
-            if (Mouse.current.leftButton.wasPressedThisFrame)
-            {
-                _chargeStartTime = Time.time;
-            }
-            if (Mouse.current.leftButton.wasReleasedThisFrame)
-            {
-                float duration = Time.time - _chargeStartTime;
-                TryFire(duration);
-            }
-        }
-        else
-        {
-            // [일반 모드] 클릭 즉시 발사
-            if (Mouse.current.leftButton.wasPressedThisFrame)
-            {
-                TryFire(0f);
-            }
-        }
+        // ... rest of input handling
     }
+
+    private void TryParry()
+    {
+        if (Time.time < _lastParryTime + _parryCooldown) return;
+        
+        StartCoroutine(ParryRoutine());
+    }
+
+    private System.Collections.IEnumerator ParryRoutine()
+    {
+        _lastParryTime = Time.time;
+        if (_health != null) _health.IsParrying = true;
+
+        // 비주얼 효과: 버블껌처럼 분홍색으로 변경
+        SpriteRenderer sr = GetComponentInChildren<SpriteRenderer>();
+        Color originalColor = sr.color;
+        sr.color = new Color(1f, 0.5f, 0.8f); // 분홍색
+
+        yield return new WaitForSeconds(_parryDuration);
+
+        if (_health != null) _health.IsParrying = false;
+        sr.color = originalColor;
+    }
+
 
     private void ApplyMovement()
     {
+        if (_knockbackTimer > 0) return; // 밀려나는 중에는 이동 처리 안 함
+
         float targetSpeed = _isRunning ? moveSettings.RunSpeed : moveSettings.WalkSpeed;
         
         // 파랑 버블 특수 능력: 스피드 부스트
