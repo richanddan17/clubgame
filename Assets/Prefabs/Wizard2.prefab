@@ -208,6 +208,9 @@ MonoBehaviour:
   OnDie:
     m_PersistentCalls:
       m_Calls: []
+  OnParry:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &1729710770603246299
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -223,3 +226,6 @@ MonoBehaviour:
   data: {fileID: 11400000, guid: 20fa613fafb9a034991935e642c903e1, type: 2}
   projectilePrefab: {fileID: 1413877270453038819, guid: 5f347889b1933514b8a2d9418ae2c5ee, type: 3}
   firePoint: {fileID: 0}
+  meleeDamage: 25
+  meleeRange: 2
+  meleeOffset: {x: 1.2, y: 0.5}

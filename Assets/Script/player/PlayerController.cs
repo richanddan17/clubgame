@@ -55,6 +55,11 @@ public class PlayerController : MonoBehaviour
     private float _chargeStartTime;
     private bool _isChargeMode = false; // Q키 토글 상태
 
+    // 특수 능력 및 쿨타임
+    private float[] _abilityCooldowns = { 5f, 5f, 8f }; // Blue, Red, Yellow
+    private float[] _lastUsedTime = { -10f, -10f, -10f };
+    private float _speedBoostTimer = 0f;
+
     private static readonly int AnimSpeed = Animator.StringToHash("Speed");
     private static readonly int AnimIsGrounded = Animator.StringToHash("isGrounded");
     private static readonly int AnimIsRunning = Animator.StringToHash("isRunning");
@@ -77,7 +82,19 @@ public class PlayerController : MonoBehaviour
             combatSettings.FirePoint = transform.Find("FirePoint") ?? transform;
 
         if (_health != null)
+        {
             _health.OnDie.AddListener(OnDeath);
+            _health.OnParry.AddListener(ApplyParryKnockback);
+        }
+    }
+
+    private float _knockbackTimer = 0f;
+
+    private void ApplyParryKnockback(Vector2 direction)
+    {
+        _knockbackTimer = 0.2f; // 0.2초 동안 이동 입력 무시
+        _rb.linearVelocity = Vector2.zero;
+        _rb.AddForce(direction * 15f, ForceMode2D.Impulse);
     }
 
     private void Update()
@@ -89,6 +106,10 @@ public class PlayerController : MonoBehaviour
         HandleFacingDirection();
         ApplyCrouch();
         UpdateAnimations();
+
+        // 타이머 감소
+        if (_speedBoostTimer > 0) _speedBoostTimer -= Time.deltaTime;
+        if (_knockbackTimer > 0) _knockbackTimer -= Time.deltaTime;
     }
 
     private void FixedUpdate()
@@ -112,8 +133,23 @@ public class PlayerController : MonoBehaviour
             moveSettings.GroundLayer = LayerMask.GetMask("Ground");
     }
 
+    private float _parryCooldown = 1f;
+    private float _lastParryTime = -10f;
+    private float _parryDuration = 0.3f;
+
+    [Header("Inventory Settings")]
+    public GameObject inventoryPanel; // 인스펙터에서 할당 필요
+    private bool _isInventoryOpen = false;
+
     private void HandleInput()
     {
+        if (Keyboard.current.eKey.wasPressedThisFrame) ToggleInventory();
+        if (_isInventoryOpen) 
+        {
+            _moveInput = Vector2.zero;
+            return;
+        }
+
         float h = Input.GetAxisRaw("Horizontal");
         _moveInput.x = Mathf.Abs(h) > 0.01f ? h : 0f;
 
@@ -124,6 +160,9 @@ public class PlayerController : MonoBehaviour
 
         if (Keyboard.current.rKey.wasPressedThisFrame) CycleColor();
 
+        // F키 패링
+        if (Keyboard.current.fKey.wasPressedThisFrame) TryParry();
+
         // Q키 토글
         if (Keyboard.current.qKey.wasPressedThisFrame)
         {
@@ -131,34 +170,94 @@ public class PlayerController : MonoBehaviour
             Debug.Log("<color=cyan>[Mode]</color> Charge Mode: " + (_isChargeMode ? "ON" : "OFF"));
         }
 
-        // 발사 핸들링
+        // 슈팅 처리
         if (_isChargeMode)
         {
-            // [차징 모드] 누를 때 시작, 뗄 때 발사
             if (Mouse.current.leftButton.wasPressedThisFrame)
             {
                 _chargeStartTime = Time.time;
             }
             if (Mouse.current.leftButton.wasReleasedThisFrame)
             {
-                float duration = Time.time - _chargeStartTime;
-                TryFire(duration);
+                float chargeTime = Time.time - _chargeStartTime;
+                TryFire(chargeTime);
             }
         }
         else
         {
-            // [일반 모드] 클릭 즉시 발사
-            if (Mouse.current.leftButton.wasPressedThisFrame)
+            if (Mouse.current.leftButton.isPressed)
             {
-                TryFire(0f);
+                TryFire();
             }
         }
     }
 
+    private void ToggleInventory()
+    {
+        if (inventoryPanel == null)
+        {
+            var canvas = FindFirstObjectByType<Canvas>();
+            if (canvas != null)
+            {
+                Transform t = canvas.transform.Find("InventoryPanel");
+                if (t != null) inventoryPanel = t.gameObject;
+            }
+        }
+
+        if (inventoryPanel != null)
+        {
+            _isInventoryOpen = !_isInventoryOpen;
+            inventoryPanel.SetActive(_isInventoryOpen);
+            
+            // 게임 일시 정지 / 재개
+            Time.timeScale = _isInventoryOpen ? 0f : 1f;
+            
+            Cursor.visible = _isInventoryOpen;
+            Cursor.lockState = _isInventoryOpen ? CursorLockMode.None : CursorLockMode.Confined;
+
+            // UI 강제 갱신 시도
+            if (_isInventoryOpen && inventoryPanel.TryGetComponent<InventoryUI>(out var invUI))
+            {
+                invUI.UpdateUI();
+            }
+
+            Debug.Log("<color=yellow>[Inventory]</color> " + (_isInventoryOpen ? "Opened (Paused)" : "Closed (Resumed)"));
+        }
+    }
+
+    private void TryParry()
+    {
+        if (Time.time < _lastParryTime + _parryCooldown) return;
+        
+        StartCoroutine(ParryRoutine());
+    }
+
+    private System.Collections.IEnumerator ParryRoutine()
+    {
+        _lastParryTime = Time.time;
+        if (_health != null) _health.IsParrying = true;
+
+        // 비주얼 효과: 버블껌처럼 분홍색으로 변경
+        SpriteRenderer sr = GetComponentInChildren<SpriteRenderer>();
+        Color originalColor = sr.color;
+        sr.color = new Color(1f, 0.5f, 0.8f); // 분홍색
+
+        yield return new WaitForSeconds(_parryDuration);
+
+        if (_health != null) _health.IsParrying = false;
+        sr.color = originalColor;
+    }
+
+
     private void ApplyMovement()
     {
+        if (_knockbackTimer > 0) return; // 밀려나는 중에는 이동 처리 안 함
+
         float targetSpeed = _isRunning ? moveSettings.RunSpeed : moveSettings.WalkSpeed;
         
+        // 파랑 버블 특수 능력: 스피드 부스트
+        if (_speedBoostTimer > 0) targetSpeed *= 1.5f;
+
         // [중요] 차징 모드이면서 실제로 마우스를 누르고 있을 때만 느려짐
         bool isActivelyCharging = _isChargeMode && Mouse.current.leftButton.isPressed;
 
@@ -186,7 +285,8 @@ public class PlayerController : MonoBehaviour
     private void CycleColor()
     {
         _currentColorIndex = (_currentColorIndex + 1) % 3;
-        Debug.Log("Bullet Color: " + ( (ColorIndex)_currentColorIndex ).ToString());
+        float remainingCooldown = Mathf.Max(0, (_lastUsedTime[_currentColorIndex] + _abilityCooldowns[_currentColorIndex]) - Time.time);
+        Debug.Log($"Bullet Color: {((ColorIndex)_currentColorIndex)} | Cooldown: {remainingCooldown:F1}s");
     }
 
     private enum ColorIndex { Blue = 0, Red = 1, Yellow = 2 }
@@ -236,10 +336,34 @@ public class PlayerController : MonoBehaviour
 
         if (Time.time < _lastFireTime + cooldown) return;
 
+        // 특수 능력 사용 가능 여부 체크
+        bool canUseSpecial = Time.time >= _lastUsedTime[_currentColorIndex] + _abilityCooldowns[_currentColorIndex];
+        bool isSpecialShot = false;
+
+        if (canUseSpecial)
+        {
+            isSpecialShot = true;
+            _lastUsedTime[_currentColorIndex] = Time.time;
+
+            // 즉발 효과 (파랑: 스피드 부스트)
+            if (_currentColorIndex == (int)ColorIndex.Blue)
+            {
+                _speedBoostTimer = 2f;
+                Debug.Log("<color=blue>[Ability]</color> SPEED BOOST activated for 2s");
+            }
+        }
+
         // 데미지 및 크기 계산
         float chargeRatio = Mathf.Clamp01(chargeTime / 5f);
         float finalDamage = Mathf.Lerp(baseDamage, 60f, chargeRatio);
         
+        // 빨강 특수 능력: 데미지 1.5배
+        if (isSpecialShot && _currentColorIndex == (int)ColorIndex.Red)
+        {
+            finalDamage *= 1.5f;
+            Debug.Log("<color=red>[Ability]</color> POWER SHOT! Damage increased by 1.5x");
+        }
+
         // [수정] 일반 모드(또는 차징 시작) 크기를 1.5f로 설정, 최대 3.5f까지 커짐
         float baseScale = 1.5f;
         float finalScale = _isChargeMode ? Mathf.Lerp(baseScale, 3.5f, chargeRatio) : baseScale;
@@ -252,6 +376,7 @@ public class PlayerController : MonoBehaviour
 
         string[] tags = { "Blue", "Red", "Yellow" };
         string poolTag = tags[_currentColorIndex];
+        Projectile.BubbleType bubbleType = (Projectile.BubbleType)_currentColorIndex;
 
         if (ObjectPooler.Instance != null && combatSettings.FirePoint != null)
         {
@@ -261,7 +386,7 @@ public class PlayerController : MonoBehaviour
             var obj = ObjectPooler.Instance.SpawnFromPool(poolTag, combatSettings.FirePoint.position, Quaternion.Euler(0, 0, angle));
             if (obj != null && obj.TryGetComponent<Projectile>(out var proj))
             {
-                proj.Initialize(finalDamage, _isFacingRight, finalSpeed, projectileScale, gameObject);
+                proj.Initialize(finalDamage, _isFacingRight, finalSpeed, projectileScale, gameObject, bubbleType, isSpecialShot);
             }
             _lastFireTime = Time.time;
         }
@@ -276,7 +401,7 @@ public class PlayerController : MonoBehaviour
                 float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
                 var obj = Instantiate(prefab, combatSettings.FirePoint.position, Quaternion.Euler(0, 0, angle));
                 if (obj.TryGetComponent<Projectile>(out var proj)) 
-                    proj.Initialize(finalDamage, _isFacingRight, finalSpeed, projectileScale, gameObject);
+                    proj.Initialize(finalDamage, _isFacingRight, finalSpeed, projectileScale, gameObject, bubbleType, isSpecialShot);
                 _lastFireTime = Time.time;
             }
         }

@@ -35,6 +35,7 @@ public class WizardSetupHelper : EditorWindow
         // 1. 기본 오브젝트 생성
         GameObject wizard = new GameObject("Wizard2");
         wizard.tag = "Enemy";
+        wizard.transform.localScale = new Vector3(3f, 3f, 1f);
 
         // 2. 컴포넌트 추가
         var sr = wizard.AddComponent<SpriteRenderer>();
@@ -51,38 +52,33 @@ public class WizardSetupHelper : EditorWindow
 
         wizard.AddComponent<Health>();
         
-        // 3. 애니메이터 컨트롤러 설정
-        if (!File.Exists(controllerPath))
-        {
-            var controller = AnimatorController.CreateAnimatorControllerAtPath(controllerPath);
-            var rootStateMachine = controller.layers[0].stateMachine;
+        // 3. 애니메이터 컨트롤러 설정 (기존 파일이 있어도 새로 생성하여 에러 방지)
+        if (File.Exists(controllerPath)) AssetDatabase.DeleteAsset(controllerPath);
+        
+        var controller = AnimatorController.CreateAnimatorControllerAtPath(controllerPath);
+        var rootStateMachine = controller.layers[0].stateMachine;
 
-            var idleClip = AssetDatabase.LoadAssetAtPath<AnimationClip>("Assets/Sprite/Evil Wizard 2/Animations/Idle.anim");
-            var walkClip = AssetDatabase.LoadAssetAtPath<AnimationClip>("Assets/Sprite/Evil Wizard 2/Animations/Run.anim");
-            var attackClip = AssetDatabase.LoadAssetAtPath<AnimationClip>("Assets/Sprite/Evil Wizard 2/Animations/Attack1.anim");
-            var dieClip = AssetDatabase.LoadAssetAtPath<AnimationClip>("Assets/Sprite/Evil Wizard 2/Animations/Death.anim");
+        var idleClip = AssetDatabase.LoadAssetAtPath<AnimationClip>("Assets/Sprite/Evil Wizard 2/Animations/Idle.anim");
+        var walkClip = AssetDatabase.LoadAssetAtPath<AnimationClip>("Assets/Sprite/Evil Wizard 2/Animations/Run.anim");
+        var attackClip = AssetDatabase.LoadAssetAtPath<AnimationClip>("Assets/Sprite/Evil Wizard 2/Animations/Attack1.anim");
+        var dieClip = AssetDatabase.LoadAssetAtPath<AnimationClip>("Assets/Sprite/Evil Wizard 2/Animations/Death.anim");
 
-            var idleState = rootStateMachine.AddState("Idle"); idleState.motion = idleClip;
-            var walkState = rootStateMachine.AddState("Walk"); walkState.motion = walkClip;
-            var attackState = rootStateMachine.AddState("Attack"); attackState.motion = attackClip;
-            var dieState = rootStateMachine.AddState("Die"); dieState.motion = dieClip;
+        var idleState = rootStateMachine.AddState("Idle"); idleState.motion = idleClip;
+        var walkState = rootStateMachine.AddState("Walk"); walkState.motion = walkClip;
+        var attackState = rootStateMachine.AddState("Attack"); attackState.motion = attackClip;
+        var dieState = rootStateMachine.AddState("Die"); dieState.motion = dieClip;
 
-            controller.AddParameter("Walk", AnimatorControllerParameterType.Bool);
-            controller.AddParameter("Attack", AnimatorControllerParameterType.Trigger);
-            controller.AddParameter("Die", AnimatorControllerParameterType.Trigger);
+        controller.AddParameter("Walk", AnimatorControllerParameterType.Bool);
+        controller.AddParameter("Attack", AnimatorControllerParameterType.Trigger);
+        controller.AddParameter("Die", AnimatorControllerParameterType.Trigger);
 
-            idleState.AddTransition(walkState).AddCondition(AnimatorConditionMode.If, 0, "Walk");
-            walkState.AddTransition(idleState).AddCondition(AnimatorConditionMode.IfNot, 0, "Walk");
-            rootStateMachine.AddAnyStateTransition(attackState).AddCondition(AnimatorConditionMode.If, 0, "Attack");
-            attackState.AddTransition(idleState).hasExitTime = true;
-            rootStateMachine.AddAnyStateTransition(dieState).AddCondition(AnimatorConditionMode.If, 0, "Die");
+        idleState.AddTransition(walkState).AddCondition(AnimatorConditionMode.If, 0, "Walk");
+        walkState.AddTransition(idleState).AddCondition(AnimatorConditionMode.IfNot, 0, "Walk");
+        rootStateMachine.AddAnyStateTransition(attackState).AddCondition(AnimatorConditionMode.If, 0, "Attack");
+        attackState.AddTransition(idleState).hasExitTime = true;
+        rootStateMachine.AddAnyStateTransition(dieState).AddCondition(AnimatorConditionMode.If, 0, "Die");
 
-            anim.runtimeAnimatorController = controller;
-        }
-        else
-        {
-            anim.runtimeAnimatorController = AssetDatabase.LoadAssetAtPath<RuntimeAnimatorController>(controllerPath);
-        }
+        anim.runtimeAnimatorController = controller;
 
         // 4. RangedEnemy 스크립트 추가 및 데이터 연결
         var rangedEnemy = wizard.GetComponent<RangedEnemy>() ?? wizard.AddComponent<RangedEnemy>();
