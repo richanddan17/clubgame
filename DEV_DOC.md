@@ -1,67 +1,43 @@
-# ClubGame 개발 문서 (v1.1)
+# ClubGame 개발 문서 (v1.2) - 껌 공장 탐험 업데이트
 
-본 문서는 ClubGame 프로젝트의 주요 시스템 구조와 데이터 관리 방법을 설명합니다.
+본 문서는 ClubGame 프로젝트의 주요 시스템 구조와 데이터 관리 방법을 설명합니다. (탐험형 게임으로의 전환 반영)
 
-## 1. 프로젝트 환경
-- **엔진**: Unity 6 (또는 최신 버전)
-- **렌더 파이프라인**: Universal Render Pipeline (URP)
-- **입력 시스템**: New Input System
+---
+
+## 1. 프로젝트 환경 및 컨셉
+- **엔진**: Unity 6 / URP / New Input System
+- **컨셉**: "껌 공장"의 비밀을 밝혀내는 탐험형(메트로이드바니아 스타일) 게임.
+- **분위기**: 다크-귀염(Dark-Cute) 디저트 테마.
 
 ---
 
 ## 2. 플레이어 시스템
-### 2.1 플레이어 조작 (`PlayerMoving.cs`)
-- **이동/점프**: Rigidbody2D 기반 물리 이동 및 지면 체크 점프.
-- **특수 조작**: 웅크리기(C), 패링(F), 인벤토리(E).
-
-### 2.2 전투 시스템 (`PlayerController.cs`)
-- **3색 버블껌**: R키로 Blue, Red, Yellow 탄종 교체.
-- **차징 모드**: Q키로 토글. 마우스 왼쪽 버튼 유지 시 투사체 크기 및 데미지 증가.
-- **패링 (Parry)**: F키 입력 시 0.3초간 무적 및 반사 상태. 성공 시 공격 방향 반대쪽으로 넉백 발생.
-
-### 2.3 인벤토리 시스템 (`InventoryManager.cs`, `InventoryUI.cs`)
-- **토글**: E키 입력 시 게임 일시 정지(`Time.timeScale = 0`) 및 UI 표시.
-- **관리**: ScriptableObject 기반의 스킬 및 아이템 데이터를 리스트로 관리.
-- **자동화**: `Custom Tools > Setup Inventory UI`를 통해 UI 구조 자동 생성 및 연결.
+### 2.1 전투 및 인벤토리
+- **3색 버블껌**: 탄종 교체 및 차징 시스템.
+- **인벤토리**: 스킬, 아이템뿐만 아니라 공장의 비밀이 담긴 **단서(Clue)**를 수집 가능.
 
 ---
 
-## 3. 데이터 자동화 시스템 (Tiger Import Tool)
-기획자가 엑셀(CSV)에서 편집한 데이터를 유니티 ScriptableObject 에셋으로 자동 변환하는 시스템입니다.
-- **경로**: `Custom Tools > tiger > Data Import > Open Import Window`
+## 3. 탐험 및 전리품 시스템
+### 3.1 구역 기반 스폰 (`SpawnZone.cs`)
+- 스테이지 방식 대신 공장의 각 구역(Zone)별로 몬스터가 관리되며, 플레이어 거리에 따라 리젠됩니다.
+
+### 3.2 전리품 및 파밍
+- **Loot Table**: 적 처치 시 또는 상자 오픈 시 확률적으로 아이템/스킬 드랍.
+- **Chest (`Chest.cs`)**: 필드 곳곳에 배치된 상호작용 가능한 보물상자.
+- **Loot Dropped Item**: 필드에 드랍된 아이템을 플레이어가 닿아서 획득.
 
 ---
 
-## 4. 데이터 구조 (Data Structure)
-### 4.1 EnemyData
-- `ID`, `EnemyName`, `HP`, `Speed`, `Damage`, `DetectionRange`, `AttackInterval`
-
-### 4.2 SkillData / ShopItemData
-- `ID`, `Name`, `Damage/Price`, `Cooldown`, `Icon(Sprite)`
+## 4. 적(Enemy) 시스템
+### 4.1 주요 몬스터
+- **MeltingHaribo**: 몸이 녹아내려 이동 후 다시 굳어져 기습하는 하리보 몬스터.
+- **Sugar Octopus (보스)**: 첫 번째 보스. 촉수 공격과 설탕 뿌리기 패턴 보유.
 
 ---
 
-## 5. 적(Enemy) 시스템
-### 5.1 주요 몬스터 AI
-- **Slime**: 기본 추격 및 근접 공격.
-- **RangedEnemy (Wizard)**: 원거리 마법 및 근접 지팡이 휘두르기 하이브리드 패턴.
-- **Mole (두더지)**: 땅속 이동 후 플레이어 발밑에서 기습. 가시성 개선을 위해 `moleColor` 적용 가능.
-
----
-
-## 6. 배경 시스템 (`ParallaxBackground.cs`)
-- 카메라 이동 속도에 비례한 5단계 레이어 패럴랙스 무한 루프 구현.
-
----
-
-## 7. 에디터 자동화 도구 (Custom Tools)
-- `ShootingSetupHelper`: 플레이어 슈팅 환경 세팅.
-- `WizardSetupHelper`: 마법사 적 프리팹 데이터 설정.
-- `InventorySetupHelper`: 인벤토리 UI 생성 및 스크립트 연결.
-- `HUDSetupHelper`: 플레이어 체력바 UI 생성 및 연결.
-
----
-
-## 8. 향후 과제 및 개선 사항
-- **UI**: 인벤토리 슬롯 레이아웃 최적화 (겹침 문제 해결 필요).
-- **비주얼**: 두더지 스프라이트 밝기 조정 및 배경 가시성 확보.
+## 5. 데이터 구조
+- **EnemyData**: 체력, 속도, 공격력 등 기본 능력치.
+- **SkillData / ShopItemData**: 획득 가능한 스킬과 아이템 정보.
+- **ClueData**: 공장의 비밀을 밝히는 텍스트 및 아이콘 정보.
+- **LootTable**: 드랍 확률 정의 데이터.

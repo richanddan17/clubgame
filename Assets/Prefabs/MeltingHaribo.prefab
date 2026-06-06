@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 6000000000000000000}
   - component: {fileID: 7000000000000000000}
   m_Layer: 0
-  m_Name: Mole
+  m_Name: MeltingHaribo
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -85,7 +85,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 5
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -5427164653334127848, guid: 81c2c943edee6674bbe32c8ac7d4de2e, type: 3}
+  m_Sprite: {fileID: 1494678002931678309, guid: a2604c04f51278c4e873b8cc08aa6f20, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -167,32 +167,33 @@ MonoBehaviour:
   m_GameObject: {fileID: 1000000000000000000}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 30401ad7abc9006428af88ae9d40d9e1, type: 3}
+  m_Script: {fileID: 11500000, guid: 63a9c2f058e82bb4dab93438c1818b93, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Mole
+  m_EditorClassIdentifier: Assembly-CSharp::MeltingHaribo
   moveSpeed: 5
   detectionRange: 10
   attackRange: 1.5
   attackDamage: 15
   stateDelay: 1
-  moleSprites:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  hariboSprites:
+  - {fileID: 1494678002931678309, guid: a2604c04f51278c4e873b8cc08aa6f20, type: 3}
+  - {fileID: 698782177227960690, guid: a2604c04f51278c4e873b8cc08aa6f20, type: 3}
+  - {fileID: -4908254855833757659, guid: a2604c04f51278c4e873b8cc08aa6f20, type: 3}
+  - {fileID: 4449287173490360542, guid: a2604c04f51278c4e873b8cc08aa6f20, type: 3}
+  - {fileID: -4849846948134072739, guid: a2604c04f51278c4e873b8cc08aa6f20, type: 3}
+  - {fileID: 5067095244844091208, guid: a2604c04f51278c4e873b8cc08aa6f20, type: 3}
+  - {fileID: -2026984984245029158, guid: a2604c04f51278c4e873b8cc08aa6f20, type: 3}
+  - {fileID: 8339103081025107736, guid: a2604c04f51278c4e873b8cc08aa6f20, type: 3}
+  - {fileID: -8612172194417888801, guid: a2604c04f51278c4e873b8cc08aa6f20, type: 3}
+  - {fileID: 5579337480596692191, guid: a2604c04f51278c4e873b8cc08aa6f20, type: 3}
+  - {fileID: 1972624801503700065, guid: a2604c04f51278c4e873b8cc08aa6f20, type: 3}
+  - {fileID: 5369275916189857317, guid: a2604c04f51278c4e873b8cc08aa6f20, type: 3}
+  - {fileID: 873555949, guid: a2604c04f51278c4e873b8cc08aa6f20, type: 3}
+  - {fileID: 1296966509, guid: a2604c04f51278c4e873b8cc08aa6f20, type: 3}
+  - {fileID: 1939624211, guid: a2604c04f51278c4e873b8cc08aa6f20, type: 3}
+  - {fileID: 613079611, guid: a2604c04f51278c4e873b8cc08aa6f20, type: 3}
+  - {fileID: 1419542319, guid: a2604c04f51278c4e873b8cc08aa6f20, type: 3}
+  - {fileID: -933741026, guid: a2604c04f51278c4e873b8cc08aa6f20, type: 3}
   animationSpeed: 0.05
 --- !u!114 &7000000000000000000
 MonoBehaviour:

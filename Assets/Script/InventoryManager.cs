@@ -11,6 +11,7 @@ public class InventoryManager : MonoBehaviour
     [Header("인벤토리 데이터")]
     public List<SkillData> acquiredSkills = new List<SkillData>();
     public List<ShopItemData> acquiredItems = new List<ShopItemData>();
+    public List<ClueData> acquiredClues = new List<ClueData>();
 
     [Header("이벤트")]
     public UnityEngine.Events.UnityEvent OnInventoryChanged;
@@ -58,6 +59,15 @@ public class InventoryManager : MonoBehaviour
         if (item != null)
         {
             acquiredItems.Add(item);
+            OnInventoryChanged?.Invoke();
+        }
+    }
+
+    public void AddClue(ClueData clue)
+    {
+        if (clue != null && !acquiredClues.Contains(clue))
+        {
+            acquiredClues.Add(clue);
             OnInventoryChanged?.Invoke();
         }
     }
