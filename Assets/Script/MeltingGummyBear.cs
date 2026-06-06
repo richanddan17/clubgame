@@ -2,12 +2,12 @@ using System.Collections;
 using UnityEngine;
 
 /// <summary>
-/// Mole 몹: 0~16번 스프라이트로 숨고, 플레이어 밑으로 이동 후 16~0번으로 나타나 공격합니다.
+/// MeltingGummyBear 몹: 몸이 녹아내려(MeltingDown) 플레이어 밑으로 이동 후, 다시 굳어져(Solidifying) 공격합니다.
 /// </summary>
 [RequireComponent(typeof(Rigidbody2D), typeof(Collider2D), typeof(Health))]
-public class Mole : MonoBehaviour
+public class MeltingGummyBear : MonoBehaviour
 {
-    public enum MoleState { Idle, DiggingDown, Underground, PoppingUp, Attack, Cooldown }
+    public enum GummyState { Idle, MeltingDown, Underground, Solidifying, Attack, Cooldown }
 
     [Header("설정")]
     public float moveSpeed = 5f;
@@ -17,7 +17,7 @@ public class Mole : MonoBehaviour
     public float stateDelay = 1f;
 
     [Header("스프라이트 설정")]
-    public Sprite[] moleSprites; // 0~16번 스프라이트 할당 필요
+    public Sprite[] gummySprites; // 0~16번 스프라이트 할당 필요 (녹는 연출)
     public float animationSpeed = 0.05f;
 
     [Header("참조")]
@@ -27,7 +27,7 @@ public class Mole : MonoBehaviour
     private Collider2D _col;
     private Health _health;
     
-    private MoleState _currentState = MoleState.Idle;
+    private GummyState _currentState = GummyState.Idle;
     private bool _isDead = false;
 
     void Awake()
@@ -38,7 +38,7 @@ public class Mole : MonoBehaviour
         _health = GetComponent<Health>();
 
         _rb.freezeRotation = true;
-        _rb.gravityScale = 0; // 두더지는 땅속을 다니므로 중력 영향 제외 (혹은 필요에 따라 조절)
+        _rb.gravityScale = 0;
     }
 
     void Start()
@@ -46,33 +46,33 @@ public class Mole : MonoBehaviour
         _player = GameObject.FindGameObjectWithTag("Player")?.transform;
         if (_health != null) _health.OnDie.AddListener(OnDie);
         
-        StartCoroutine(MoleRoutine());
+        StartCoroutine(GummyRoutine());
     }
 
-    IEnumerator MoleRoutine()
+    IEnumerator GummyRoutine()
     {
         while (!_isDead)
         {
             switch (_currentState)
             {
-                case MoleState.Idle:
+                case GummyState.Idle:
                     yield return HandleIdle();
                     break;
-                case MoleState.DiggingDown:
-                    yield return HandleDiggingDown();
+                case GummyState.MeltingDown:
+                    yield return HandleMeltingDown();
                     break;
-                case MoleState.Underground:
+                case GummyState.Underground:
                     yield return HandleUnderground();
                     break;
-                case MoleState.PoppingUp:
-                    yield return HandlePoppingUp();
+                case GummyState.Solidifying:
+                    yield return HandleSolidifying();
                     break;
-                case MoleState.Attack:
+                case GummyState.Attack:
                     yield return HandleAttack();
                     break;
-                case MoleState.Cooldown:
+                case GummyState.Cooldown:
                     yield return new WaitForSeconds(stateDelay);
-                    _currentState = MoleState.Idle;
+                    _currentState = GummyState.Idle;
                     break;
             }
             yield return null;
@@ -83,28 +83,29 @@ public class Mole : MonoBehaviour
     {
         if (_player != null && Vector2.Distance(transform.position, _player.position) <= detectionRange)
         {
-            _currentState = MoleState.DiggingDown;
+            _currentState = GummyState.MeltingDown;
         }
         yield return new WaitForSeconds(0.5f);
     }
 
-    private IEnumerator HandleDiggingDown()
+    private IEnumerator HandleMeltingDown()
     {
-        // 0 -> 16 애니메이션
-        for (int i = 0; i <= 16; i++)
+        // 녹아내리는 애니메이션 (0 -> 18)
+        int frameCount = gummySprites != null ? gummySprites.Length : 19;
+        for (int i = 0; i < frameCount; i++)
         {
-            if (moleSprites != null && i < moleSprites.Length)
-                _sr.sprite = moleSprites[i];
+            if (gummySprites != null && i < gummySprites.Length)
+                _sr.sprite = gummySprites[i];
             yield return new WaitForSeconds(animationSpeed);
         }
         
-        _col.enabled = false; // 땅속에서는 충돌 무시
-        _currentState = MoleState.Underground;
+        _col.enabled = false;
+        _currentState = GummyState.Underground;
     }
 
     private IEnumerator HandleUnderground()
     {
-        float duration = 2f; // 최대 2초간 이동
+        float duration = 2f;
         float elapsed = 0f;
 
         while (elapsed < duration)
@@ -112,12 +113,11 @@ public class Mole : MonoBehaviour
             if (_player == null) break;
 
             float dist = Vector2.Distance(transform.position, _player.position);
-            if (dist < 0.5f) break; // 플레이어 바로 밑 도착
+            if (dist < 0.5f) break;
 
             Vector2 dir = ((Vector2)_player.position - (Vector2)transform.position).normalized;
             _rb.linearVelocity = dir * moveSpeed;
 
-            // 방향에 따른 스프라이트 반전
             if (dir.x > 0.01f) transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
             else if (dir.x < -0.01f) transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
 
@@ -126,21 +126,22 @@ public class Mole : MonoBehaviour
         }
 
         _rb.linearVelocity = Vector2.zero;
-        _currentState = MoleState.PoppingUp;
+        _currentState = GummyState.Solidifying;
     }
 
-    private IEnumerator HandlePoppingUp()
+    private IEnumerator HandleSolidifying()
     {
-        // 16 -> 0 애니메이션
-        for (int i = 16; i >= 0; i--)
+        // 다시 나타나는 애니메이션 (18 -> 0)
+        int frameCount = gummySprites != null ? gummySprites.Length : 19;
+        for (int i = frameCount - 1; i >= 0; i--)
         {
-            if (moleSprites != null && i < moleSprites.Length)
-                _sr.sprite = moleSprites[i];
+            if (gummySprites != null && i < gummySprites.Length)
+                _sr.sprite = gummySprites[i];
             yield return new WaitForSeconds(animationSpeed);
         }
 
-        _col.enabled = true; // 다시 지상으로 나오면 충돌 활성화
-        _currentState = MoleState.Attack;
+        _col.enabled = true;
+        _currentState = GummyState.Attack;
     }
 
     private IEnumerator HandleAttack()
@@ -151,12 +152,12 @@ public class Mole : MonoBehaviour
             if (playerHealth != null)
             {
                 playerHealth.TakeDamage(attackDamage, transform.position);
-                Debug.Log("Mole Attacked Player!");
+                Debug.Log("Gummy Bear Attacked Player!");
             }
         }
         
         yield return new WaitForSeconds(0.5f);
-        _currentState = MoleState.Cooldown;
+        _currentState = GummyState.Cooldown;
     }
 
     private void OnDie()
