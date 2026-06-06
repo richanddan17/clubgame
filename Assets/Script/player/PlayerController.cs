@@ -169,7 +169,27 @@ public class PlayerController : MonoBehaviour
             _isChargeMode = !_isChargeMode;
             Debug.Log("<color=cyan>[Mode]</color> Charge Mode: " + (_isChargeMode ? "ON" : "OFF"));
         }
-        // ... rest of input handling
+
+        // 슈팅 처리
+        if (_isChargeMode)
+        {
+            if (Mouse.current.leftButton.wasPressedThisFrame)
+            {
+                _chargeStartTime = Time.time;
+            }
+            if (Mouse.current.leftButton.wasReleasedThisFrame)
+            {
+                float chargeTime = Time.time - _chargeStartTime;
+                TryFire(chargeTime);
+            }
+        }
+        else
+        {
+            if (Mouse.current.leftButton.isPressed)
+            {
+                TryFire();
+            }
+        }
     }
 
     private void ToggleInventory()
