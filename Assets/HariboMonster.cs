@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-public class MoleMonster : MonoBehaviour
+public class HariboMonster : MonoBehaviour
 {
     public enum State
     {
@@ -140,7 +140,7 @@ public class MoleMonster : MonoBehaviour
     {
         if (currentState == State.StiffVulnerable)
         {
-            Debug.Log("Mole Monster hit while vulnerable!");
+            Debug.Log("Haribo Monster hit while vulnerable!");
         }
     }
 }
