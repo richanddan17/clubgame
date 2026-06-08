@@ -14,6 +14,8 @@
 - **Core & Systems**:
   - `PlayerMoving.cs`: 플레이어 물리 이동 및 점프
   - `PlayerController.cs`: 플레이어 전투, 슈팅, 패링 및 인벤토리 토글 로직
+  - `BiomeData.cs`: 바이옴별 배경, 몬스터, 타일 정보를 담는 데이터 (ScriptableObject)
+  - `BiomeManager.cs`: 현재 바이옴 상태 관리 및 심리스 전환 로직 (신규)
   - `Projectile.cs`: 투사체 충돌 및 데미지 처리
   - `InventoryManager.cs`: 스킬/아이템/단서(Clue) 목록 관리
   - `InventoryUI.cs`: 인벤토리 데이터의 시각적 표시 및 슬롯 관리

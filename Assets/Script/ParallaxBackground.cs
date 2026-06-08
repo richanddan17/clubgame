@@ -5,25 +5,79 @@ public class ParallaxBackground : MonoBehaviour
     [Header("설정 (1: 멀리 있음, 0.1: 가까이 있음)")]
     [Range(0, 1)]
     public float parallaxEffect; 
+    public int backgroundLayerIndex; // BiomeData의 backgroundLayers 중 몇 번째인지
     
     private Transform cam;
     private float length, startpos;
+    private SpriteRenderer sr;
 
     void Start()
     {
+        sr = GetComponent<SpriteRenderer>();
         if (Camera.main != null) cam = Camera.main.transform;
         
         if (cam == null) return;
 
-        startpos = transform.position.x;
-        
-        SpriteRenderer sr = GetComponent<SpriteRenderer>();
-        if (sr != null)
+        // 시작 시 현재 바이옴이 이미 설정되어 있다면 반영
+        if (BiomeManager.Instance != null && BiomeManager.Instance.currentBiome != null)
         {
-            // 실제 월드 크기 너비 계산
-            length = sr.bounds.size.x;
+            HandleBiomeChanged(BiomeManager.Instance.currentBiome);
+        }
+        else
+        {
+            UpdateStartSettings();
+        }
 
-            // [개선] 양옆으로 배경을 복제하여 무한 루프 시 빈 공간 방지
+        // 바이옴 변경 이벤트 구독
+        if (BiomeManager.Instance != null)
+        {
+            BiomeManager.Instance.OnBiomeChanged += HandleBiomeChanged;
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (BiomeManager.Instance != null)
+        {
+            BiomeManager.Instance.OnBiomeChanged -= HandleBiomeChanged;
+        }
+    }
+
+    private void HandleBiomeChanged(BiomeData newData)
+    {
+        if (newData.backgroundLayers != null && backgroundLayerIndex < newData.backgroundLayers.Length)
+        {
+            Sprite newSprite = newData.backgroundLayers[backgroundLayerIndex];
+            if (newSprite != null)
+            {
+                sr.sprite = newSprite;
+                UpdateStartSettings(); // 스프라이트가 바뀌었으므로 길이 등 재계산
+
+                // 자식(복제본)들도 업데이트
+                foreach (Transform child in transform)
+                {
+                    var childSr = child.GetComponent<SpriteRenderer>();
+                    if (childSr != null) childSr.sprite = newSprite;
+                }
+            }
+        }
+    }
+
+    private void UpdateStartSettings()
+    {
+        startpos = transform.position.x;
+        if (sr != null && sr.sprite != null)
+        {
+            length = sr.bounds.size.x;
+            
+            // 기존 복제본 삭제 (재설정 시)
+            foreach (Transform child in transform)
+            {
+                // 간단히 하기 위해 파괴 (성능 최적화 필요 시 재사용 로직 고려)
+                if (child.name.Contains("Left") || child.name.Contains("Right"))
+                    Destroy(child.gameObject);
+            }
+
             CreateDuplicate(sr, -1, "Left");
             CreateDuplicate(sr, 1, "Right");
         }

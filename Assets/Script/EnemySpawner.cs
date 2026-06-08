@@ -40,11 +40,23 @@ public class EnemySpawner : MonoBehaviour
 
     private void SpawnRandomEnemy()
     {
-        if (enemyDataList.Count == 0) return;
+        // BiomeManager에서 현재 바이옴의 적 리스트 가져오기
+        EnemyData[] currentPossibleEnemies = null;
+        if (BiomeManager.Instance != null && BiomeManager.Instance.currentBiome != null)
+        {
+            currentPossibleEnemies = BiomeManager.Instance.currentBiome.allowedEnemies;
+        }
+
+        if (currentPossibleEnemies == null || currentPossibleEnemies.Length == 0)
+        {
+            // 데이터가 없으면 기존 리스트(Resources 전체) 사용 시도
+            if (enemyDataList.Count == 0) return;
+            currentPossibleEnemies = enemyDataList.ToArray();
+        }
 
         // 랜덤 데이터 선택
-        EnemyData randomData = enemyDataList[Random.Range(0, enemyDataList.Count)];
-        
+        EnemyData randomData = currentPossibleEnemies[UnityEngine.Random.Range(0, currentPossibleEnemies.Length)];
+
         // 특수 프리팹 확인 (예: Slime 이면 Prefabs/Slime.prefab 을 찾음)
         GameObject prefabToSpawn = enemyPrefab;
         string specializedPrefabPath = $"Prefabs/{randomData.EnemyName.Split('_')[1]}"; // ID_Name 형태일 경우 Name만 추출
