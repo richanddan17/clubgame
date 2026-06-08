@@ -18,7 +18,15 @@ public class ParallaxBackground : MonoBehaviour
         
         if (cam == null) return;
 
-        UpdateStartSettings();
+        // 시작 시 현재 바이옴이 이미 설정되어 있다면 반영
+        if (BiomeManager.Instance != null && BiomeManager.Instance.currentBiome != null)
+        {
+            HandleBiomeChanged(BiomeManager.Instance.currentBiome);
+        }
+        else
+        {
+            UpdateStartSettings();
+        }
 
         // 바이옴 변경 이벤트 구독
         if (BiomeManager.Instance != null)
