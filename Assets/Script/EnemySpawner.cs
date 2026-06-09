@@ -49,18 +49,25 @@ public class EnemySpawner : MonoBehaviour
 
         if (currentPossibleEnemies == null || currentPossibleEnemies.Length == 0)
         {
-            // 데이터가 없으면 기존 리스트(Resources 전체) 사용 시도
-            if (enemyDataList.Count == 0) return;
+            // 바이옴에 적이 설정되어 있지 않으면 전역 리스트(Resources/EnemyData) 사용
+            if (enemyDataList.Count == 0)
+            {
+                // 실시간으로 다시 로드 시도
+                EnemyData[] loadedData = Resources.LoadAll<EnemyData>("EnemyData");
+                enemyDataList.AddRange(loadedData);
+                if (enemyDataList.Count == 0) return;
+            }
             currentPossibleEnemies = enemyDataList.ToArray();
         }
 
         // 랜덤 데이터 선택
         EnemyData randomData = currentPossibleEnemies[UnityEngine.Random.Range(0, currentPossibleEnemies.Length)];
 
-        // 특수 프리팹 확인 (예: Slime 이면 Prefabs/Slime.prefab 을 찾음)
-        GameObject prefabToSpawn = enemyPrefab;
-        string specializedPrefabPath = $"Prefabs/{randomData.EnemyName.Split('_')[1]}"; // ID_Name 형태일 경우 Name만 추출
-        GameObject specializedPrefab = Resources.Load<GameObject>(specializedPrefabPath);
+        // 특수 프리팹 확인 (ID_Name 또는 Name 형태)
+        string prefabName = randomData.EnemyName;
+        if (prefabName.Contains("_")) prefabName = prefabName.Split('_')[1];
+
+        GameObject specializedPrefab = Resources.Load<GameObject>($"Prefabs/{prefabName}");
         
         // Resources에 없으면 Assets/Prefabs에서 직접 로드 시도 (Editor 전용)
         if (specializedPrefab == null)

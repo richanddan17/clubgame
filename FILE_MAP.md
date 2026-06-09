@@ -14,8 +14,9 @@
 - **Core & Systems**:
   - `PlayerMoving.cs`: 플레이어 물리 이동 및 점프
   - `PlayerController.cs`: 플레이어 전투, 슈팅, 패링 및 인벤토리 토글 로직
-  - `BiomeData.cs`: 바이옴별 배경, 몬스터, 타일 정보를 담는 데이터 (ScriptableObject)
-  - `BiomeManager.cs`: 현재 바이옴 상태 관리 및 심리스 전환 로직 (신규)
+  - `BiomeData.cs`: 바이옴별 생성 규칙(노이즈, 타일), 배경, 몬스터 정보를 담는 데이터 (SO)
+  - `BiomeManager.cs`: 현재 플레이어 위치(청크)에 따른 바이옴 상태 관리 및 전환
+  - `WorldGenerator.cs`: (설계 중) 청크 기반 절차적 맵 생성 (Perlin Noise 동굴 생성)
   - `Projectile.cs`: 투사체 충돌 및 데미지 처리
   - `InventoryManager.cs`: 스킬/아이템/단서(Clue) 목록 관리
   - `InventoryUI.cs`: 인벤토리 데이터의 시각적 표시 및 슬롯 관리
@@ -26,7 +27,7 @@
   - `EnemyLootDropper.cs`: 적 사망 시 전리품 생성을 담당하는 컴포넌트
   - `Chest.cs`: 상호작용 가능한 보물상자 파밍 시스템
 - **Environment**:
-  - `ParallaxBackground.cs`: 5단계 패럴랙스 무한 배경
+  - `ParallaxBackground.cs`: 바이옴별 자동 전환을 지원하는 패럴랙스 배경
   - `LevelPortal.cs`: 스테이지 이동 포탈
 - **Enemy AI**:
   - `MeltingHaribo.cs`: 녹아내리는 하리보 기습 AI
@@ -39,7 +40,7 @@
   - `ObjectPooler.cs`: 오브젝트 풀링 시스템
 
 ### 2.2 Editor Tools (`Assets/Editor/`)
-- `DataImportMenu.cs`: Tiger 데이터 임포터 (CSV -> ScriptableObject)
+- `DataImportMenu.cs`: Tiger 데이터 임포터 (CSV[몹, 스킬] -> ScriptableObject 자동 변환)
 - `ShootingSetupHelper.cs`: 슈팅 환경 자동 세팅
 - `WizardSetupHelper.cs`: 마법사 AI 설정 도구
 - `InventorySetupHelper.cs`: 인벤토리 UI 구조 자동 연결 도구
