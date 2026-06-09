@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Overgrown
   m_EditorClassIdentifier: Assembly-CSharp::BiomeData
   biomeName: Overgrown
-  mainTile: {fileID: 0}
+  mainTile: {fileID: 11400000, guid: 18b9aafa1f6d69f4fba252f4f7537fc1, type: 2}
   caveDensity: 0.5
   noiseScale: 0.05
   backgroundLayers: []

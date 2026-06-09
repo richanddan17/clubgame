@@ -350,9 +350,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BiomeManager
   currentBiome: {fileID: 0}
-  undergroundBiome: {fileID: 11400000, guid: c3965e894e20f094fba9386903ae15d3, type: 2}
-  surfaceBiome: {fileID: 11400000, guid: 685e4e1631e789448bb1656926072316, type: 2}
-  transitionTriggerX: 100
+  defaultBiome: {fileID: 0}
+  targetTilemaps:
+  - {fileID: 1675321931}
+  playerTransform: {fileID: 2006720546}
 --- !u!4 &293502893
 Transform:
   m_ObjectHideFlags: 0
@@ -611,6 +612,67 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 723139010}
   m_CullTransparentMesh: 1
+--- !u!1 &809259866
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 809259868}
+  - component: {fileID: 809259867}
+  m_Layer: 0
+  m_Name: worldgenerator
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &809259867
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 809259866}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6397f861ca9b2ad4993a132df310d859, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WorldGenerator
+  tilemap: {fileID: 1675321931}
+  chunkSize: 16
+  worldHeight: 64
+  seed: 0
+  defaultBiome: {fileID: 11400000, guid: fdcd5bfaa2f4e0149b0c847847275884, type: 2}
+  possibleBiomes:
+  - {fileID: 11400000, guid: fdcd5bfaa2f4e0149b0c847847275884, type: 2}
+  - {fileID: 11400000, guid: 7109a319bdc734e49ae3cd3fe7dfc52f, type: 2}
+  - {fileID: 11400000, guid: 5dfe80de675aa5a4cb70307d6ec37e50, type: 2}
+  chunksPerBiome: 10
+  minTunnelHeight: 3
+  maxTunnelHeight: 6
+  groundLevel: 0
+  pathCurvature: 0.1
+  maxPathOffset: 10
+  wallDensity: 0.5
+  secondaryNoiseScale: 0.08
+--- !u!4 &809259868
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 809259866}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.31551, y: -0.27707, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &890308136
 GameObject:
   m_ObjectHideFlags: 0
@@ -2785,3 +2847,4 @@ SceneRoots:
   - {fileID: 108525108}
   - {fileID: 82891252}
   - {fileID: 293502893}
+  - {fileID: 809259868}
