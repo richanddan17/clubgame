@@ -9,13 +9,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ea097a79e5f3ae045b4d2f261ea0b260, type: 3}
-  m_Name: 105_Wizard2
-  m_EditorClassIdentifier: Assembly-CSharp::EnemyData
-  ID: 105
-  EnemyName: Wizard2
-  HP: 120
-  Speed: 1.5
+  m_Script: {fileID: 11500000, guid: 24ea9cccfcc3f9c4cb343fb760fdec25, type: 3}
+  m_Name: 203_Whirlwind
+  m_EditorClassIdentifier: Assembly-CSharp::SkillData
+  ID: 203
+  SkillName: Whirlwind
   Damage: 15
-  DetectionRange: 12
-  AttackInterval: 2.5
+  ManaCost: 15
+  Cooldown: 3
+  Icon: {fileID: 0}
+  ProjectilePrefab: {fileID: 0}

@@ -93,6 +93,10 @@ public class BiomeManager : MonoBehaviour
                 tm.color = data.tilemapTint;
             }
         }
+
+        // 전체 조명 색상(Ambient Color) 변경
+        RenderSettings.ambientMode = UnityEngine.Rendering.AmbientMode.Flat;
+        RenderSettings.ambientLight = data.ambientColor;
     }
 
     // 구역 감지(수동) 호환성을 위한 메서드
