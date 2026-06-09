@@ -14,8 +14,10 @@ public class WorldGenerator : MonoBehaviour
 
     [Header("바이옴")]
     public BiomeData defaultBiome;
+    public List<BiomeData> possibleBiomes = new List<BiomeData>();
+    public int chunksPerBiome = 10; // 몇 청크마다 바이옴이 바뀔 가능성이 있는지
 
-    private Dictionary<Vector2Int, BiomeData> chunkBiomes = new Dictionary<Vector2Int, BiomeData>();
+    private Dictionary<int, BiomeData> chunkBiomeMap = new Dictionary<int, BiomeData>();
     private HashSet<Vector2Int> generatedChunks = new HashSet<Vector2Int>();
 
     private void Awake()
@@ -72,10 +74,26 @@ public class WorldGenerator : MonoBehaviour
         Debug.Log($"청크 생성 완료: {chunkX} (바이옴: {biome.biomeName})");
     }
 
-    private BiomeData GetBiomeForChunk(int chunkX)
+    public BiomeData GetBiomeForChunk(int chunkX)
     {
-        // 간단한 바이옴 교체 로직 (예: 100단위로 바이옴 변경 등)
-        // 현재는 BiomeManager의 설정을 따르거나 기본 바이옴 반환
-        return defaultBiome;
+        if (chunkBiomeMap.TryGetValue(chunkX, out BiomeData cachedBiome))
+            return cachedBiome;
+
+        // 바이옴 그룹 인덱스 (chunksPerBiome 개수마다 하나씩 결정)
+        int biomeIndex = Mathf.FloorToInt((float)chunkX / chunksPerBiome);
+        
+        // 시드와 바이옴 인덱스를 조합하여 랜덤 값 생성
+        Random.State prevState = Random.state;
+        Random.InitState(seed + biomeIndex);
+        
+        BiomeData selectedBiome = defaultBiome;
+        if (possibleBiomes != null && possibleBiomes.Count > 0)
+        {
+            selectedBiome = possibleBiomes[Random.Range(0, possibleBiomes.Count)];
+        }
+
+        Random.state = prevState;
+        chunkBiomeMap[chunkX] = selectedBiome;
+        return selectedBiome;
     }
 }

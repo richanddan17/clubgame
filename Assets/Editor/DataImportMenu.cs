@@ -193,6 +193,44 @@ public class DataImportMenu : EditorWindow
         DataImportMenu window = GetWindow<DataImportMenu>(); 
         window.ImportEnemyData(); 
         window.ImportBiomeData();
+        window.ImportSkillData();
+    }
+
+    public void ImportSkillData()
+    {
+        ImportSkillFile(skillRangedPath);
+        ImportSkillFile(skillMeleePath);
+        ImportSkillFile(skillMagicPath);
+        AssetDatabase.SaveAssets(); AssetDatabase.Refresh();
+        Debug.Log("Skill Data Import Complete!");
+    }
+
+    private void ImportSkillFile(string path)
+    {
+        if (!File.Exists(path)) return;
+        string[] lines = File.ReadAllLines(path);
+        EnsureFolder("Assets/Resources/SkillData");
+        
+        for (int i = 1; i < lines.Length; i++)
+        {
+            if (string.IsNullOrWhiteSpace(lines[i])) continue;
+            string[] data = lines[i].Split(',');
+            
+            if (data.Length < 5) continue;
+
+            int id = int.Parse(data[0]);
+            string skillName = data[1];
+            string assetPath = $"Assets/Resources/SkillData/{id}_{skillName}.asset";
+            
+            SkillData asset = GetOrCreateAsset<SkillData>(assetPath);
+            asset.ID = id;
+            asset.SkillName = skillName;
+            asset.Damage = float.Parse(data[2]);
+            asset.ManaCost = float.Parse(data[3]);
+            asset.Cooldown = float.Parse(data[4]);
+            
+            EditorUtility.SetDirty(asset);
+        }
     }
 
     public void ImportEnemyData()

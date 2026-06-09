@@ -9,14 +9,15 @@ public class BiomeManager : MonoBehaviour
 
     [Header("바이옴 데이터")]
     public BiomeData currentBiome;
-    public BiomeData defaultBiome; // 기본 바이옴
+    public BiomeData defaultBiome;
 
     [Header("참조")]
-    public Tilemap[] targetTilemaps; // 틴트를 적용할 타일맵들
+    public Tilemap[] targetTilemaps;
+    public Transform playerTransform;
 
     public event Action<BiomeData> OnBiomeChanged;
 
-    private Stack<BiomeZone> zoneStack = new Stack<BiomeZone>();
+    private int lastChunkX = int.MinValue;
 
     private void Awake()
     {
@@ -26,49 +27,47 @@ public class BiomeManager : MonoBehaviour
 
     private void Start()
     {
-        // 초기 바이옴 설정
+        if (playerTransform == null)
+        {
+            GameObject player = GameObject.FindGameObjectWithTag("Player");
+            if (player != null) playerTransform = player.transform;
+        }
+
         if (defaultBiome != null)
         {
             ChangeBiome(defaultBiome);
         }
 
-        // 씬 내의 모든 타일맵 자동 검색 (설정되지 않은 경우)
         if (targetTilemaps == null || targetTilemaps.Length == 0)
         {
             targetTilemaps = FindObjectsByType<Tilemap>(FindObjectsSortMode.None);
         }
     }
 
-    public void EnterZone(BiomeZone zone)
+    private void Update()
     {
-        if (zone == null || zone.biomeData == null) return;
-        
-        zoneStack.Push(zone);
-        ChangeBiome(zone.biomeData);
+        if (playerTransform == null || WorldGenerator.Instance == null) return;
+
+        // 플레이어의 현재 청크 위치 계산
+        int currentChunkX = Mathf.FloorToInt(playerTransform.position.x / WorldGenerator.Instance.chunkSize);
+
+        if (currentChunkX != lastChunkX)
+        {
+            lastChunkX = currentChunkX;
+            UpdateBiomeAtLocation(currentChunkX);
+            
+            // 주변 청크 추가 생성 요청
+            WorldGenerator.Instance.GenerateAround(playerTransform.position);
+        }
     }
 
-    public void ExitZone(BiomeZone zone)
+    private void UpdateBiomeAtLocation(int chunkX)
     {
-        if (zoneStack.Count == 0) return;
-
-        // 스택에서 해당 구역 제거 (일반적으로는 가장 위쪽일 것임)
-        List<BiomeZone> temp = new List<BiomeZone>(zoneStack);
-        temp.Remove(zone);
-        
-        zoneStack.Clear();
-        for (int i = temp.Count - 1; i >= 0; i--)
+        // WorldGenerator에 청크의 바이옴을 물어봄
+        BiomeData biomeAtLoc = WorldGenerator.Instance.GetBiomeForChunk(chunkX);
+        if (biomeAtLoc != null)
         {
-            zoneStack.Push(temp[i]);
-        }
-
-        // 새로운 최상단 바이옴 적용
-        if (zoneStack.Count > 0)
-        {
-            ChangeBiome(zoneStack.Peek().biomeData);
-        }
-        else
-        {
-            ChangeBiome(defaultBiome);
+            ChangeBiome(biomeAtLoc);
         }
     }
 
@@ -77,7 +76,7 @@ public class BiomeManager : MonoBehaviour
         if (newData == null || currentBiome == newData) return;
 
         currentBiome = newData;
-        Debug.Log($"바이옴 변경: {currentBiome.biomeName}");
+        Debug.Log($"바이옴 전환: {currentBiome.biomeName} (청크 위치)");
         
         ApplyVisuals(currentBiome);
         OnBiomeChanged?.Invoke(currentBiome);
@@ -94,8 +93,5 @@ public class BiomeManager : MonoBehaviour
                 tm.color = data.tilemapTint;
             }
         }
-
-        // 필요한 경우 라이팅(Ambient Color) 등 추가 처리
-        // RenderSettings.ambientLight = data.ambientColor;
     }
 }
