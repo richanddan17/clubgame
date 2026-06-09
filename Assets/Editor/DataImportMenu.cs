@@ -12,6 +12,7 @@ public class DataImportMenu : EditorWindow
     private string unitPath = "";
     private string shopItemPath = "";
     private string biomePath = "";
+    private string skillPresetPath = "";
 
     private string baseDataPath => Path.Combine(Application.dataPath, "../tiger/datafiles");
 
@@ -174,6 +175,7 @@ public class DataImportMenu : EditorWindow
         unitPath = Path.Combine(baseDataPath, "unit/unit.csv");
         shopItemPath = Path.Combine(baseDataPath, "shop/shop.csv");
         biomePath = Path.Combine(baseDataPath, "biome/biome.csv");
+        skillPresetPath = Path.Combine(baseDataPath, "skill/preset.csv");
     }
 
     private void OnGUI()
@@ -183,6 +185,7 @@ public class DataImportMenu : EditorWindow
         DrawStatusRow("Melee Skill", ref skillMeleePath);
         DrawStatusRow("Unit", ref unitPath);
         DrawStatusRow("Biome", ref biomePath);
+        DrawStatusRow("Skill Preset", ref skillPresetPath);
         if (GUILayout.Button("IMPORT ALL", GUILayout.Height(40))) ImportAll();
     }
 
@@ -194,6 +197,7 @@ public class DataImportMenu : EditorWindow
         window.ImportEnemyData(); 
         window.ImportBiomeData();
         window.ImportSkillData();
+        window.ImportSkillPresets();
     }
 
     public void ImportSkillData()
@@ -231,6 +235,41 @@ public class DataImportMenu : EditorWindow
             
             EditorUtility.SetDirty(asset);
         }
+    }
+
+    public void ImportSkillPresets()
+    {
+        if (!File.Exists(skillPresetPath)) return;
+        string[] lines = File.ReadAllLines(skillPresetPath);
+        EnsureFolder("Assets/Resources/SkillPresets");
+        
+        for (int i = 1; i < lines.Length; i++)
+        {
+            if (string.IsNullOrWhiteSpace(lines[i])) continue;
+            string[] data = lines[i].Split(',');
+            
+            string presetName = data[0];
+            string[] skillIds = data[1].Split(';');
+            string assetPath = $"Assets/Resources/SkillPresets/{presetName}.asset";
+            
+            SkillPreset asset = GetOrCreateAsset<SkillPreset>(assetPath);
+            asset.presetName = presetName;
+            asset.skills.Clear();
+            
+            foreach (var id in skillIds)
+            {
+                if (string.IsNullOrEmpty(id)) continue;
+                string[] guids = AssetDatabase.FindAssets($"{id}_ t:SkillData", new[] { "Assets/Resources/SkillData" });
+                if (guids.Length > 0)
+                {
+                    asset.skills.Add(AssetDatabase.LoadAssetAtPath<SkillData>(AssetDatabase.GUIDToAssetPath(guids[0])));
+                }
+            }
+            
+            EditorUtility.SetDirty(asset);
+        }
+        AssetDatabase.SaveAssets(); AssetDatabase.Refresh();
+        Debug.Log("Skill Presets Import Complete!");
     }
 
     public void ImportEnemyData()
