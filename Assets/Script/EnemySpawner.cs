@@ -79,7 +79,7 @@ public class EnemySpawner : MonoBehaviour
             #endif
         }
 
-        if (specializedPrefab != null) prefabToSpawn = specializedPrefab;
+        GameObject prefabToSpawn = specializedPrefab != null ? specializedPrefab : enemyPrefab;
         if (prefabToSpawn == null) return;
 
         // 플레이어 주변 랜덤 위치 계산

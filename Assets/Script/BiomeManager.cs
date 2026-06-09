@@ -94,4 +94,19 @@ public class BiomeManager : MonoBehaviour
             }
         }
     }
+
+    // 구역 감지(수동) 호환성을 위한 메서드
+    public void EnterZone(BiomeZone zone)
+    {
+        if (zone != null && zone.biomeData != null)
+        {
+            ChangeBiome(zone.biomeData);
+        }
+    }
+
+    public void ExitZone(BiomeZone zone)
+    {
+        // 절차적 생성 시스템에서는 Update에서 자동으로 현재 위치의 바이옴을 체크하므로 
+        // 여기서는 별도의 처리가 필요하지 않을 수 있습니다.
+    }
 }
