@@ -10,10 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0619c6dccad9cf545993ccc3ca29437c, type: 3}
-  m_Name: Underground_Overgrown
+  m_Name: SyrupCave
   m_EditorClassIdentifier: Assembly-CSharp::BiomeData
-  biomeName: "\uC9C0\uD558 \uC815\uC6D0"
+  biomeName: SyrupCave
+  mainTile: {fileID: 0}
+  caveDensity: 0.5
+  noiseScale: 0.05
   backgroundLayers:
   - {fileID: 21300000, guid: f44fd67bd73d546469d7c317fcd1d5ae, type: 3}
-  allowedEnemies: []
-  ambientColor: {r: 0.1, g: 0.4, b: 0.2, a: 1}
+  tilemapTint: {r: 0.4, g: 0.2, b: 0.6, a: 1}
+  allowedEnemies:
+  - {fileID: 11400000, guid: 88a59997e1afe5041a1d350fb2bbe52b, type: 2}
+  - {fileID: 11400000, guid: 67a22bbc71baf5c45883ffc3eaeb645c, type: 2}
+  ambientColor: {r: 1, g: 1, b: 1, a: 1}

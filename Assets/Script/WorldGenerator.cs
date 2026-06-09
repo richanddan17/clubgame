@@ -14,8 +14,10 @@ public class WorldGenerator : MonoBehaviour
 
     [Header("바이옴")]
     public BiomeData defaultBiome;
+    public List<BiomeData> possibleBiomes = new List<BiomeData>();
+    public int chunksPerBiome = 10; // 몇 청크마다 바이옴이 바뀔 가능성이 있는지
 
-    private Dictionary<Vector2Int, BiomeData> chunkBiomes = new Dictionary<Vector2Int, BiomeData>();
+    private Dictionary<int, BiomeData> chunkBiomeMap = new Dictionary<int, BiomeData>();
     private HashSet<Vector2Int> generatedChunks = new HashSet<Vector2Int>();
 
     private void Awake()
@@ -43,39 +45,87 @@ public class WorldGenerator : MonoBehaviour
         }
     }
 
+    [Header("동굴 세부 설정")]
+    public int minTunnelHeight = 5;  // 최소 동굴 높이
+    public int maxTunnelHeight = 10; // 최대 동굴 높이
+    public int groundLevel = 0;      // 중앙 높이 기준점
+    public float pathCurvature = 0.02f; // 길이 굽어지는 정도
+    public int maxPathOffset = 15;   // 위아래로 얼마나 크게 요동칠지
+
+    [Header("고급 랜덤 설정 (테라리아 스타일)")]
+    [Range(0, 1)]
+    public float wallDensity = 0.5f; // 벽이 채워질 확률 (낮을수록 구멍이 많음)
+    public float secondaryNoiseScale = 0.08f; // 벽 안의 구멍들 크기
+
     public void GenerateChunk(int chunkX)
     {
         Vector2Int chunkKey = new Vector2Int(chunkX, 0);
         if (generatedChunks.Contains(chunkKey)) return;
 
-        // 해당 청크의 바이옴 결정 (일단은 기본 바이옴 사용, 추후 확장 가능)
         BiomeData biome = GetBiomeForChunk(chunkX);
-        
         int startX = chunkX * chunkSize;
 
         for (int x = startX; x < startX + chunkSize; x++)
         {
+            // 1. 주 통로(Main Path) 계산
+            float pathNoise = Mathf.PerlinNoise((x + seed) * pathCurvature, seed * 0.1f);
+            int currentCenterY = groundLevel + Mathf.FloorToInt((pathNoise - 0.5f) * 2f * maxPathOffset);
+
+            float heightNoise = Mathf.PerlinNoise((x + seed) * biome.noiseScale, seed * 0.5f);
+            int currentTunnelHeight = Mathf.FloorToInt(Mathf.Lerp(minTunnelHeight, maxTunnelHeight, heightNoise));
+
+            int topY = currentCenterY + (currentTunnelHeight / 2);
+            int bottomY = currentCenterY - (currentTunnelHeight / 2);
+
             for (int y = -worldHeight / 2; y < worldHeight / 2; y++)
             {
-                // Perlin Noise를 이용한 동굴 생성 로직
-                float noiseValue = Mathf.PerlinNoise((x + seed) * biome.noiseScale, (y + seed) * biome.noiseScale);
-                
-                // 노이즈 값이 밀도보다 높으면 블록 배치 (1: 꽉 참, 0: 텅 빔)
-                if (noiseValue < biome.caveDensity)
+                // 2. 주 통로 안쪽은 무조건 비움 (플레이어 이동 보장)
+                if (y <= topY && y >= bottomY)
                 {
-                    tilemap.SetTile(new Vector3Int(x, y, 0), biome.mainTile);
+                    tilemap.SetTile(new Vector3Int(x, y, 0), null);
+                }
+                else
+                {
+                    // 3. 주 통로 밖은 2D 노이즈로 덩어리 지형 생성 (벽에 구멍 뚫기)
+                    float wallNoise = Mathf.PerlinNoise((x + seed) * secondaryNoiseScale, (y + seed) * secondaryNoiseScale);
+                    
+                    // 노이즈 값이 밀도보다 낮을 때만 블록 배치 (덩어리진 느낌)
+                    if (wallNoise < wallDensity)
+                    {
+                        tilemap.SetTile(new Vector3Int(x, y, 0), biome.mainTile);
+                    }
+                    else
+                    {
+                        tilemap.SetTile(new Vector3Int(x, y, 0), null);
+                    }
                 }
             }
         }
 
         generatedChunks.Add(chunkKey);
-        Debug.Log($"청크 생성 완료: {chunkX} (바이옴: {biome.biomeName})");
+        Debug.Log($"고급 랜덤 동굴 생성 완료: {chunkX}");
     }
 
-    private BiomeData GetBiomeForChunk(int chunkX)
+    public BiomeData GetBiomeForChunk(int chunkX)
     {
-        // 간단한 바이옴 교체 로직 (예: 100단위로 바이옴 변경 등)
-        // 현재는 BiomeManager의 설정을 따르거나 기본 바이옴 반환
-        return defaultBiome;
+        if (chunkBiomeMap.TryGetValue(chunkX, out BiomeData cachedBiome))
+            return cachedBiome;
+
+        // 바이옴 그룹 인덱스 (chunksPerBiome 개수마다 하나씩 결정)
+        int biomeIndex = Mathf.FloorToInt((float)chunkX / chunksPerBiome);
+        
+        // 시드와 바이옴 인덱스를 조합하여 랜덤 값 생성
+        Random.State prevState = Random.state;
+        Random.InitState(seed + biomeIndex);
+        
+        BiomeData selectedBiome = defaultBiome;
+        if (possibleBiomes != null && possibleBiomes.Count > 0)
+        {
+            selectedBiome = possibleBiomes[Random.Range(0, possibleBiomes.Count)];
+        }
+
+        Random.state = prevState;
+        chunkBiomeMap[chunkX] = selectedBiome;
+        return selectedBiome;
     }
 }

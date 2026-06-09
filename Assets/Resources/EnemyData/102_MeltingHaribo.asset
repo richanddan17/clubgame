@@ -10,12 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ea097a79e5f3ae045b4d2f261ea0b260, type: 3}
-  m_Name: 105_Wizard2
+  m_Name: 102_MeltingHaribo
   m_EditorClassIdentifier: Assembly-CSharp::EnemyData
-  ID: 105
-  EnemyName: Wizard2
-  HP: 120
-  Speed: 1.5
-  Damage: 15
-  DetectionRange: 12
-  AttackInterval: 2.5
+  ID: 102
+  EnemyName: MeltingHaribo
+  HP: 100
+  Speed: 2.2
+  Damage: 0
+  DetectionRange: 0
+  AttackInterval: 0
