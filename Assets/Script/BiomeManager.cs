@@ -1,5 +1,7 @@
 using UnityEngine;
+using UnityEngine.Tilemaps;
 using System;
+using System.Collections.Generic;
 
 public class BiomeManager : MonoBehaviour
 {
@@ -7,13 +9,15 @@ public class BiomeManager : MonoBehaviour
 
     [Header("바이옴 데이터")]
     public BiomeData currentBiome;
-    public BiomeData undergroundBiome; // 지하 공장 (시작)
-    public BiomeData surfaceBiome;     // 지상
+    public BiomeData defaultBiome;
 
-    [Header("전환 설정")]
-    public float transitionTriggerX = 100f; // 지상으로 전환될 X 좌표 (임시)
+    [Header("참조")]
+    public Tilemap[] targetTilemaps;
+    public Transform playerTransform;
 
     public event Action<BiomeData> OnBiomeChanged;
+
+    private int lastChunkX = int.MinValue;
 
     private void Awake()
     {
@@ -23,23 +27,47 @@ public class BiomeManager : MonoBehaviour
 
     private void Start()
     {
-        // 지하 공장에서 시작
-        if (undergroundBiome != null)
+        if (playerTransform == null)
         {
-            ChangeBiome(undergroundBiome);
+            GameObject player = GameObject.FindGameObjectWithTag("Player");
+            if (player != null) playerTransform = player.transform;
+        }
+
+        if (defaultBiome != null)
+        {
+            ChangeBiome(defaultBiome);
+        }
+
+        if (targetTilemaps == null || targetTilemaps.Length == 0)
+        {
+            targetTilemaps = FindObjectsByType<Tilemap>(FindObjectsSortMode.None);
         }
     }
 
     private void Update()
     {
-        // 플레이어 위치 체크 (추후 트리거 오브젝트 방식으로 변경 가능)
-        GameObject player = GameObject.FindGameObjectWithTag("Player");
-        if (player != null && currentBiome == undergroundBiome)
+        if (playerTransform == null || WorldGenerator.Instance == null) return;
+
+        // 플레이어의 현재 청크 위치 계산
+        int currentChunkX = Mathf.FloorToInt(playerTransform.position.x / WorldGenerator.Instance.chunkSize);
+
+        if (currentChunkX != lastChunkX)
         {
-            if (player.transform.position.x > transitionTriggerX)
-            {
-                ChangeBiome(surfaceBiome);
-            }
+            lastChunkX = currentChunkX;
+            UpdateBiomeAtLocation(currentChunkX);
+            
+            // 주변 청크 추가 생성 요청
+            WorldGenerator.Instance.GenerateAround(playerTransform.position);
+        }
+    }
+
+    private void UpdateBiomeAtLocation(int chunkX)
+    {
+        // WorldGenerator에 청크의 바이옴을 물어봄
+        BiomeData biomeAtLoc = WorldGenerator.Instance.GetBiomeForChunk(chunkX);
+        if (biomeAtLoc != null)
+        {
+            ChangeBiome(biomeAtLoc);
         }
     }
 
@@ -48,8 +76,41 @@ public class BiomeManager : MonoBehaviour
         if (newData == null || currentBiome == newData) return;
 
         currentBiome = newData;
-        Debug.Log($"바이옴 변경: {currentBiome.biomeName}");
+        Debug.Log($"바이옴 전환: {currentBiome.biomeName} (청크 위치)");
         
+        ApplyVisuals(currentBiome);
         OnBiomeChanged?.Invoke(currentBiome);
+    }
+
+    private void ApplyVisuals(BiomeData data)
+    {
+        if (targetTilemaps == null) return;
+
+        foreach (var tm in targetTilemaps)
+        {
+            if (tm != null)
+            {
+                tm.color = data.tilemapTint;
+            }
+        }
+
+        // 전체 조명 색상(Ambient Color) 변경
+        RenderSettings.ambientMode = UnityEngine.Rendering.AmbientMode.Flat;
+        RenderSettings.ambientLight = data.ambientColor;
+    }
+
+    // 구역 감지(수동) 호환성을 위한 메서드
+    public void EnterZone(BiomeZone zone)
+    {
+        if (zone != null && zone.biomeData != null)
+        {
+            ChangeBiome(zone.biomeData);
+        }
+    }
+
+    public void ExitZone(BiomeZone zone)
+    {
+        // 절차적 생성 시스템에서는 Update에서 자동으로 현재 위치의 바이옴을 체크하므로 
+        // 여기서는 별도의 처리가 필요하지 않을 수 있습니다.
     }
 }

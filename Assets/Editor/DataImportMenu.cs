@@ -11,6 +11,8 @@ public class DataImportMenu : EditorWindow
     private string skillMagicPath = "";
     private string unitPath = "";
     private string shopItemPath = "";
+    private string biomePath = "";
+    private string skillPresetPath = "";
 
     private string baseDataPath => Path.Combine(Application.dataPath, "../tiger/datafiles");
 
@@ -172,6 +174,8 @@ public class DataImportMenu : EditorWindow
         skillMagicPath = Path.Combine(baseDataPath, "skill/magicskill.csv");
         unitPath = Path.Combine(baseDataPath, "unit/unit.csv");
         shopItemPath = Path.Combine(baseDataPath, "shop/shop.csv");
+        biomePath = Path.Combine(baseDataPath, "biome/biome.csv");
+        skillPresetPath = Path.Combine(baseDataPath, "skill/preset.csv");
     }
 
     private void OnGUI()
@@ -180,12 +184,93 @@ public class DataImportMenu : EditorWindow
         DrawStatusRow("Ranged Skill", ref skillRangedPath);
         DrawStatusRow("Melee Skill", ref skillMeleePath);
         DrawStatusRow("Unit", ref unitPath);
+        DrawStatusRow("Biome", ref biomePath);
+        DrawStatusRow("Skill Preset", ref skillPresetPath);
         if (GUILayout.Button("IMPORT ALL", GUILayout.Height(40))) ImportAll();
     }
 
     private void DrawStatusRow(string label, ref string path) { EditorGUILayout.BeginHorizontal(); EditorGUILayout.LabelField(label, GUILayout.Width(100)); EditorGUILayout.LabelField(File.Exists(path) ? "Ready" : "Missing"); EditorGUILayout.EndHorizontal(); }
 
-    public static void ImportAll() { DataImportMenu window = GetWindow<DataImportMenu>(); window.ImportEnemyData(); }
+    public static void ImportAll() 
+    { 
+        DataImportMenu window = GetWindow<DataImportMenu>(); 
+        window.ImportEnemyData(); 
+        window.ImportBiomeData();
+        window.ImportSkillData();
+        window.ImportSkillPresets();
+    }
+
+    public void ImportSkillData()
+    {
+        ImportSkillFile(skillRangedPath);
+        ImportSkillFile(skillMeleePath);
+        ImportSkillFile(skillMagicPath);
+        AssetDatabase.SaveAssets(); AssetDatabase.Refresh();
+        Debug.Log("Skill Data Import Complete!");
+    }
+
+    private void ImportSkillFile(string path)
+    {
+        if (!File.Exists(path)) return;
+        string[] lines = File.ReadAllLines(path);
+        EnsureFolder("Assets/Resources/SkillData");
+        
+        for (int i = 1; i < lines.Length; i++)
+        {
+            if (string.IsNullOrWhiteSpace(lines[i])) continue;
+            string[] data = lines[i].Split(',');
+            
+            if (data.Length < 5) continue;
+
+            int id = int.Parse(data[0]);
+            string skillName = data[1];
+            string assetPath = $"Assets/Resources/SkillData/{id}_{skillName}.asset";
+            
+            SkillData asset = GetOrCreateAsset<SkillData>(assetPath);
+            asset.ID = id;
+            asset.SkillName = skillName;
+            asset.Damage = float.Parse(data[2]);
+            asset.ManaCost = float.Parse(data[3]);
+            asset.Cooldown = float.Parse(data[4]);
+            
+            EditorUtility.SetDirty(asset);
+        }
+    }
+
+    public void ImportSkillPresets()
+    {
+        if (!File.Exists(skillPresetPath)) return;
+        string[] lines = File.ReadAllLines(skillPresetPath);
+        EnsureFolder("Assets/Resources/SkillPresets");
+        
+        for (int i = 1; i < lines.Length; i++)
+        {
+            if (string.IsNullOrWhiteSpace(lines[i])) continue;
+            string[] data = lines[i].Split(',');
+            
+            string presetName = data[0];
+            string[] skillIds = data[1].Split(';');
+            string assetPath = $"Assets/Resources/SkillPresets/{presetName}.asset";
+            
+            SkillPreset asset = GetOrCreateAsset<SkillPreset>(assetPath);
+            asset.presetName = presetName;
+            asset.skills.Clear();
+            
+            foreach (var id in skillIds)
+            {
+                if (string.IsNullOrEmpty(id)) continue;
+                string[] guids = AssetDatabase.FindAssets($"{id}_ t:SkillData", new[] { "Assets/Resources/SkillData" });
+                if (guids.Length > 0)
+                {
+                    asset.skills.Add(AssetDatabase.LoadAssetAtPath<SkillData>(AssetDatabase.GUIDToAssetPath(guids[0])));
+                }
+            }
+            
+            EditorUtility.SetDirty(asset);
+        }
+        AssetDatabase.SaveAssets(); AssetDatabase.Refresh();
+        Debug.Log("Skill Presets Import Complete!");
+    }
 
     public void ImportEnemyData()
     {
@@ -202,6 +287,63 @@ public class DataImportMenu : EditorWindow
             EditorUtility.SetDirty(asset);
         }
         AssetDatabase.SaveAssets(); AssetDatabase.Refresh();
+    }
+
+    public void ImportBiomeData()
+    {
+        if (!File.Exists(biomePath)) return;
+        string[] lines = File.ReadAllLines(biomePath);
+        EnsureFolder("Assets/Resources/BiomeData");
+        
+        for (int i = 1; i < lines.Length; i++)
+        {
+            if (string.IsNullOrWhiteSpace(lines[i])) continue;
+            string[] data = lines[i].Split(',');
+            
+            // ID,Name,TintR,TintG,TintB,EnemyIDs,BG_Layer1
+            string id = data[0];
+            string biomeName = data[1];
+            float r = float.Parse(data[2]);
+            float g = float.Parse(data[3]);
+            float b = float.Parse(data[4]);
+            string[] enemyIds = data[5].Split(';');
+            string bgGuid = data.Length > 6 ? data[6] : "";
+
+            string assetPath = $"Assets/Resources/BiomeData/{biomeName}.asset";
+            BiomeData asset = GetOrCreateAsset<BiomeData>(assetPath);
+            
+            asset.biomeName = biomeName;
+            asset.tilemapTint = new Color(r, g, b, 1f);
+            
+            // 몬스터 연결
+            List<EnemyData> enemyList = new List<EnemyData>();
+            foreach (var eid in enemyIds)
+            {
+                if (string.IsNullOrEmpty(eid)) continue;
+                // Resources/EnemyData 폴더에서 ID로 시작하는 에셋 검색
+                string[] guids = AssetDatabase.FindAssets($"{eid}_ t:EnemyData", new[] { "Assets/Resources/EnemyData" });
+                if (guids.Length > 0)
+                {
+                    enemyList.Add(AssetDatabase.LoadAssetAtPath<EnemyData>(AssetDatabase.GUIDToAssetPath(guids[0])));
+                }
+            }
+            asset.allowedEnemies = enemyList.ToArray();
+
+            // 배경 이미지 연결 (GUID 기반)
+            if (!string.IsNullOrEmpty(bgGuid))
+            {
+                string path = AssetDatabase.GUIDToAssetPath(bgGuid);
+                if (!string.IsNullOrEmpty(path))
+                {
+                    Sprite bgSprite = AssetDatabase.LoadAssetAtPath<Sprite>(path);
+                    asset.backgroundLayers = new Sprite[] { bgSprite };
+                }
+            }
+
+            EditorUtility.SetDirty(asset);
+        }
+        AssetDatabase.SaveAssets(); AssetDatabase.Refresh();
+        Debug.Log("Biome Data Import Complete!");
     }
 
     private static void EnsureFolder(string path)
