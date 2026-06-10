@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 24ea9cccfcc3f9c4cb343fb760fdec25, type: 3}
-  m_Name: 201_Slash
+  m_Name: 101_Shotgun
   m_EditorClassIdentifier: Assembly-CSharp::SkillData
   ID: 201
   SkillName: Slash
@@ -19,3 +19,5 @@ MonoBehaviour:
   Cooldown: 0.5
   Icon: {fileID: 0}
   ProjectilePrefab: {fileID: 0}
+  projectileCount: 6
+  spreadAngle: 15

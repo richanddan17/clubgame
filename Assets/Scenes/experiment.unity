@@ -1022,6 +1022,14 @@ PrefabInstance:
       propertyPath: m_Size.y
       value: 0.7
       objectReference: {fileID: 0}
+    - target: {fileID: 5918841862803961086, guid: 0d25e10f315caa24fb6de1bc8afb0b2e, type: 3}
+      propertyPath: combatSettings.EquippedSkills.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5918841862803961086, guid: 0d25e10f315caa24fb6de1bc8afb0b2e, type: 3}
+      propertyPath: 'combatSettings.EquippedSkills.Array.data[0]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 8a3909b7a79631a4583ebc8f62ace5bf, type: 2}
     - target: {fileID: 6561653759693523767, guid: 0d25e10f315caa24fb6de1bc8afb0b2e, type: 3}
       propertyPath: m_SortingLayer
       value: 1
