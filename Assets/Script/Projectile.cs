@@ -11,8 +11,9 @@ public class Projectile : MonoBehaviour
     private GameObject owner; // 투사체를 쏜 주인
     private BubbleType bubbleType;
     private bool isSpecial;
+    public bool IsFullyCharged { get; private set; }
 
-    public void Initialize(float damageAmount, bool facingRight, float customSpeed = 15f, Vector3? customScale = null, GameObject shooter = null, BubbleType type = BubbleType.Blue, bool special = false)
+    public void Initialize(float damageAmount, bool facingRight, float customSpeed = 15f, Vector3? customScale = null, GameObject shooter = null, BubbleType type = BubbleType.Blue, bool special = false, bool fullyCharged = false)
     {
         damage = damageAmount;
         isFacingRight = facingRight;
@@ -20,6 +21,7 @@ public class Projectile : MonoBehaviour
         owner = shooter;
         bubbleType = type;
         isSpecial = special;
+        IsFullyCharged = fullyCharged;
 
         if (customScale.HasValue)
         {
