@@ -328,12 +328,17 @@ public class PlayerController : MonoBehaviour
         
         float baseDamage = 10f;
         float cooldown = 0.2f;
+        int projectileCount = 1;
+        float spreadAngle = 0f;
 
+        SkillData currentSkill = null;
         if (combatSettings.EquippedSkills.Count > 0)
         {
-            var skill = combatSettings.EquippedSkills[_currentSkillIndex];
-            baseDamage = skill.Damage;
-            cooldown = skill.Cooldown;
+            currentSkill = combatSettings.EquippedSkills[_currentSkillIndex];
+            baseDamage = currentSkill.Damage;
+            cooldown = currentSkill.Cooldown;
+            projectileCount = Mathf.Max(1, currentSkill.projectileCount);
+            spreadAngle = currentSkill.spreadAngle;
         }
 
         if (Time.time < _lastFireTime + cooldown) return;
@@ -366,12 +371,10 @@ public class PlayerController : MonoBehaviour
             Debug.Log("<color=red>[Ability]</color> POWER SHOT! Damage increased by 1.5x");
         }
 
-        // [수정] 일반 모드(또는 차징 시작) 크기를 1.5f로 설정, 최대 3.5f까지 커짐
         float baseScale = 1.5f;
         float finalScale = _isChargeMode ? Mathf.Lerp(baseScale, 3.5f, chargeRatio) : baseScale;
-        
         Vector3 projectileScale = new Vector3(finalScale, finalScale, 1f);
-        float finalSpeed = _isChargeMode ? Mathf.Lerp(15f, 10f, chargeRatio) : 18f; // 일반 모드는 조금 더 빠르게
+        float finalSpeed = _isChargeMode ? Mathf.Lerp(15f, 10f, chargeRatio) : 18f;
 
         Vector3 mousePos = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
         mousePos.z = 0f;
@@ -380,33 +383,43 @@ public class PlayerController : MonoBehaviour
         string poolTag = tags[_currentColorIndex];
         Projectile.BubbleType bubbleType = (Projectile.BubbleType)_currentColorIndex;
 
-        if (ObjectPooler.Instance != null && combatSettings.FirePoint != null)
-        {
-            Vector2 direction = (mousePos - combatSettings.FirePoint.position).normalized;
-            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+        // 산탄/연사 루프
+        Vector2 baseDirection = (mousePos - combatSettings.FirePoint.position).normalized;
+        float centerAngle = Mathf.Atan2(baseDirection.y, baseDirection.x) * Mathf.Rad2Deg;
 
-            var obj = ObjectPooler.Instance.SpawnFromPool(poolTag, combatSettings.FirePoint.position, Quaternion.Euler(0, 0, angle));
-            if (obj != null && obj.TryGetComponent<Projectile>(out var proj))
+        for (int i = 0; i < projectileCount; i++)
+        {
+            float offset = 0f;
+            if (projectileCount > 1)
             {
-                proj.Initialize(finalDamage, _isFacingRight, finalSpeed, projectileScale, gameObject, bubbleType, isSpecialShot);
+                // spreadAngle 내에서 균등하게 배분
+                offset = (i - (projectileCount - 1) / 2f) * (spreadAngle / Mathf.Max(1, projectileCount - 1));
             }
-            _lastFireTime = Time.time;
-        }
-        else
-        {
-            GameObject prefab = (combatSettings.ColorProjectilePrefabs != null && combatSettings.ColorProjectilePrefabs.Length > _currentColorIndex) 
-                ? combatSettings.ColorProjectilePrefabs[_currentColorIndex] : null;
+            float finalAngle = centerAngle + offset;
 
-            if (prefab && combatSettings.FirePoint)
+            if (ObjectPooler.Instance != null && combatSettings.FirePoint != null)
             {
-                Vector2 direction = (mousePos - combatSettings.FirePoint.position).normalized;
-                float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-                var obj = Instantiate(prefab, combatSettings.FirePoint.position, Quaternion.Euler(0, 0, angle));
-                if (obj.TryGetComponent<Projectile>(out var proj)) 
+                var obj = ObjectPooler.Instance.SpawnFromPool(poolTag, combatSettings.FirePoint.position, Quaternion.Euler(0, 0, finalAngle));
+                if (obj != null && obj.TryGetComponent<Projectile>(out var proj))
+                {
                     proj.Initialize(finalDamage, _isFacingRight, finalSpeed, projectileScale, gameObject, bubbleType, isSpecialShot);
-                _lastFireTime = Time.time;
+                }
+            }
+            else
+            {
+                GameObject prefab = (combatSettings.ColorProjectilePrefabs != null && combatSettings.ColorProjectilePrefabs.Length > _currentColorIndex) 
+                    ? combatSettings.ColorProjectilePrefabs[_currentColorIndex] : null;
+
+                if (prefab && combatSettings.FirePoint)
+                {
+                    var obj = Instantiate(prefab, combatSettings.FirePoint.position, Quaternion.Euler(0, 0, finalAngle));
+                    if (obj.TryGetComponent<Projectile>(out var proj)) 
+                        proj.Initialize(finalDamage, _isFacingRight, finalSpeed, projectileScale, gameObject, bubbleType, isSpecialShot);
+                }
             }
         }
+
+        _lastFireTime = Time.time;
     }
 
     private void OnDeath()

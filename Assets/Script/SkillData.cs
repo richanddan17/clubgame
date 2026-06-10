@@ -10,4 +10,8 @@ public class SkillData : ScriptableObject
     public float Cooldown;
     public Sprite Icon;
     public GameObject ProjectilePrefab;
+
+    [Header("멀티샷 설정 (산탄 등)")]
+    public int projectileCount = 1;
+    public float spreadAngle = 0f;
 }
