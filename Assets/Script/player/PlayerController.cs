@@ -29,11 +29,6 @@ public class PlayerController : MonoBehaviour
         public Transform FirePoint;
         public List<SkillData> EquippedSkills = new List<SkillData>();
         public GameObject[] ColorProjectilePrefabs; // 0:Blue, 1:Red, 2:Yellow
-        
-        [Header("Damage Settings")]
-        public float BaseDamage = 10f;
-        public float MaxChargeDamage = 60f;
-        public float MaxChargeTime = 5f;
     }
     #endregion
 
@@ -331,7 +326,7 @@ public class PlayerController : MonoBehaviour
     {
         if (_isCrouching) return;
         
-        float baseDamage = combatSettings.BaseDamage;
+        float baseDamage = 10f;
         float cooldown = 0.2f;
 
         if (combatSettings.EquippedSkills.Count > 0)
@@ -361,8 +356,8 @@ public class PlayerController : MonoBehaviour
         }
 
         // 데미지 및 크기 계산
-        float chargeRatio = Mathf.Clamp01(chargeTime / combatSettings.MaxChargeTime);
-        float finalDamage = Mathf.Lerp(baseDamage, combatSettings.MaxChargeDamage, chargeRatio);
+        float chargeRatio = Mathf.Clamp01(chargeTime / 5f);
+        float finalDamage = Mathf.Lerp(baseDamage, 60f, chargeRatio);
         
         // 빨강 특수 능력: 데미지 1.5배
         if (isSpecialShot && _currentColorIndex == (int)ColorIndex.Red)
