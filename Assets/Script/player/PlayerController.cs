@@ -293,20 +293,22 @@ public class PlayerController : MonoBehaviour
 
     private void HandleFacingDirection()
     {
-        if (Time.time < _lastFireTime + 0.3f) return;
-
         bool isPressingFire = Mouse.current.leftButton.isPressed;
 
         if (isPressingFire)
         {
-            // 차징 중일 때는 마우스 위치를 바라봄
+            // 차징 중이거나 발사 중일 때는 마우스 위치를 바라봄
             Vector3 mousePos = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
             float directionX = mousePos.x - transform.position.x;
 
             if (directionX > 0.1f && !_isFacingRight) Flip();
             else if (directionX < -0.1f && _isFacingRight) Flip();
+            return;
         }
-        else if (Mathf.Abs(_moveInput.x) > 0.1f)
+
+        if (Time.time < _lastFireTime + 0.3f) return;
+
+        if (Mathf.Abs(_moveInput.x) > 0.1f)
         {
             // 평소 이동 중일 때는 이동 방향을 바라봄
             if (_moveInput.x > 0 && !_isFacingRight) Flip();
