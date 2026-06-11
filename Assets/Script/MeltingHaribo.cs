@@ -96,9 +96,24 @@ public class MeltingHaribo : MonoBehaviour
         }
     }
 
+    private void FindPlayer()
+    {
+        if (_player != null) return;
+        GameObject p = GameObject.FindGameObjectWithTag("Player") ?? GameObject.Find("Player");
+        if (p == null)
+        {
+            PlayerController pc = Object.FindFirstObjectByType<PlayerController>();
+            if (pc != null) p = pc.gameObject;
+        }
+        if (p != null) _player = p.transform;
+    }
+
     private IEnumerator HandleIdle()
     {
         _rb.gravityScale = gravityScale;
+        
+        if (_player == null) FindPlayer();
+
         if (_player != null && Vector2.Distance(transform.position, _player.position) <= detectionRange)
         {
             _currentState = HariboState.MeltingDown;
@@ -110,12 +125,12 @@ public class MeltingHaribo : MonoBehaviour
     {
         if (_health != null) _health.DamageMultiplier = 0f;
         
-        // 땅으로 들어갈 때는 중력 해제 및 속도 정지 (바닥 통과 방지)
         _rb.gravityScale = 0f;
         _rb.linearVelocity = Vector2.zero;
         
         int frameCount = hariboSprites != null ? hariboSprites.Length : 0;
-        for (int i = 0; i < frameCount; i++)
+        // 기획: 2번부터 끝까지 (인덱스상 2번부터 시작)
+        for (int i = 2; i < frameCount; i++)
         {
             if (hariboSprites != null && i < hariboSprites.Length)
                 _sr.sprite = hariboSprites[i];
@@ -136,6 +151,7 @@ public class MeltingHaribo : MonoBehaviour
             float xDir = _player.position.x - transform.position.x;
             float moveDir = xDir > 0 ? 1 : -1;
             
+            // 플레이어 바로 아래(X축)까지 이동
             if (Mathf.Abs(xDir) > 0.1f)
             {
                 _rb.linearVelocity = new Vector2(moveDir * moveSpeed, 0f);
@@ -144,6 +160,8 @@ public class MeltingHaribo : MonoBehaviour
             else
             {
                 _rb.linearVelocity = Vector2.zero;
+                // 플레이어 바로 아래에 도착하면 바로 튀어나오기 위해 루프 탈출 가능
+                if (elapsed > 1f) break; 
             }
 
             elapsed += Time.deltaTime;
@@ -156,7 +174,8 @@ public class MeltingHaribo : MonoBehaviour
     private IEnumerator HandleSolidifying()
     {
         int frameCount = hariboSprites != null ? hariboSprites.Length : 0;
-        for (int i = frameCount - 1; i >= 0; i--)
+        // 기획: 끝(17번 등)부터 1번(또는 0번)까지 거꾸로
+        for (int i = frameCount - 1; i >= 1; i--)
         {
             if (hariboSprites != null && i < hariboSprites.Length)
                 _sr.sprite = hariboSprites[i];
@@ -165,7 +184,7 @@ public class MeltingHaribo : MonoBehaviour
 
         if (_col != null) _col.isTrigger = false;
         if (_health != null) _health.DamageMultiplier = 1f;
-        _rb.gravityScale = gravityScale; // 다시 중력 적용
+        _rb.gravityScale = gravityScale;
         
         _currentState = HariboState.Attack;
     }
