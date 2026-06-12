@@ -1,10 +1,22 @@
 fileFormatVersion: 2
-guid: 0cdddb36e4b1d384f8e5bcc67573c04b
+guid: 27896a4198b902448b95d81ff3654356
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -8791620013811517663
-    second: candy tank slime-shooting_0
+      213: -501503089529177424
+    second: starcandy_0
+  - first:
+      213: 6139552734672483384
+    second: starcandy_1
+  - first:
+      213: -1716196609298137316
+    second: starcandy_2
+  - first:
+      213: 7178704094639067408
+    second: starcandy_3
+  - first:
+      213: 9152410007469007174
+    second: starcandy_4
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -100,13 +112,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: candy tank slime-shooting_0
+      name: starcandy_0
       rect:
         serializedVersion: 2
-        x: 11
-        y: 10
-        width: 10
-        height: 10
+        x: 8
+        y: 63
+        width: 16
+        height: 14
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,8 +127,96 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 127bc8c6d24edf580800000000000000
-      internalID: -8791620013811517663
+      spriteID: 0ba3aded89d4a09f0800000000000000
+      internalID: -501503089529177424
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: starcandy_1
+      rect:
+        serializedVersion: 2
+        x: 40
+        y: 64
+        width: 16
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8347ee5fea2143550800000000000000
+      internalID: 6139552734672483384
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: starcandy_2
+      rect:
+        serializedVersion: 2
+        x: 8
+        y: 33
+        width: 16
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c1ffd02d648de28e0800000000000000
+      internalID: -1716196609298137316
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: starcandy_3
+      rect:
+        serializedVersion: 2
+        x: 40
+        y: 32
+        width: 16
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0119a94f651ef9360800000000000000
+      internalID: 7178704094639067408
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: starcandy_4
+      rect:
+        serializedVersion: 2
+        x: 8
+        y: 0
+        width: 16
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 641abe50964e30f70800000000000000
+      internalID: 9152410007469007174
       vertices: []
       indices: 
       edges: []
@@ -135,7 +235,11 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      candy tank slime-shooting_0: -8791620013811517663
+      starcandy_0: -501503089529177424
+      starcandy_1: 6139552734672483384
+      starcandy_2: -1716196609298137316
+      starcandy_3: 7178704094639067408
+      starcandy_4: 9152410007469007174
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

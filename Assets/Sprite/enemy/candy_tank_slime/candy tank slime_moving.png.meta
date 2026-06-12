@@ -1,22 +1,25 @@
 fileFormatVersion: 2
-guid: 31dd495d957f9814699ca563d1ceddf4
+guid: 15e39146dd39ba345ac05a483e7a58aa
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 534598992814216457
-    second: POPPINGCANDYBIRDBOOM_0
+      213: -924679386384262470
+    second: candy tank slime_0
   - first:
-      213: -1458699741393821995
-    second: POPPINGCANDYBIRDBOOM_1
+      213: 4725009425234335331
+    second: candy tank slime_1
   - first:
-      213: -4338317337525020749
-    second: POPPINGCANDYBIRDBOOM_2
+      213: -1562635232461934716
+    second: candy tank slime_2
   - first:
-      213: 9166259162768258002
-    second: POPPINGCANDYBIRDBOOM_3
+      213: 4631145895996476828
+    second: candy tank slime_3
   - first:
-      213: 2238195713336106654
-    second: POPPINGCANDYBIRDBOOM_4
+      213: -3130651477145214496
+    second: candy tank slime_4
+  - first:
+      213: -4119390610287813218
+    second: candy tank slime_5
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -49,7 +52,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -112,111 +115,133 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: POPPINGCANDYBIRDBOOM_0
+      name: candy tank slime_moving_0
       rect:
         serializedVersion: 2
-        x: 12
-        y: 75
-        width: 8
-        height: 8
+        x: 3
+        y: 63
+        width: 30
+        height: 13
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 90519f793f64b6700800000000000000
-      internalID: 534598992814216457
+      spriteID: aba907b4ff0ea23f0800000000000000
+      internalID: -924679386384262470
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: POPPINGCANDYBIRDBOOM_1
+      name: candy tank slime_moving_1
       rect:
         serializedVersion: 2
-        x: 43
-        y: 74
-        width: 10
-        height: 10
+        x: 34
+        y: 63
+        width: 30
+        height: 13
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 5de54405058a1cbe0800000000000000
-      internalID: -1458699741393821995
+      spriteID: 366177fb90b929140800000000000000
+      internalID: 4725009425234335331
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: POPPINGCANDYBIRDBOOM_2
+      name: candy tank slime_moving_2
       rect:
         serializedVersion: 2
-        x: 9
-        y: 40
-        width: 14
-        height: 14
+        x: 2
+        y: 31
+        width: 28
+        height: 13
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 3b717eded533bc3c0800000000000000
-      internalID: -4338317337525020749
+      spriteID: 48fa8970987605ae0800000000000000
+      internalID: -1562635232461934716
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: POPPINGCANDYBIRDBOOM_3
+      name: candy tank slime_moving_3
       rect:
         serializedVersion: 2
-        x: 38
-        y: 37
-        width: 20
-        height: 19
+        x: 34
+        y: 31
+        width: 27
+        height: 13
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 2d3b8f3c428153f70800000000000000
-      internalID: 9166259162768258002
+      spriteID: c9dc0e1d7a2254040800000000000000
+      internalID: 4631145895996476828
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: POPPINGCANDYBIRDBOOM_4
+      name: candy tank slime_moving_4
       rect:
         serializedVersion: 2
-        x: 6
-        y: 5
-        width: 20
-        height: 19
+        x: 1
+        y: 0
+        width: 28
+        height: 12
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: e9e533f842baf0f10800000000000000
-      internalID: 2238195713336106654
+      spriteID: 0e125358111bd84d0800000000000000
+      internalID: -3130651477145214496
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: candy tank slime_moving_5
+      rect:
+        serializedVersion: 2
+        x: 33
+        y: 0
+        width: 28
+        height: 12
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e9d17beb01cf4d6c0800000000000000
+      internalID: -4119390610287813218
       vertices: []
       indices: 
       edges: []
@@ -225,7 +250,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 18e745c31227ade48aa6a6acace6f9b4
     internalID: 0
     vertices: []
     indices: 
@@ -235,11 +260,13 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      POPPINGCANDYBIRDBOOM_0: 534598992814216457
-      POPPINGCANDYBIRDBOOM_1: -1458699741393821995
-      POPPINGCANDYBIRDBOOM_2: -4338317337525020749
-      POPPINGCANDYBIRDBOOM_3: 9166259162768258002
-      POPPINGCANDYBIRDBOOM_4: 2238195713336106654
+      _moving: 4631145895996476828
+      candy tank slime_moving_0: -924679386384262470
+      candy tank slime_moving_1: 4725009425234335331
+      candy tank slime_moving_2: -1562635232461934716
+      candy tank slime_moving_3: 4631145895996476828
+      candy tank slime_moving_4: -3130651477145214496
+      candy tank slime_moving_5: -4119390610287813218
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

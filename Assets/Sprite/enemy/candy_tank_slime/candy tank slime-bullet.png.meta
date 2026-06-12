@@ -1,16 +1,10 @@
 fileFormatVersion: 2
-guid: 41745ba2176d8884682034e8a2211865
+guid: 0cdddb36e4b1d384f8e5bcc67573c04b
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 8530477062226032744
-    second: staying MOTION  (1) 1_0
-  - first:
-      213: 3002979349681259469
-    second: staying MOTION  (1) 1_1
-  - first:
-      213: 3681484182748365660
-    second: staying MOTION  (1) 1_2
+      213: -8791620013811517663
+    second: candy tank slime-shooting_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -54,7 +48,7 @@ TextureImporter:
   compressionQuality: 50
   spriteMode: 2
   spriteExtrude: 1
-  spriteMeshType: 0
+  spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
   spritePixelsToUnits: 100
@@ -106,67 +100,23 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: playeridle_0
+      name: candy tank slime-bullet_0
       rect:
         serializedVersion: 2
-        x: 6
-        y: 36
-        width: 18
-        height: 26
+        x: 11
+        y: 10
+        width: 10
+        height: 10
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: 4e6c1c39f22312944a4e2412f1a9a880
-      internalID: 812951808
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: playeridle_1
-      rect:
-        serializedVersion: 2
-        x: 38
-        y: 36
-        width: 18
-        height: 26
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 20beb86b3a3d8c54b9bfe7d7164869d6
-      internalID: -1275545849
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: playeridle_2
-      rect:
-        serializedVersion: 2
-        x: 6
-        y: 4
-        width: 17
-        height: 26
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: ddf10b0d41856284799425bdedf1b030
-      internalID: -1080195176
+      spriteID: 127bc8c6d24edf580800000000000000
+      internalID: -8791620013811517663
       vertices: []
       indices: 
       edges: []
@@ -175,7 +125,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: d7e78a770a2329f46a5ec3edff69bf35
+    spriteID: 073d8982b7a6bb24eb3748451223fdab
     internalID: 0
     vertices: []
     indices: 
@@ -183,13 +133,9 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries:
-      - key: SpriteEditor.SliceSettings
-        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":64.0,"y":64.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":0,"keepEmptyRects":false,"isAlternate":false}'
+      entries: []
     nameFileIdTable:
-      playeridle_0: 812951808
-      playeridle_1: -1275545849
-      playeridle_2: -1080195176
+      candy tank slime-bullet_0: -8791620013811517663
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
