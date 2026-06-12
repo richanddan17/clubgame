@@ -49,7 +49,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 0
+    filterMode: 1
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -112,7 +112,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: POPPINGCANDYBIRD_DEAD_0
+      name: POPPINGCANDYBIRDBOOM_0
       rect:
         serializedVersion: 2
         x: 12
@@ -120,7 +120,7 @@ TextureImporter:
         width: 8
         height: 8
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -134,7 +134,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: POPPINGCANDYBIRD_DEAD_1
+      name: POPPINGCANDYBIRDBOOM_1
       rect:
         serializedVersion: 2
         x: 43
@@ -142,7 +142,7 @@ TextureImporter:
         width: 10
         height: 10
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -156,7 +156,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: POPPINGCANDYBIRD_DEAD_2
+      name: POPPINGCANDYBIRDBOOM_2
       rect:
         serializedVersion: 2
         x: 9
@@ -164,7 +164,7 @@ TextureImporter:
         width: 14
         height: 14
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -178,7 +178,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: POPPINGCANDYBIRDB_DEAD_3
+      name: POPPINGCANDYBIRDBOOM_3
       rect:
         serializedVersion: 2
         x: 38
@@ -186,7 +186,7 @@ TextureImporter:
         width: 20
         height: 19
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -200,7 +200,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: POPPINGCANDYBIRD_DEAD_4
+      name: POPPINGCANDYBIRDBOOM_4
       rect:
         serializedVersion: 2
         x: 6
@@ -208,7 +208,7 @@ TextureImporter:
         width: 20
         height: 19
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -225,7 +225,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: be782252a07427c46aa1c916205ffd12
+    spriteID: 
     internalID: 0
     vertices: []
     indices: 
@@ -235,11 +235,11 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      POPPINGCANDYBIRDB_DEAD_3: 9166259162768258002
-      POPPINGCANDYBIRD_DEAD_0: 534598992814216457
-      POPPINGCANDYBIRD_DEAD_1: -1458699741393821995
-      POPPINGCANDYBIRD_DEAD_2: -4338317337525020749
-      POPPINGCANDYBIRD_DEAD_4: 2238195713336106654
+      POPPINGCANDYBIRDBOOM_0: 534598992814216457
+      POPPINGCANDYBIRDBOOM_1: -1458699741393821995
+      POPPINGCANDYBIRDBOOM_2: -4338317337525020749
+      POPPINGCANDYBIRDBOOM_3: 9166259162768258002
+      POPPINGCANDYBIRDBOOM_4: 2238195713336106654
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

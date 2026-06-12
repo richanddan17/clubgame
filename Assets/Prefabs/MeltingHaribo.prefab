@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &5245657657784622053
+--- !u!1 &1000000000000000000
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,43 +8,42 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 4442351419966297396}
-  - component: {fileID: 6405183190567280806}
-  - component: {fileID: 8430921121746403126}
-  - component: {fileID: 1867936473358399512}
-  - component: {fileID: 6191671766652093823}
-  - component: {fileID: 8308049704571333753}
-  - component: {fileID: 173574550693941353}
+  - component: {fileID: 2000000000000000000}
+  - component: {fileID: 3000000000000000000}
+  - component: {fileID: 4000000000000000000}
+  - component: {fileID: 5000000000000000000}
+  - component: {fileID: 6000000000000000000}
+  - component: {fileID: 7000000000000000000}
   m_Layer: 0
-  m_Name: candy_tank_slime
+  m_Name: MeltingHaribo
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &4442351419966297396
+--- !u!4 &2000000000000000000
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5245657657784622053}
+  m_GameObject: {fileID: 1000000000000000000}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 3, y: 3, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!212 &6405183190567280806
+--- !u!212 &3000000000000000000
 SpriteRenderer:
   serializedVersion: 2
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5245657657784622053}
+  m_GameObject: {fileID: 1000000000000000000}
   m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 0
@@ -84,48 +83,26 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 5
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -4119390610287813218, guid: 15e39146dd39ba345ac05a483e7a58aa, type: 3}
+  m_Sprite: {fileID: 1494678002931678309, guid: a2604c04f51278c4e873b8cc08aa6f20, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 0.28, y: 0.12}
+  m_Size: {x: 0.32, y: 0.32}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
---- !u!95 &8430921121746403126
-Animator:
-  serializedVersion: 7
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5245657657784622053}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 533dbb732d65de342bbc9e99511e8512, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_AnimatePhysics: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0
---- !u!50 &1867936473358399512
+--- !u!50 &4000000000000000000
 Rigidbody2D:
   serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5245657657784622053}
+  m_GameObject: {fileID: 1000000000000000000}
   m_BodyType: 0
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
@@ -133,7 +110,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 3
+  m_GravityScale: 0
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -145,13 +122,13 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 1
   m_Constraints: 4
---- !u!70 &6191671766652093823
-CapsuleCollider2D:
+--- !u!58 &5000000000000000000
+CircleCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5245657657784622053}
+  m_GameObject: {fileID: 1000000000000000000}
   m_Enabled: 1
   serializedVersion: 3
   m_Density: 1
@@ -180,21 +157,57 @@ CapsuleCollider2D:
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
-  m_Size: {x: 0.5, y: 0.5}
-  m_Direction: 0
---- !u!114 &8308049704571333753
+  m_Radius: 0.16
+--- !u!114 &6000000000000000000
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5245657657784622053}
+  m_GameObject: {fileID: 1000000000000000000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 63a9c2f058e82bb4dab93438c1818b93, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MeltingHaribo
+  moveSpeed: 5
+  detectionRange: 10
+  attackRange: 1.5
+  attackDamage: 15
+  stateDelay: 1
+  hariboSprites:
+  - {fileID: 1494678002931678309, guid: a2604c04f51278c4e873b8cc08aa6f20, type: 3}
+  - {fileID: 698782177227960690, guid: a2604c04f51278c4e873b8cc08aa6f20, type: 3}
+  - {fileID: -4908254855833757659, guid: a2604c04f51278c4e873b8cc08aa6f20, type: 3}
+  - {fileID: 4449287173490360542, guid: a2604c04f51278c4e873b8cc08aa6f20, type: 3}
+  - {fileID: -4849846948134072739, guid: a2604c04f51278c4e873b8cc08aa6f20, type: 3}
+  - {fileID: 5067095244844091208, guid: a2604c04f51278c4e873b8cc08aa6f20, type: 3}
+  - {fileID: -2026984984245029158, guid: a2604c04f51278c4e873b8cc08aa6f20, type: 3}
+  - {fileID: 8339103081025107736, guid: a2604c04f51278c4e873b8cc08aa6f20, type: 3}
+  - {fileID: -8612172194417888801, guid: a2604c04f51278c4e873b8cc08aa6f20, type: 3}
+  - {fileID: 5579337480596692191, guid: a2604c04f51278c4e873b8cc08aa6f20, type: 3}
+  - {fileID: 1972624801503700065, guid: a2604c04f51278c4e873b8cc08aa6f20, type: 3}
+  - {fileID: 5369275916189857317, guid: a2604c04f51278c4e873b8cc08aa6f20, type: 3}
+  - {fileID: 873555949, guid: a2604c04f51278c4e873b8cc08aa6f20, type: 3}
+  - {fileID: 1296966509, guid: a2604c04f51278c4e873b8cc08aa6f20, type: 3}
+  - {fileID: 1939624211, guid: a2604c04f51278c4e873b8cc08aa6f20, type: 3}
+  - {fileID: 613079611, guid: a2604c04f51278c4e873b8cc08aa6f20, type: 3}
+  - {fileID: 1419542319, guid: a2604c04f51278c4e873b8cc08aa6f20, type: 3}
+  - {fileID: -933741026, guid: a2604c04f51278c4e873b8cc08aa6f20, type: 3}
+  animationSpeed: 0.05
+--- !u!114 &7000000000000000000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1000000000000000000}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 63e1ec1262f034b4c867fc49675831ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Health
-  maxHealth: 100
+  maxHealth: 50
   currentHealth: 0
   OnHealthChanged:
     m_PersistentCalls:
@@ -208,20 +221,3 @@ MonoBehaviour:
   OnDie:
     m_PersistentCalls:
       m_Calls: []
-  OnParry:
-    m_PersistentCalls:
-      m_Calls: []
---- !u!114 &173574550693941353
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5245657657784622053}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1261ff05723f1a449b5b4e46b20d83c5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::EnemyController
-  data: {fileID: 11400000, guid: fca0232a837b30743ba1a742adae3a82, type: 2}
-  autoInitialize: 1
