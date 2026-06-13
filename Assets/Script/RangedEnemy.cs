@@ -74,16 +74,18 @@ public class RangedEnemy : MonoBehaviour
         }
 
         float distance = Vector2.Distance(transform.position, _player.position);
+        float attackRange = data.AttackRange > 0 ? data.AttackRange : 20f;
+        float detectionRange = data.DetectionRange > 0 ? data.DetectionRange : 35f;
 
-        // 1. 공격 사거리(5f) 안에 있으면 멈추고 공격
-        if (distance <= 5f) 
+        // 1. 공격 사거리 안에 있으면 멈추고 공격
+        if (distance <= attackRange) 
         {
             _rb.linearVelocity = new Vector2(0, _rb.linearVelocity.y);
             UpdateWalkAnimation(false);
             TryAttack();
         }
-        // 2. 공격 사거리 밖이지만 탐지 범위(data.DetectionRange) 안이면 추격
-        else if (distance <= data.DetectionRange)
+        // 2. 공격 사거리 밖이지만 탐지 범위 안이면 추격
+        else if (distance <= detectionRange)
         {
             Vector2 direction = (_player.position - transform.position).normalized;
             

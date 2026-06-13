@@ -32,14 +32,15 @@
 - **Enemy AI**:
   - `MeltingHaribo.cs`: 녹아내리는 하리보 기습 AI
   - `SugarOctopusBoss.cs`: 첫 번째 보스 '설탕 문어' 기초 로직
-  - `EnemyController.cs`: 적 기본 추격 AI
+  - `EnemyController.cs`: 적 기본 추격 및 근접 공격 AI
   - `RangedEnemy.cs`: 마법사 등 원거리/근접 하이브리드 AI
-  - `Slime.cs`: 슬라임 전용 로직
 - **Common**:
   - `Health.cs` / `HealthBar.cs`: 체력 시스템 및 UI
   - `ObjectPooler.cs`: 오브젝트 풀링 시스템
 
 ### 2.2 Editor Tools (`Assets/Editor/`)
+- **컨벤션**: 모든 툴은 `EditorWindow`를 상속받으며 `Custom Tools` 메뉴를 통해 접근 가능해야 함.
+- `PrefabAutoCreator.cs`: 스프라이트 기반 프리팹 일괄 생성 및 AI 자동 설정 도구 (신규)
 - `DataImportMenu.cs`: Tiger 데이터 임포터 (CSV[몹, 스킬] -> ScriptableObject 자동 변환)
 - `ShootingSetupHelper.cs`: 슈팅 환경 자동 세팅
 - `WizardSetupHelper.cs`: 마법사 AI 설정 도구

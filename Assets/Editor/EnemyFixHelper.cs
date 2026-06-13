@@ -23,8 +23,8 @@ public class EnemyFixHelper : EditorWindow
             var oldScript = instance.GetComponent("Mobs");
             if (oldScript != null) DestroyImmediate(oldScript);
 
-            var slimeScript = instance.GetComponent<Slime>();
-            if (slimeScript == null) slimeScript = instance.AddComponent<Slime>();
+            var slimeScript = instance.GetComponent<EnemyController>();
+            if (slimeScript == null) slimeScript = instance.AddComponent<EnemyController>();
             
             // 3. 컴포넌트 설정 최적화
             var rb = instance.GetComponent<Rigidbody2D>();

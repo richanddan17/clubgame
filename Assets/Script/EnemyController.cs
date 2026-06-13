@@ -22,6 +22,7 @@ public class EnemyController : MonoBehaviour
     private Transform _target;
     private bool _isDead = false;
     private Vector3 _initialScale;
+    private float _nextAttackTime;
 
     // 상태 이상 타이머
     private float _slowTimer = 0f;
@@ -44,6 +45,8 @@ public class EnemyController : MonoBehaviour
         SetupPhysics();
         _initialScale = transform.localScale;
         
+        if (_rb != null) _rb.simulated = true;
+        
         // Health 이벤트 연결
         if (_health != null)
         {
@@ -53,26 +56,39 @@ public class EnemyController : MonoBehaviour
 
     private void Start()
     {
+        FindPlayer();
         if (autoInitialize && data != null)
         {
             Initialize(data);
         }
     }
 
+    private void FindPlayer()
+    {
+        GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
+        if (playerObj == null) playerObj = GameObject.Find("Player");
+        if (playerObj != null) 
+        {
+            _target = playerObj.transform;
+            Debug.Log($"[{name}] Target set to Player at {_target.position}");
+        }
+    }
+
     private void Update()
     {
         if (_isDead) return;
+        if (_target == null) FindPlayer();
 
         // 타이머 감소
         if (_slowTimer > 0) _slowTimer -= Time.deltaTime;
         if (_stunTimer > 0) _stunTimer -= Time.deltaTime;
 
-        // 시각적 피드백 (상태에 따른 색상 변화)
+        // 시각적 피드백
         if (_sr != null)
         {
-            if (_stunTimer > 0) _sr.color = Color.gray; // 스턴: 회색
-            else if (_slowTimer > 0) _sr.color = new Color(0.5f, 0f, 0.5f); // 슬로우: 보라색
-            else ApplyVisualSettings(); // 평소
+            if (_stunTimer > 0) _sr.color = Color.gray;
+            else if (_slowTimer > 0) _sr.color = new Color(0.5f, 0f, 0.5f);
+            else ApplyVisualSettings();
         }
     }
 
@@ -80,7 +96,7 @@ public class EnemyController : MonoBehaviour
     {
         if (_isDead || _target == null || data == null) return;
 
-        HandleMovement();
+        HandleMovementAndAttack();
     }
     #endregion
 
@@ -88,9 +104,9 @@ public class EnemyController : MonoBehaviour
     public void Initialize(EnemyData enemyData)
     {
         data = enemyData;
-        _target = GameObject.FindGameObjectWithTag("Player")?.transform;
+        FindPlayer();
 
-        // Health 초기화 (데이터 기반)
+        // Health 초기화
         if (_health != null && data != null)
         {
             _health.Initialize(data.HP);
@@ -103,6 +119,10 @@ public class EnemyController : MonoBehaviour
     {
         _rb.freezeRotation = true;
         _rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
+        
+        // 레이어 설정
+        int enemyLayer = LayerMask.NameToLayer("Enemy");
+        if (enemyLayer != -1) gameObject.layer = enemyLayer;
     }
 
     private void ApplyVisualSettings()
@@ -115,9 +135,14 @@ public class EnemyController : MonoBehaviour
     #endregion
 
     #region Core Logic
-    private void HandleMovement()
+    private void HandleMovementAndAttack()
     {
-        // 스턴 상태면 움직임 중지
+        if (data == null)
+        {
+            Debug.LogError($"[{name}] EnemyData is missing!");
+            return;
+        }
+
         if (_stunTimer > 0)
         {
             _rb.linearVelocity = new Vector2(0, _rb.linearVelocity.y);
@@ -126,30 +151,56 @@ public class EnemyController : MonoBehaviour
         }
 
         float distance = Vector2.Distance(transform.position, _target.position);
+        float detectionRange = data.DetectionRange > 0 ? data.DetectionRange : 30f;
+        float attackRange = data.AttackRange > 0 ? data.AttackRange : 10f;
 
-        if (distance <= data.DetectionRange)
+        // [Debug Log] 상태 실시간 파악
+        // Debug.Log($"[{name}] Dist: {distance:F1}, Detection: {detectionRange}, Attack: {attackRange}");
+
+        if (distance <= attackRange)
         {
+            // 공격 범위 내
+            _rb.linearVelocity = new Vector2(0, _rb.linearVelocity.y);
+            UpdateAnimation(false);
+            TryMeleeAttack();
+        }
+        else if (distance <= detectionRange)
+        {
+            // 추격 범위 내
             Vector2 direction = (_target.position - transform.position).normalized;
-            
-            // 슬로우 상태면 속도 50% 감소
             float currentSpeed = _slowTimer > 0 ? data.Speed * 0.5f : data.Speed;
 
-            if (distance > 0.5f)
-            {
-                _rb.linearVelocity = new Vector2(direction.x * currentSpeed, _rb.linearVelocity.y);
-                UpdateAnimation(true);
-            }
-            else
-            {
-                _rb.linearVelocity = new Vector2(0, _rb.linearVelocity.y);
-                UpdateAnimation(false);
-            }
+            _rb.linearVelocity = new Vector2(direction.x * currentSpeed, _rb.linearVelocity.y);
+            UpdateAnimation(true);
             ApplyFlip(direction.x);
+            
+            if (Time.frameCount % 60 == 0) // 너무 자주 찍히지 않게 60프레임마다 출력
+                Debug.Log($"[{name}] Chasing player. Speed: {currentSpeed}");
         }
         else
         {
+            // 범위를 벗어남
             _rb.linearVelocity = new Vector2(0, _rb.linearVelocity.y);
             UpdateAnimation(false);
+            
+            if (Time.frameCount % 120 == 0)
+                Debug.Log($"[{name}] Player too far ({distance:F1} > {detectionRange}). Idling.");
+        }
+    }
+
+    private void TryMeleeAttack()
+    {
+        if (Time.time < _nextAttackTime) return;
+
+        Health playerHealth = _target.GetComponent<Health>();
+        if (playerHealth != null && !playerHealth.IsDead)
+        {
+            playerHealth.TakeDamage(data.Damage, transform.position);
+            
+            if (_animator != null) _animator.SetTrigger(AnimAttack);
+            _nextAttackTime = Time.time + (data.AttackInterval > 0 ? data.AttackInterval : 1.5f);
+            
+            Debug.Log($"[{name}] Attacked player! Damage: {data.Damage}");
         }
     }
 
