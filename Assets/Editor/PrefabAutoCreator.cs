@@ -69,10 +69,19 @@ public class PrefabAutoCreator : EditorWindow
             rb.gravityScale = isEnemy ? 3f : 1f;
             rb.constraints = RigidbodyConstraints2D.FreezeRotation;
             rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
+            rb.simulated = true;
 
             if (isEnemy)
             {
                 go.transform.localScale = new Vector3(10, 10, 10);
+                int enemyLayer = LayerMask.NameToLayer("Enemy");
+                if (enemyLayer != -1) go.layer = enemyLayer;
+            }
+            else
+            {
+                go.tag = "Player";
+                int playerLayer = LayerMask.NameToLayer("Player");
+                if (playerLayer != -1) go.layer = playerLayer;
             }
 
             CapsuleCollider2D col = go.AddComponent<CapsuleCollider2D>();
@@ -140,6 +149,10 @@ public class PrefabAutoCreator : EditorWindow
         go.tag = "Enemy";
         Health health = go.AddComponent<Health>();
         
+        // 1. Animator 추가 및 컨트롤러 검색
+        Animator anim = go.AddComponent<Animator>();
+        anim.runtimeAnimatorController = FindAnimatorController(dir);
+
         string[] files = Directory.GetFiles(dir, "*.png");
         bool hasBullet = files.Any(f => Path.GetFileNameWithoutExtension(f).ToLower().Contains("bullet"));
         bool hasAttack = files.Any(f => Path.GetFileNameWithoutExtension(f).ToLower().Contains("attack"));
@@ -152,25 +165,19 @@ public class PrefabAutoCreator : EditorWindow
             RangedEnemy ranged = go.AddComponent<RangedEnemy>();
             ranged.data = data;
             
+            // FirePoint 생성
+            GameObject firePointObj = new GameObject("FirePoint");
+            firePointObj.transform.SetParent(go.transform);
+            firePointObj.transform.localPosition = new Vector3(0.5f, 0, 0); // 기본 위치
+            ranged.firePoint = firePointObj.transform;
+
             // 총알 프리팹 생성 및 연결
             string bulletSpritePath = files.First(f => Path.GetFileNameWithoutExtension(f).ToLower().Contains("bullet"));
             ranged.projectilePrefab = CreateProjectilePrefab(bulletSpritePath, prefabName);
         }
-        else if (hasAttack)
-        {
-            // 근접 공격 설정 (Slime 스크립트가 근접 로직을 가지고 있음)
-            Slime melee = go.AddComponent<Slime>();
-            if (data != null)
-            {
-                melee.speed = data.Speed;
-                melee.attackDamage = data.Damage;
-                melee.attackRange = 1.5f;
-                melee.attackCooldown = data.AttackInterval;
-            }
-        }
         else
         {
-            // 기본 이동만 하는 설정
+            // 근접 공격 및 기본 이동 설정 (EnemyController로 통합)
             EnemyController controller = go.AddComponent<EnemyController>();
             if (data != null)
             {
@@ -180,6 +187,26 @@ public class PrefabAutoCreator : EditorWindow
                 so.ApplyModifiedProperties();
             }
         }
+    }
+
+    private RuntimeAnimatorController FindAnimatorController(string dir)
+    {
+        // 1. 현재 폴더에서 검색
+        string[] controllers = Directory.GetFiles(dir, "*.controller", SearchOption.AllDirectories);
+        if (controllers.Length > 0)
+        {
+            return AssetDatabase.LoadAssetAtPath<RuntimeAnimatorController>(controllers[0].Replace("\\", "/"));
+        }
+
+        // 2. 부모 폴더에서 검색 (한 단계 위까지만)
+        string parentDir = Directory.GetParent(dir).FullName;
+        controllers = Directory.GetFiles(parentDir, "*.controller", SearchOption.TopDirectoryOnly);
+        if (controllers.Length > 0)
+        {
+            return AssetDatabase.LoadAssetAtPath<RuntimeAnimatorController>(controllers[0].Replace("\\", "/"));
+        }
+
+        return null;
     }
 
     private GameObject CreateProjectilePrefab(string spritePath, string enemyName)

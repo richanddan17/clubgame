@@ -59,7 +59,6 @@ public class Projectile : MonoBehaviour
         
         // 다양한 적 스크립트 대응
         EnemyController enemy = collision.GetComponent<EnemyController>() ?? collision.GetComponentInParent<EnemyController>();
-        Slime slime = collision.GetComponent<Slime>() ?? collision.GetComponentInParent<Slime>();
         RangedEnemy wizard = collision.GetComponent<RangedEnemy>() ?? collision.GetComponentInParent<RangedEnemy>();
 
         if (health != null)
@@ -70,7 +69,6 @@ public class Projectile : MonoBehaviour
             if (isSpecial)
             {
                 if (enemy != null) enemy.ApplyEffect(bubbleType);
-                if (slime != null) slime.ApplyEffect(bubbleType);
                 if (wizard != null) wizard.ApplyEffect(bubbleType);
             }
 
@@ -79,13 +77,12 @@ public class Projectile : MonoBehaviour
         }
 
         // Health는 없지만 컨트롤러만 있는 경우나 지형 충돌 처리
-        bool isAnyEnemy = (enemy != null || slime != null || wizard != null);
+        bool isAnyEnemy = (enemy != null || wizard != null);
         if (isAnyEnemy || collision.gameObject.layer == LayerMask.NameToLayer("Ground"))
         {
             if (isSpecial)
             {
                 if (enemy != null) enemy.ApplyEffect(bubbleType);
-                if (slime != null) slime.ApplyEffect(bubbleType);
                 if (wizard != null) wizard.ApplyEffect(bubbleType);
             }
             Deactivate();

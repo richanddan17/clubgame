@@ -13,7 +13,8 @@ GameObject:
   - component: {fileID: 8291750867814486355}
   - component: {fileID: 8484050782753609248}
   - component: {fileID: 7506376843832758695}
-  - component: {fileID: 5650032038835319877}
+  - component: {fileID: 6334520531758917238}
+  - component: {fileID: 6602208777958168383}
   m_Layer: 0
   m_Name: MeltingHaribo
   m_TagString: Enemy
@@ -188,7 +189,29 @@ MonoBehaviour:
   OnParry:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &5650032038835319877
+--- !u!95 &6334520531758917238
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7407700295360949425}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 0}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &6602208777958168383
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -197,14 +220,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 7407700295360949425}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: da1e19d5a6ce924408ccd965f11e7313, type: 3}
+  m_Script: {fileID: 11500000, guid: 1261ff05723f1a449b5b4e46b20d83c5, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Slime
-  speed: 2.2
-  groundLayer:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  groundCheckDistance: 0.2
-  attackRange: 1.5
-  attackDamage: 0
-  attackCooldown: 0
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyController
+  data: {fileID: 11400000, guid: a557b47323c641940b44624562f68640, type: 2}
+  autoInitialize: 1

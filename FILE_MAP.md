@@ -32,9 +32,8 @@
 - **Enemy AI**:
   - `MeltingHaribo.cs`: 녹아내리는 하리보 기습 AI
   - `SugarOctopusBoss.cs`: 첫 번째 보스 '설탕 문어' 기초 로직
-  - `EnemyController.cs`: 적 기본 추격 AI
+  - `EnemyController.cs`: 적 기본 추격 및 근접 공격 AI
   - `RangedEnemy.cs`: 마법사 등 원거리/근접 하이브리드 AI
-  - `Slime.cs`: 슬라임 전용 로직
 - **Common**:
   - `Health.cs` / `HealthBar.cs`: 체력 시스템 및 UI
   - `ObjectPooler.cs`: 오브젝트 풀링 시스템

@@ -14,6 +14,8 @@ public class EnemySpawner : MonoBehaviour
 
     private void Start()
     {
+        Debug.Log($"[{name}] EnemySpawner Start() 호출됨. 현재 활성화 상태입니다.");
+
         // Resources에서 로드된 모든 적 데이터를 리스트에 담음
         EnemyData[] loadedData = Resources.LoadAll<EnemyData>("EnemyData");
         enemyDataList.AddRange(loadedData);
@@ -22,11 +24,22 @@ public class EnemySpawner : MonoBehaviour
         {
             Debug.LogWarning("EnemyData를 찾을 수 없습니다. Import를 먼저 진행하세요.");
         }
+        else
+        {
+            Debug.Log($"[{name}] 로드된 적 데이터 개수: {enemyDataList.Count}");
+        }
     }
 
     private void Update()
     {
         timer += Time.deltaTime;
+
+        // 5초마다 현재 스폰 대기 상태 로그 출력 (디버그용)
+        if (Time.frameCount % 300 == 0)
+        {
+            int currentEnemies = GameObject.FindGameObjectsWithTag("Enemy").Length;
+            // Debug.Log($"[{name}] 스폰 대기 중... 현재 적 수: {currentEnemies}/{maxEnemyCount}, 타이머: {timer:F1}/{spawnInterval}");
+        }
 
         if (timer >= spawnInterval)
         {
@@ -73,15 +86,23 @@ public class EnemySpawner : MonoBehaviour
         if (specializedPrefab == null)
         {
             #if UNITY_EDITOR
-            specializedPrefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>($"Assets/Prefabs/{randomData.EnemyName}.prefab");
-            if (specializedPrefab == null && randomData.EnemyName.Contains("Slime"))
-                specializedPrefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Slime.prefab");
+            // 툴이 저장하는 경로인 Assets/Prefabs/Enemy/ 에서 먼저 찾음
+            specializedPrefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>($"Assets/Prefabs/Enemy/{randomData.EnemyName}.prefab");
+            
+            // 못 찾으면 기존 경로에서도 시도
+            if (specializedPrefab == null)
+                specializedPrefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>($"Assets/Prefabs/{randomData.EnemyName}.prefab");
             #endif
         }
 
-        GameObject prefabToSpawn = specializedPrefab != null ? specializedPrefab : enemyPrefab;
-        if (prefabToSpawn == null) return;
+        if (specializedPrefab == null)
+        {
+            Debug.LogWarning($"[{name}] 스폰할 프리팹을 찾을 수 없습니다: {randomData.EnemyName}");
+            return;
+        }
 
+        GameObject prefabToSpawn = specializedPrefab;
+        
         // 플레이어 주변 랜덤 위치 계산
         Vector3 spawnPos = transform.position + new Vector3(Random.Range(-spawnRange, spawnRange), 0, 0);
         
@@ -89,14 +110,15 @@ public class EnemySpawner : MonoBehaviour
         GameObject enemyObj = Instantiate(prefabToSpawn, spawnPos, Quaternion.identity);
         enemyObj.tag = "Enemy";
         
-        // Slime 스크립트가 있으면 속도 동기화
-        Slime slimeScript = enemyObj.GetComponent<Slime>();
-        if (slimeScript != null) slimeScript.speed = randomData.Speed;
-
         EnemyController controller = enemyObj.GetComponent<EnemyController>();
         if (controller != null)
         {
             controller.Initialize(randomData);
+            Debug.Log($"[{name}] Spawned {randomData.EnemyName} at {spawnPos}");
+        }
+        else
+        {
+            Debug.LogError($"[{name}] 생성된 {enemyObj.name}에 EnemyController가 없습니다!");
         }
     }
 }
