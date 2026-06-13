@@ -40,6 +40,8 @@
   - `ObjectPooler.cs`: 오브젝트 풀링 시스템
 
 ### 2.2 Editor Tools (`Assets/Editor/`)
+- **컨벤션**: 모든 툴은 `EditorWindow`를 상속받으며 `Custom Tools` 메뉴를 통해 접근 가능해야 함.
+- `PrefabAutoCreator.cs`: 스프라이트 기반 프리팹 일괄 생성 및 AI 자동 설정 도구 (신규)
 - `DataImportMenu.cs`: Tiger 데이터 임포터 (CSV[몹, 스킬] -> ScriptableObject 자동 변환)
 - `ShootingSetupHelper.cs`: 슈팅 환경 자동 세팅
 - `WizardSetupHelper.cs`: 마법사 AI 설정 도구
