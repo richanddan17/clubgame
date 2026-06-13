@@ -47,6 +47,6 @@ public class EnemyFixHelper : EditorWindow
         }
         
         AssetDatabase.Refresh();
-        EditorUtility.DisplayDialog("Enemy Fix Complete", "슬라임 몬스터 설정이 완료되었습니다!\n1. 크기가 3배로 커졌습니다.\n2. 이제 플레이어를 추격합니다.", "확인");
+        EditorApplication.delayCall += () => EditorUtility.DisplayDialog("Enemy Fix Complete", "슬라임 몬스터 설정이 완료되었습니다!\n1. 크기가 3배로 커졌습니다.\n2. 이제 플레이어를 추격합니다.", "확인");
     }
 }

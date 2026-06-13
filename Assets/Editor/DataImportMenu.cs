@@ -30,7 +30,7 @@ public class DataImportMenu : EditorWindow
     public static void SetupPlayerAnimations()
     {
         GameObject player = GameObject.FindGameObjectWithTag("Player");
-        if (player == null) { EditorUtility.DisplayDialog("Error", "플레이어 찾기 실패", "확인"); return; }
+        if (player == null) { EditorApplication.delayCall += () => EditorUtility.DisplayDialog("Error", "플레이어 찾기 실패", "확인"); return; }
 
         var mf = player.GetComponent<MeshFilter>();
         var mr = player.GetComponent<MeshRenderer>();
@@ -40,7 +40,7 @@ public class DataImportMenu : EditorWindow
         SpriteRenderer sr = player.GetComponent<SpriteRenderer>() ?? player.AddComponent<SpriteRenderer>();
         Animator animator = player.GetComponent<Animator>() ?? player.AddComponent<Animator>();
 
-        if (sr.sprite == null) { EditorUtility.DisplayDialog("Notice", "이미지를 먼저 넣어주세요", "확인"); return; }
+        if (sr.sprite == null) { EditorApplication.delayCall += () => EditorUtility.DisplayDialog("Notice", "이미지를 먼저 넣어주세요", "확인"); return; }
 
         string spritePath = AssetDatabase.GetAssetPath(sr.sprite);
         string spriteFolder = Path.GetDirectoryName(spritePath);
@@ -81,7 +81,7 @@ public class DataImportMenu : EditorWindow
         animator.runtimeAnimatorController = controller;
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
-        EditorUtility.DisplayDialog("Success", "애니메이션 설정 완료! \n'Idle', 'Walk', 'Run' 클립 생성됨.", "확인");
+        EditorApplication.delayCall += () => EditorUtility.DisplayDialog("Success", "애니메이션 설정 완료! \n'Idle', 'Walk', 'Run' 클립 생성됨.", "확인");
     }
 
     [MenuItem("Custom Tools/tiger/Initialize Game Scene", false, 0)]
@@ -161,7 +161,7 @@ public class DataImportMenu : EditorWindow
         }
 
         follow.target = player.transform;
-        EditorUtility.DisplayDialog("Magic Setup", "완료!", "확인");
+        EditorApplication.delayCall += () => EditorUtility.DisplayDialog("Magic Setup", "완료!", "확인");
     }
 
     [MenuItem("Custom Tools/tiger/Data Import/Open Import Window", false, 1)]
@@ -186,7 +186,10 @@ public class DataImportMenu : EditorWindow
         DrawStatusRow("Unit", ref unitPath);
         DrawStatusRow("Biome", ref biomePath);
         DrawStatusRow("Skill Preset", ref skillPresetPath);
-        if (GUILayout.Button("IMPORT ALL", GUILayout.Height(40))) ImportAll();
+        if (GUILayout.Button("IMPORT ALL", GUILayout.Height(40))) 
+        {
+            EditorApplication.delayCall += ImportAll;
+        }
     }
 
     private void DrawStatusRow(string label, ref string path) { EditorGUILayout.BeginHorizontal(); EditorGUILayout.LabelField(label, GUILayout.Width(100)); EditorGUILayout.LabelField(File.Exists(path) ? "Ready" : "Missing"); EditorGUILayout.EndHorizontal(); }
