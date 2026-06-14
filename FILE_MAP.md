@@ -48,10 +48,23 @@
 ### 2.3 Prefabs (`Assets/Prefabs/`)
 - `Player.prefab`: 플레이어 캐릭터
 - **Enemy/**: 적 프리팹 (PrefabAutoCreator로 생성)
-  - `CandyTankSlime.prefab`: 캔디 탱크 슬라임 (신규)
-  - `PoppingCandyBat.prefab`: 팝핑 캔디 박쥐 (신규)
+  - `CandyTankSlime.prefab`: 박스 콜라이더(0.3, 0.13) 적용, 지상 추격형.
+  - `PoppingCandyBat.prefab`: 비행형(중력 0), 플레이어 머리 위 2.5m 호버링 추격.
   - `MeltingHaribo.prefab`: 녹아내리는 하리보 적
 - `BubbleProjectile_*.prefab`: 3색 버블껌 투사체 (Red, Yellow, Blue)
+
+---
+
+## 3. 현재 진행 상태 및 미해결 이슈 (2026-06-14)
+### 진행 완료
+- **PrefabAutoCreator 고도화**: 스프라이트 폴더만으로 애니메이터, 클립, 프리팹(물리/AI 포함)을 일괄 생성하는 시스템 구축.
+- **비행 AI 구현**: 박쥐 적이 공중에서 플레이어를 추격하고 고도를 유지하는 로직 완성.
+- **데이터 동기화**: `unit.csv`를 통해 모든 적의 능력치(속도, 사거리 등)를 통합 관리.
+
+### 미해결 이슈 (내일 작업 예정)
+- **Animator Controller 연결 유실**: 프리팹 생성 로그에는 '성공'으로 뜨지만, 실제 실행 시 `Animator is not playing an AnimatorController` 에러 발생.
+  - **원인 가설**: 유니티 에셋 데이터베이스의 비동기 생성 속도 문제 또는 프리팹 저장(`SaveAsPrefabAsset`) 과정에서 참조가 유실됨.
+  - **해결 방안**: 내일 프리팹 생성 후 `PrefabUtility.RecordPrefabInstancePropertyModifications`를 통한 강제 직렬화 및 씬 내 인스턴스 강제 교체 로직 점검 예정.
 
 ### 2.4 Data (`Assets/Resources/`)
 - `EnemyData/`: 적 능력치 데이터

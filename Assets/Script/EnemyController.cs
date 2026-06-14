@@ -241,7 +241,7 @@ public class EnemyController : MonoBehaviour
 
     private void UpdateAnimation(bool isMoving)
     {
-        if (_animator == null) return;
+        if (_animator == null || _animator.runtimeAnimatorController == null) return;
         _animator.SetBool(AnimWalk, isMoving);
     }
 

@@ -115,6 +115,9 @@ public class RangedEnemy : MonoBehaviour
         Vector2 targetPos = _player.position;
         if (isFlying) targetPos.y += 2.5f; 
 
+        // [디버그] 타겟 위치 시각화
+        Debug.DrawLine(transform.position, targetPos, Color.yellow);
+
         // 2. 스턴 상태 처리
         if (_stunTimer > 0)
         {
@@ -126,11 +129,10 @@ public class RangedEnemy : MonoBehaviour
         // 3. 행동 로직
         if (distance <= attackRange) 
         {
-            // 공격 중에도 비행 적은 고도를 유지해야 함
             if (isFlying)
             {
                 float yDiff = targetPos.y - transform.position.y;
-                _rb.linearVelocity = new Vector2(0, yDiff * 5f); // 부드럽게 고도 유지
+                _rb.linearVelocity = new Vector2(0, yDiff * 5f);
             }
             else
             {
@@ -147,7 +149,6 @@ public class RangedEnemy : MonoBehaviour
             
             if (isFlying)
             {
-                // 비행 적은 Y축 이동도 속도에 포함
                 _rb.linearVelocity = moveDir * currentSpeed;
             }
             else
@@ -160,7 +161,6 @@ public class RangedEnemy : MonoBehaviour
         }
         else
         {
-            // 대기 상태: 비행 적은 제자리 부양
             if (isFlying)
             {
                  _rb.linearVelocity = Vector2.Lerp(_rb.linearVelocity, Vector2.zero, Time.fixedDeltaTime * 5f);
@@ -172,10 +172,10 @@ public class RangedEnemy : MonoBehaviour
             UpdateWalkAnimation(false);
         }
 
-        // 4. 화면 밖 이탈 방지 (플레이어 기준 Y축 제한)
+        // 4. 화면 밖 이탈 방지
         if (isFlying)
         {
-            float clampedY = Mathf.Clamp(transform.position.y, _player.position.y - 2f, _player.position.y + 6f);
+            float clampedY = Mathf.Clamp(transform.position.y, _player.position.y - 2f, _player.position.y + 10f); // 범위를 조금 더 넓힘
             if (transform.position.y != clampedY)
             {
                 transform.position = new Vector3(transform.position.x, clampedY, transform.position.z);
@@ -186,37 +186,40 @@ public class RangedEnemy : MonoBehaviour
 
     private void UpdateWalkAnimation(bool isWalking)
     {
-        // Animator가 초기화되지 않았거나 활성화되지 않았을 때의 에러 방지
-        if (_animator != null && _animator.isActiveAndEnabled && _animator.runtimeAnimatorController != null)
+        if (_animator == null || _animator.runtimeAnimatorController == null)
         {
-            _animator.SetBool("Walk", isWalking);
+            if (Time.frameCount % 200 == 0 && _animator == null) Debug.LogError($"<color=red>[AnimDebug]</color> {name} Animator is MISSING!");
+            return;
         }
+
+        if (!_animator.isActiveAndEnabled)
+        {
+            if (Time.frameCount % 200 == 0) Debug.LogWarning($"<color=yellow>[AnimDebug]</color> {name} Animator is DISABLED!");
+            return;
+        }
+
+        _animator.SetBool("Walk", isWalking);
     }
 
     private void TryAttack()
     {
         if (Time.time < _nextAttackTime) return;
 
-        // 공격 시작 시 플래그 초기화 (중요: 한 발만 쏘는 문제 해결)
         _didShootThisAttack = false;
 
-        Debug.Log($"<color=cyan>[RangedEnemy]</color> {name} TryAttack() triggered! Distance: {Vector2.Distance(transform.position, _player.position):F1}");
+        Debug.Log($"<color=cyan>[AttackDebug]</color> {name} Attack Triggered!");
 
-        // 플레이어 방향 보기
         float directionX = _player.position.x - transform.position.x;
         ApplyFlip(directionX);
 
-        if (_animator != null && _animator.isActiveAndEnabled && _animator.runtimeAnimatorController != null)
+        if (_animator != null && _animator.runtimeAnimatorController != null && _animator.isActiveAndEnabled)
         {
             _animator.SetTrigger("Attack");
-            // 애니메이션 이벤트가 없을 경우를 대비해 0.3초 뒤 강제 발사 예약
             StartCoroutine(AutoShootFallback(0.3f));
             _nextAttackTime = Time.time + data.AttackInterval;
         }
         else
         {
-            // 애니메이터가 없으면 즉시 발사
-            Debug.LogWarning($"<color=yellow>[RangedEnemy]</color> {name} No Animator, firing immediately!");
             Shoot();
             _nextAttackTime = Time.time + data.AttackInterval;
         }

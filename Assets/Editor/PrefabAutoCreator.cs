@@ -106,8 +106,27 @@ public class PrefabAutoCreator : EditorWindow
         go.tag = "Enemy";
         go.AddComponent<Health>();
         Animator anim = go.AddComponent<Animator>();
-        anim.cullingMode = AnimatorCullingMode.AlwaysAnimate; // 항상 애니메이션 재생 보장
-        anim.runtimeAnimatorController = CreateAutoAnimator(dir);
+        anim.cullingMode = AnimatorCullingMode.AlwaysAnimate;
+        
+        // 1. 애니메이터 컨트롤러 생성
+        CreateAutoAnimator(dir);
+        
+        // 2. 강제 리프레시 (이게 없으면 유니티가 파일을 못 찾음)
+        AssetDatabase.Refresh();
+        
+        // 3. 확실하게 로드해서 할당
+        string animPath = Path.Combine(dir, folderName + ".controller").Replace("\\", "/");
+        RuntimeAnimatorController controller = AssetDatabase.LoadAssetAtPath<RuntimeAnimatorController>(animPath);
+        
+        if (controller != null)
+        {
+            anim.runtimeAnimatorController = controller;
+            Debug.Log($"<color=green>[PrefabCreator]</color> Assigned Controller to {prefabName}");
+        }
+        else
+        {
+            Debug.LogError($"<color=red>[PrefabCreator]</color> Failed to load Controller for {prefabName} at {animPath}");
+        }
 
         string[] files = Directory.GetFiles(dir, "*.png");
         bool hasBullet = files.Any(f => f.ToLower().Contains("bullet"));
@@ -132,12 +151,12 @@ public class PrefabAutoCreator : EditorWindow
         }
     }
 
-    private RuntimeAnimatorController CreateAutoAnimator(string dir)
+    private void CreateAutoAnimator(string dir)
     {
         string folderName = Path.GetFileName(dir);
         string animPath = Path.Combine(dir, folderName + ".controller").Replace("\\", "/");
         
-        // 기존 파일 삭제 후 재생성 (강제 갱신)
+        // 기존 파일 삭제 후 재생성
         AssetDatabase.DeleteAsset(animPath);
         var controller = AnimatorController.CreateAnimatorControllerAtPath(animPath);
         var root = controller.layers[0].stateMachine;
@@ -176,7 +195,6 @@ public class PrefabAutoCreator : EditorWindow
 
         EditorUtility.SetDirty(controller);
         AssetDatabase.SaveAssets();
-        return controller;
     }
 
     private AnimationClip CreateClip(string dir, string kw, string name, bool loop)
@@ -201,7 +219,11 @@ public class PrefabAutoCreator : EditorWindow
             AnimationUtility.SetAnimationClipSettings(clip, s); 
         }
 
-        EditorCurveBinding cb = EditorCurveBinding.Sprite(0); // 가장 확실한 스프라이트 바인딩 방식
+        EditorCurveBinding cb = new EditorCurveBinding { 
+            type = typeof(SpriteRenderer), 
+            path = "", 
+            propertyName = "m_Sprite" 
+        };
         ObjectReferenceKeyframe[] keys = new ObjectReferenceKeyframe[matches.Count];
         for (int i = 0; i < matches.Count; i++) 
         {
@@ -209,10 +231,13 @@ public class PrefabAutoCreator : EditorWindow
             keys[i] = new ObjectReferenceKeyframe { time = i * 0.15f, value = s };
         }
         
-        // 마지막 키프레임 추가하여 애니메이션 끝 보장
+        // 마지막 키프레임 추가
         if (matches.Count > 0)
         {
-            ArrayUtility.Add(ref keys, new ObjectReferenceKeyframe { time = matches.Count * 0.15f, value = keys[matches.Count - 1].value });
+            var lastKeys = new ObjectReferenceKeyframe[keys.Length + 1];
+            System.Array.Copy(keys, lastKeys, keys.Length);
+            lastKeys[keys.Length] = new ObjectReferenceKeyframe { time = matches.Count * 0.15f, value = keys[keys.Length - 1].value };
+            keys = lastKeys;
         }
 
         AnimationUtility.SetObjectReferenceCurve(clip, cb, keys);
