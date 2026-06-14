@@ -12,6 +12,10 @@ public class RangedEnemy : MonoBehaviour
     public GameObject projectilePrefab;
     public Transform firePoint;
 
+    [Header("인스펙터 조절용")]
+    public float speedMultiplier = 1f;
+    public float damageMultiplier = 1f;
+
     private Rigidbody2D _rb;
     private Animator _animator;
     private SpriteRenderer _sr;
@@ -27,25 +31,62 @@ public class RangedEnemy : MonoBehaviour
 
     private void Awake()
     {
+        Debug.Log($"<color=orange>[RangedEnemy]</color> Awake called on {gameObject.name}");
         _rb = GetComponent<Rigidbody2D>();
         _animator = GetComponentInChildren<Animator>();
         _sr = GetComponentInChildren<SpriteRenderer>();
         _health = GetComponent<Health>();
         _initialScale = transform.localScale;
         
-        if (firePoint == null) firePoint = transform;
+        if (firePoint == null) 
+        {
+            firePoint = transform;
+            Debug.LogWarning($"<color=orange>[RangedEnemy]</color> {name} FirePoint is missing, using transform.");
+        }
         if (_health != null) _health.OnDie.AddListener(Die);
+    }
+
+    private void FindPlayer()
+    {
+        // 'player'라는 이름을 가진 오브젝트를 가장 먼저 찾음
+        GameObject playerObj = GameObject.Find("player");
+        
+        // 없으면 'Player' (대문자) 찾기
+        if (playerObj == null) playerObj = GameObject.Find("Player");
+
+        if (playerObj != null)
+        {
+            _player = playerObj.transform;
+            Debug.Log($"<color=orange>[RangedEnemy]</color> {name} Target LOCKED to: <color=yellow>{playerObj.name}</color>");
+        }
+        else
+        {
+            Debug.LogError($"<color=red>[RangedEnemy]</color> {name} CANNOT find 'player' object in scene!");
+        }
     }
 
     private void Start()
     {
-        _player = GameObject.FindGameObjectWithTag("Player")?.transform;
-        if (data != null && _health != null) _health.Initialize(data.HP);
+        Debug.Log($"<color=orange>[RangedEnemy]</color> Start called on {gameObject.name}");
+        FindPlayer();
+
+        if (data != null)
+        {
+            if (_health != null) _health.Initialize(data.HP);
+        }
+        else
+        {
+            Debug.LogError($"<color=red>[RangedEnemy]</color> {name} has NO EnemyData!");
+        }
+
+        if (projectilePrefab == null)
+            Debug.LogError($"<color=red>[RangedEnemy]</color> {name} has NO ProjectilePrefab!");
     }
 
     private void Update()
     {
         if (_isDead) return;
+        if (_player == null) FindPlayer();
 
         // 타이머 감소
         if (_slowTimer > 0) _slowTimer -= Time.deltaTime;
@@ -64,43 +105,82 @@ public class RangedEnemy : MonoBehaviour
     {
         if (_isDead || _player == null || data == null) return;
 
-        // 스턴 상태면 행동 불가
+        float distance = Vector2.Distance(transform.position, _player.position);
+        float attackRange = data.AttackRange;
+        float detectionRange = data.DetectionRange;
+
+        bool isFlying = _rb.gravityScale == 0;
+
+        // 1. 비행 적 전용 타겟 위치 계산 (플레이어 머리 위 2.5m)
+        Vector2 targetPos = _player.position;
+        if (isFlying) targetPos.y += 2.5f; 
+
+        // 2. 스턴 상태 처리
         if (_stunTimer > 0)
         {
-            _rb.linearVelocity = new Vector2(0, _rb.linearVelocity.y);
-            if (_animator != null && _animator.isActiveAndEnabled && _animator.runtimeAnimatorController != null) 
-                _animator.SetBool("Walk", false);
+            _rb.linearVelocity = isFlying ? Vector2.zero : new Vector2(0, _rb.linearVelocity.y);
+            UpdateWalkAnimation(false);
             return;
         }
 
-        float distance = Vector2.Distance(transform.position, _player.position);
-        float attackRange = data.AttackRange > 0 ? data.AttackRange : 20f;
-        float detectionRange = data.DetectionRange > 0 ? data.DetectionRange : 35f;
-
-        // 1. 공격 사거리 안에 있으면 멈추고 공격
+        // 3. 행동 로직
         if (distance <= attackRange) 
         {
-            _rb.linearVelocity = new Vector2(0, _rb.linearVelocity.y);
+            // 공격 중에도 비행 적은 고도를 유지해야 함
+            if (isFlying)
+            {
+                float yDiff = targetPos.y - transform.position.y;
+                _rb.linearVelocity = new Vector2(0, yDiff * 5f); // 부드럽게 고도 유지
+            }
+            else
+            {
+                _rb.linearVelocity = new Vector2(0, _rb.linearVelocity.y);
+            }
+            
             UpdateWalkAnimation(false);
             TryAttack();
         }
-        // 2. 공격 사거리 밖이지만 탐지 범위 안이면 추격
         else if (distance <= detectionRange)
         {
-            Vector2 direction = (_player.position - transform.position).normalized;
+            Vector2 moveDir = (targetPos - (Vector2)transform.position).normalized;
+            float currentSpeed = (_slowTimer > 0 ? data.Speed * 0.5f : data.Speed) * speedMultiplier;
             
-            // 슬로우 효과 적용
-            float currentSpeed = _slowTimer > 0 ? data.Speed * 0.5f : data.Speed;
-            
-            _rb.linearVelocity = new Vector2(direction.x * currentSpeed, _rb.linearVelocity.y);
+            if (isFlying)
+            {
+                // 비행 적은 Y축 이동도 속도에 포함
+                _rb.linearVelocity = moveDir * currentSpeed;
+            }
+            else
+            {
+                _rb.linearVelocity = new Vector2(moveDir.x * currentSpeed, _rb.linearVelocity.y);
+            }
+
             UpdateWalkAnimation(true);
-            ApplyFlip(direction.x);
+            ApplyFlip(moveDir.x);
         }
-        // 3. 둘 다 아니면 정지
         else
         {
-            _rb.linearVelocity = new Vector2(0, _rb.linearVelocity.y);
+            // 대기 상태: 비행 적은 제자리 부양
+            if (isFlying)
+            {
+                 _rb.linearVelocity = Vector2.Lerp(_rb.linearVelocity, Vector2.zero, Time.fixedDeltaTime * 5f);
+            }
+            else
+            {
+                _rb.linearVelocity = new Vector2(0, _rb.linearVelocity.y);
+            }
             UpdateWalkAnimation(false);
+        }
+
+        // 4. 화면 밖 이탈 방지 (플레이어 기준 Y축 제한)
+        if (isFlying)
+        {
+            float clampedY = Mathf.Clamp(transform.position.y, _player.position.y - 2f, _player.position.y + 6f);
+            if (transform.position.y != clampedY)
+            {
+                transform.position = new Vector3(transform.position.x, clampedY, transform.position.z);
+                _rb.linearVelocity = new Vector2(_rb.linearVelocity.x, 0);
+            }
         }
     }
 
@@ -117,6 +197,11 @@ public class RangedEnemy : MonoBehaviour
     {
         if (Time.time < _nextAttackTime) return;
 
+        // 공격 시작 시 플래그 초기화 (중요: 한 발만 쏘는 문제 해결)
+        _didShootThisAttack = false;
+
+        Debug.Log($"<color=cyan>[RangedEnemy]</color> {name} TryAttack() triggered! Distance: {Vector2.Distance(transform.position, _player.position):F1}");
+
         // 플레이어 방향 보기
         float directionX = _player.position.x - transform.position.x;
         ApplyFlip(directionX);
@@ -124,7 +209,30 @@ public class RangedEnemy : MonoBehaviour
         if (_animator != null && _animator.isActiveAndEnabled && _animator.runtimeAnimatorController != null)
         {
             _animator.SetTrigger("Attack");
+            // 애니메이션 이벤트가 없을 경우를 대비해 0.3초 뒤 강제 발사 예약
+            StartCoroutine(AutoShootFallback(0.3f));
             _nextAttackTime = Time.time + data.AttackInterval;
+        }
+        else
+        {
+            // 애니메이터가 없으면 즉시 발사
+            Debug.LogWarning($"<color=yellow>[RangedEnemy]</color> {name} No Animator, firing immediately!");
+            Shoot();
+            _nextAttackTime = Time.time + data.AttackInterval;
+        }
+    }
+
+    private bool _didShootThisAttack = false;
+
+    private System.Collections.IEnumerator AutoShootFallback(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        
+        // 만약 애니메이션 이벤트(Shoot)가 이미 실행되지 않았다면 강제로 실행
+        if (!_didShootThisAttack)
+        {
+            Debug.Log($"<color=yellow>[RangedEnemy]</color> {name} No Animation Event detected. Firing via fallback.");
+            Shoot();
         }
     }
 
@@ -152,6 +260,9 @@ public class RangedEnemy : MonoBehaviour
     public void MeleeSwing()
     {
         if (_isDead || _player == null) return;
+        _didShootThisAttack = true; // 이벤트 실행됨 표시
+
+        Debug.Log($"<color=cyan>[RangedEnemy]</color> {name} MeleeSwing() called via Animation Event!");
 
         float side = transform.localScale.x > 0 ? 1f : -1f;
         Vector2 checkPos = (Vector2)transform.position + new Vector2(side * meleeOffset.x, meleeOffset.y);
@@ -163,8 +274,8 @@ public class RangedEnemy : MonoBehaviour
             {
                 if (col.TryGetComponent<Health>(out var h))
                 {
-                    h.TakeDamage(meleeDamage, transform.position);
-                    Debug.Log($"<color=orange>[Wizard Melee]</color> 지팡이 휘두르기 적중! 데미지: {meleeDamage}");
+                    h.TakeDamage(meleeDamage * damageMultiplier, transform.position);
+                    Debug.Log($"<color=orange>[Wizard Melee]</color> 지팡이 휘두르기 적중! 데미지: {meleeDamage * damageMultiplier}");
                 }
             }
         }
@@ -172,30 +283,60 @@ public class RangedEnemy : MonoBehaviour
 
     public void Shoot()
     {
-        if (_isDead || projectilePrefab == null || firePoint == null || _player == null) return;
+        if (_isDead || projectilePrefab == null || firePoint == null || _player == null) 
+        {
+            Debug.LogWarning($"<color=red>[RangedEnemy]</color> {name} Shoot() failed! Prefab: {projectilePrefab!=null}, Point: {firePoint!=null}, Player: {_player!=null}");
+            return;
+        }
+
+        if (_didShootThisAttack) return; 
+        _didShootThisAttack = true;
+
+        Debug.Log($"<color=cyan>[RangedEnemy]</color> {name} Shoot() EXECUTED!");
 
         Vector2 direction = (_player.position - firePoint.position).normalized;
         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
         
         GameObject projectile = Instantiate(projectilePrefab, firePoint.position, Quaternion.Euler(0, 0, angle));
+        
+        // 총알 크기 강제 확대 (5, 5, 5)
+        projectile.transform.localScale = new Vector3(5f, 5f, 5f);
+
         if (projectile.TryGetComponent<Projectile>(out var proj))
         {
-            proj.Initialize(data.Damage, transform.localScale.x > 0, shooter: gameObject);
+            proj.Initialize(data.Damage * damageMultiplier, transform.localScale.x < 0, shooter: gameObject);
         }
     }
 
     private void OnDrawGizmosSelected()
     {
+        if (data == null) return;
+
+        // 탱크일 때만 사각형으로 표시, 아니면 원형으로 표시
+        bool isTank = name.Contains("CandyTankSlime");
+
+        // 1. 탐지 범위 (하늘색)
+        Gizmos.color = Color.cyan;
+        if (isTank) Gizmos.DrawWireCube(transform.position, new Vector3(data.DetectionRange * 2, data.DetectionRange * 2, 1));
+        else Gizmos.DrawWireSphere(transform.position, data.DetectionRange);
+
+        // 2. 원거리 공격 사거리 (빨간색)
+        Gizmos.color = Color.red;
+        if (isTank) Gizmos.DrawWireCube(transform.position, new Vector3(data.AttackRange * 2, data.AttackRange * 2, 1));
+        else Gizmos.DrawWireSphere(transform.position, data.AttackRange);
+
+        // 3. 근접 공격 범위 (노란색)
         float side = transform.localScale.x > 0 ? 1f : -1f;
-        Vector2 checkPos = (Vector2)transform.position + new Vector2(side * meleeOffset.x, meleeOffset.y);
+        Vector3 checkPos = transform.position + new Vector3(side * meleeOffset.x, meleeOffset.y, 0);
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(checkPos, meleeRange);
     }
 
     private void ApplyFlip(float x)
     {
-        if (x > 0.1f) transform.localScale = new Vector3(Mathf.Abs(_initialScale.x), _initialScale.y, _initialScale.z);
-        else if (x < -0.1f) transform.localScale = new Vector3(-Mathf.Abs(_initialScale.x), _initialScale.y, _initialScale.z);
+        // x > 0 (플레이어가 오른쪽)일 때 -스케일, x < 0 (플레이어가 왼쪽)일 때 +스케일로 반전
+        if (x > 0.1f) transform.localScale = new Vector3(-Mathf.Abs(_initialScale.x), _initialScale.y, _initialScale.z);
+        else if (x < -0.1f) transform.localScale = new Vector3(Mathf.Abs(_initialScale.x), _initialScale.y, _initialScale.z);
     }
 
     private void Die()

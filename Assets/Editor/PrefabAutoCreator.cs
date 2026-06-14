@@ -1,7 +1,9 @@
 using UnityEngine;
 using UnityEditor;
+using UnityEditor.Animations;
 using System.IO;
 using System.Linq;
+using System.Collections.Generic;
 
 public class PrefabAutoCreator : EditorWindow
 {
@@ -10,7 +12,6 @@ public class PrefabAutoCreator : EditorWindow
     private const string EnemyPrefabPath = "Assets/Prefabs/Enemy";
     private const string PlayerPrefabPath = "Assets/Prefabs/Player";
     private const string EnemyDataPath = "Assets/Resources/EnemyData";
-
     private const string ProjectilePrefabPath = "Assets/Prefabs/Projectiles";
 
     [MenuItem("Custom Tools/Prefab Auto Creator", false, -100)]
@@ -22,216 +23,211 @@ public class PrefabAutoCreator : EditorWindow
     private void OnGUI()
     {
         GUILayout.Label("Prefab Auto Creator Settings", EditorStyles.boldLabel);
-        
-        if (GUILayout.Button("Create Enemy Prefabs", GUILayout.Height(40)))
-        {
-            CreatePrefabs(EnemySpritePath, EnemyPrefabPath, true);
-        }
-
-        if (GUILayout.Button("Create Player Prefabs", GUILayout.Height(40)))
-        {
-            CreatePrefabs(PlayerSpritePath, PlayerPrefabPath, false);
-        }
+        if (GUILayout.Button("Create Enemy Prefabs", GUILayout.Height(40))) CreatePrefabs(EnemySpritePath, EnemyPrefabPath, true);
+        if (GUILayout.Button("Create Player Prefabs", GUILayout.Height(40))) CreatePrefabs(PlayerSpritePath, PlayerPrefabPath, false);
     }
 
     private void CreatePrefabs(string spriteRoot, string saveRoot, bool isEnemy)
     {
-        if (!Directory.Exists(saveRoot))
-        {
-            Directory.CreateDirectory(saveRoot);
-        }
-        if (isEnemy && !Directory.Exists(ProjectilePrefabPath))
-        {
-            Directory.CreateDirectory(ProjectilePrefabPath);
-        }
+        if (!Directory.Exists(saveRoot)) Directory.CreateDirectory(saveRoot);
+        if (isEnemy && !Directory.Exists(ProjectilePrefabPath)) Directory.CreateDirectory(ProjectilePrefabPath);
         AssetDatabase.Refresh();
 
         string[] subDirs = Directory.GetDirectories(spriteRoot);
-        int count = 0;
-
         foreach (string dir in subDirs)
         {
-            string folderName = Path.GetFileName(dir);
-            string prefabName = folderName.Replace("_", " ");
-            prefabName = System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(prefabName).Replace(" ", "");
-            
-            string savePath = Path.Combine(saveRoot, prefabName + ".prefab").Replace("\\", "/");
+            CreateSinglePrefab(dir, Path.GetFileName(dir), saveRoot, isEnemy);
+        }
+        AssetDatabase.Refresh();
+        EditorUtility.DisplayDialog("완료", "프리팹 및 애니메이션 생성이 완료되었습니다.", "확인");
+    }
 
-            GameObject go = new GameObject(prefabName);
-            
-            // 1. SpriteRenderer 및 스프라이트 설정
-            SpriteRenderer sr = go.AddComponent<SpriteRenderer>();
-            sr.sprite = FindBestSprite(dir, folderName);
-            sr.sortingLayerName = isEnemy ? "Default" : "player";
+    private void CreateSinglePrefab(string dir, string folderName, string saveRoot, bool isEnemy)
+    {
+        string prefabName = System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(folderName.Replace("_", " ")).Replace(" ", "");
+        string savePath = Path.Combine(saveRoot, prefabName + ".prefab").Replace("\\", "/");
 
-            // 2. 물리 컴포넌트 추가
-            Rigidbody2D rb = go.AddComponent<Rigidbody2D>();
-            rb.gravityScale = isEnemy ? 3f : 1f;
-            rb.constraints = RigidbodyConstraints2D.FreezeRotation;
-            rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
-            rb.simulated = true;
+        GameObject go = new GameObject(prefabName);
+        SpriteRenderer sr = go.AddComponent<SpriteRenderer>();
+        sr.sprite = FindBestSprite(dir, folderName);
+        sr.sortingLayerName = isEnemy ? "Default" : "player";
 
-            if (isEnemy)
+        Rigidbody2D rb = go.AddComponent<Rigidbody2D>();
+        bool isFlying = prefabName.ToLower().Contains("bat") || prefabName.ToLower().Contains("bird");
+        rb.gravityScale = isFlying ? 0f : (isEnemy ? 3.5f : 1f);
+        rb.constraints = RigidbodyConstraints2D.FreezeRotation;
+        rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
+        rb.simulated = true;
+
+        if (isEnemy)
+        {
+            go.transform.localScale = new Vector3(10, 10, 10);
+            int enemyLayer = LayerMask.NameToLayer("Enemy");
+            if (enemyLayer != -1) go.layer = enemyLayer;
+
+            if (prefabName.Contains("CandyTankSlime"))
             {
-                go.transform.localScale = new Vector3(10, 10, 10);
-                int enemyLayer = LayerMask.NameToLayer("Enemy");
-                if (enemyLayer != -1) go.layer = enemyLayer;
+                BoxCollider2D col = go.AddComponent<BoxCollider2D>();
+                col.size = new Vector2(0.3f, 0.13f);
             }
             else
             {
-                go.tag = "Player";
-                int playerLayer = LayerMask.NameToLayer("Player");
-                if (playerLayer != -1) go.layer = playerLayer;
+                CapsuleCollider2D col = go.AddComponent<CapsuleCollider2D>();
+                if (sr.sprite != null) col.size = sr.sprite.bounds.size * 0.8f;
             }
-
-            CapsuleCollider2D col = go.AddComponent<CapsuleCollider2D>();
-            if (sr.sprite != null)
-            {
-                col.size = sr.sprite.bounds.size * 0.8f;
-            }
-
-            // 3. 타입별 특화 설정 (공격 로직 포함)
-            if (isEnemy)
-            {
-                SetupEnemyAI(go, dir, folderName, prefabName);
-            }
-            else
-            {
-                SetupPlayer(go);
-            }
-
-            // 4. 프리팹 저장
-            PrefabUtility.SaveAsPrefabAsset(go, savePath);
-            DestroyImmediate(go);
-            count++;
+            SetupEnemyAI(go, dir, folderName, prefabName);
+        }
+        else
+        {
+            go.tag = "Player";
+            int playerLayer = LayerMask.NameToLayer("Player");
+            if (playerLayer != -1) go.layer = playerLayer;
+            go.AddComponent<PlayerController>();
+            go.AddComponent<Health>();
         }
 
-        AssetDatabase.Refresh();
-        EditorUtility.DisplayDialog("완료", $"{count}개의 프리팹이 {saveRoot}에 생성되었습니다.", "확인");
+        PrefabUtility.SaveAsPrefabAsset(go, savePath);
+        DestroyImmediate(go);
     }
 
     private Sprite FindBestSprite(string dir, string folderName)
     {
         string[] files = Directory.GetFiles(dir, "*.png");
-        if (files.Length == 0) return null;
-
-        var fileInfos = files.Select(f => new { Path = f, Name = Path.GetFileNameWithoutExtension(f).ToLower() }).ToList();
-        string folderNameLower = folderName.ToLower();
-
-        // 1. "idle" 포함 (bullet 제외)
-        string bestMatch = fileInfos.FirstOrDefault(f => f.Name.Contains("idle") && !f.Name.Contains("bullet"))?.Path;
-
-        // 2. 폴더 이름과 정확히 일치 (뒤에 아무것도 없는 것)
-        if (string.IsNullOrEmpty(bestMatch))
-        {
-            bestMatch = fileInfos.FirstOrDefault(f => f.Name == folderNameLower)?.Path;
-        }
-
-        // 3. "moving"으로 끝나는 것
-        if (string.IsNullOrEmpty(bestMatch))
-        {
-            bestMatch = fileInfos.FirstOrDefault(f => f.Name.EndsWith("moving") || f.Name.Contains("walk") || f.Name.Contains("run"))?.Path;
-        }
-
-        // 4. 최후의 수단: 첫 번째 파일 (단, bullet이나 dead 등은 최대한 피함)
-        if (string.IsNullOrEmpty(bestMatch))
-        {
-            string[] excludes = { "bullet", "dead", "attack", "hit" };
-            bestMatch = fileInfos.FirstOrDefault(f => !excludes.Any(ex => f.Name.Contains(ex)))?.Path;
-            if (string.IsNullOrEmpty(bestMatch)) bestMatch = files[0];
-        }
-
-        return AssetDatabase.LoadAssetAtPath<Sprite>(bestMatch.Replace("\\", "/"));
+        string best = files.FirstOrDefault(f => {
+            string n = Path.GetFileNameWithoutExtension(f).ToLower();
+            return n.Contains("idle") && !n.Contains("elite") && !n.Contains("bullet");
+        });
+        if (string.IsNullOrEmpty(best)) best = files.FirstOrDefault(f => !f.ToLower().Contains("bullet") && !f.ToLower().Contains("elite"));
+        return string.IsNullOrEmpty(best) ? null : AssetDatabase.LoadAssetAtPath<Sprite>(best.Replace("\\", "/"));
     }
 
     private void SetupEnemyAI(GameObject go, string dir, string folderName, string prefabName)
     {
         go.tag = "Enemy";
-        Health health = go.AddComponent<Health>();
-        
-        // 1. Animator 추가 및 컨트롤러 검색
+        go.AddComponent<Health>();
         Animator anim = go.AddComponent<Animator>();
-        anim.runtimeAnimatorController = FindAnimatorController(dir);
+        anim.cullingMode = AnimatorCullingMode.AlwaysAnimate; // 항상 애니메이션 재생 보장
+        anim.runtimeAnimatorController = CreateAutoAnimator(dir);
 
         string[] files = Directory.GetFiles(dir, "*.png");
-        bool hasBullet = files.Any(f => Path.GetFileNameWithoutExtension(f).ToLower().Contains("bullet"));
-        bool hasAttack = files.Any(f => Path.GetFileNameWithoutExtension(f).ToLower().Contains("attack"));
-
+        bool hasBullet = files.Any(f => f.ToLower().Contains("bullet"));
         EnemyData data = FindEnemyData(folderName);
 
         if (hasBullet)
         {
-            // 원거리 공격 설정
             RangedEnemy ranged = go.AddComponent<RangedEnemy>();
             ranged.data = data;
-            
-            // FirePoint 생성
-            GameObject firePointObj = new GameObject("FirePoint");
-            firePointObj.transform.SetParent(go.transform);
-            firePointObj.transform.localPosition = new Vector3(0.5f, 0, 0); // 기본 위치
-            ranged.firePoint = firePointObj.transform;
-
-            // 총알 프리팹 생성 및 연결
-            string bulletSpritePath = files.First(f => Path.GetFileNameWithoutExtension(f).ToLower().Contains("bullet"));
-            ranged.projectilePrefab = CreateProjectilePrefab(bulletSpritePath, prefabName);
+            GameObject fp = new GameObject("FirePoint");
+            fp.transform.SetParent(go.transform);
+            fp.transform.localPosition = new Vector3(-0.135f, 0.02f, 0f);
+            ranged.firePoint = fp.transform;
+            string bulletPath = files.First(f => f.ToLower().Contains("bullet"));
+            ranged.projectilePrefab = CreateProjectilePrefab(bulletPath, prefabName);
         }
         else
         {
-            // 근접 공격 및 기본 이동 설정 (EnemyController로 통합)
-            EnemyController controller = go.AddComponent<EnemyController>();
-            if (data != null)
-            {
-                SerializedObject so = new SerializedObject(controller);
-                so.FindProperty("data").objectReferenceValue = data;
-                so.FindProperty("autoInitialize").boolValue = true;
-                so.ApplyModifiedProperties();
-            }
+            EnemyController ec = go.AddComponent<EnemyController>();
+            ec.data = data;
+            ec.autoInitialize = true;
         }
     }
 
-    private RuntimeAnimatorController FindAnimatorController(string dir)
+    private RuntimeAnimatorController CreateAutoAnimator(string dir)
     {
-        // 1. 현재 폴더에서 검색
-        string[] controllers = Directory.GetFiles(dir, "*.controller", SearchOption.AllDirectories);
-        if (controllers.Length > 0)
-        {
-            return AssetDatabase.LoadAssetAtPath<RuntimeAnimatorController>(controllers[0].Replace("\\", "/"));
+        string folderName = Path.GetFileName(dir);
+        string animPath = Path.Combine(dir, folderName + ".controller").Replace("\\", "/");
+        
+        // 기존 파일 삭제 후 재생성 (강제 갱신)
+        AssetDatabase.DeleteAsset(animPath);
+        var controller = AnimatorController.CreateAnimatorControllerAtPath(animPath);
+        var root = controller.layers[0].stateMachine;
+
+        controller.AddParameter("Walk", AnimatorControllerParameterType.Bool);
+        controller.AddParameter("Attack", AnimatorControllerParameterType.Trigger);
+        controller.AddParameter("Die", AnimatorControllerParameterType.Trigger);
+
+        var idle = CreateClip(dir, "idle", "Idle", true) ?? CreateClip(dir, "", "Idle", true);
+        var walk = CreateClip(dir, "moving", "Walk", true) ?? CreateClip(dir, "walk", "Walk", true);
+        var attack = CreateClip(dir, "attack", "Attack", false);
+        var die = CreateClip(dir, "dead", "Die", false);
+
+        var sIdle = root.AddState("Idle"); sIdle.motion = idle;
+        root.defaultState = sIdle;
+
+        if (walk != null) 
+        { 
+            var sWalk = root.AddState("Walk"); sWalk.motion = walk; 
+            sIdle.AddTransition(sWalk).AddCondition(AnimatorConditionMode.If, 0, "Walk"); 
+            sWalk.AddTransition(sIdle).AddCondition(AnimatorConditionMode.IfNot, 0, "Walk"); 
+        }
+        if (attack != null) 
+        { 
+            var sAtk = root.AddState("Attack"); sAtk.motion = attack; 
+            var t = root.AddAnyStateTransition(sAtk);
+            t.AddCondition(AnimatorConditionMode.If, 0, "Attack"); 
+            t.canTransitionToSelf = false;
+            sAtk.AddTransition(sIdle).hasExitTime = true; 
+        }
+        if (die != null) 
+        { 
+            var sDie = root.AddState("Die"); sDie.motion = die; 
+            root.AddAnyStateTransition(sDie).AddCondition(AnimatorConditionMode.If, 0, "Die"); 
         }
 
-        // 2. 부모 폴더에서 검색 (한 단계 위까지만)
-        string parentDir = Directory.GetParent(dir).FullName;
-        controllers = Directory.GetFiles(parentDir, "*.controller", SearchOption.TopDirectoryOnly);
-        if (controllers.Length > 0)
-        {
-            return AssetDatabase.LoadAssetAtPath<RuntimeAnimatorController>(controllers[0].Replace("\\", "/"));
-        }
-
-        return null;
+        EditorUtility.SetDirty(controller);
+        AssetDatabase.SaveAssets();
+        return controller;
     }
 
-    private GameObject CreateProjectilePrefab(string spritePath, string enemyName)
+    private AnimationClip CreateClip(string dir, string kw, string name, bool loop)
     {
-        string savePath = $"{ProjectilePrefabPath}/{enemyName}_Bullet.prefab";
-        
-        // 이미 있으면 반환
-        GameObject existing = AssetDatabase.LoadAssetAtPath<GameObject>(savePath);
-        if (existing != null) return existing;
+        string[] files = Directory.GetFiles(dir, "*.png");
+        var matches = files.Where(f => {
+            string n = Path.GetFileNameWithoutExtension(f).ToLower();
+            if (n.Contains("elite") || n.Contains("bullet")) return false;
+            return string.IsNullOrEmpty(kw) || n.Contains(kw.ToLower());
+        }).OrderBy(f => f).ToList();
 
-        GameObject go = new GameObject(enemyName + "_Bullet");
-        SpriteRenderer sr = go.AddComponent<SpriteRenderer>();
-        sr.sprite = AssetDatabase.LoadAssetAtPath<Sprite>(spritePath.Replace("\\", "/"));
-        
-        Rigidbody2D rb = go.AddComponent<Rigidbody2D>();
-        rb.gravityScale = 0;
-        rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
-        
-        CircleCollider2D col = go.AddComponent<CircleCollider2D>();
-        col.isTrigger = true;
-        if (sr.sprite != null) col.radius = Mathf.Max(sr.sprite.bounds.extents.x, sr.sprite.bounds.extents.y);
+        if (matches.Count == 0) return null;
 
-        // Projectile 스크립트가 있다면 추가 (기존 Projectile.cs 참고)
-        var proj = go.AddComponent<Projectile>();
+        string savePath = Path.Combine(dir, name + ".anim").Replace("\\", "/");
+        AssetDatabase.DeleteAsset(savePath);
+
+        AnimationClip clip = new AnimationClip { name = name };
+        if (loop) 
+        { 
+            var s = AnimationUtility.GetAnimationClipSettings(clip); 
+            s.loopTime = true; 
+            AnimationUtility.SetAnimationClipSettings(clip, s); 
+        }
+
+        EditorCurveBinding cb = EditorCurveBinding.Sprite(0); // 가장 확실한 스프라이트 바인딩 방식
+        ObjectReferenceKeyframe[] keys = new ObjectReferenceKeyframe[matches.Count];
+        for (int i = 0; i < matches.Count; i++) 
+        {
+            Sprite s = AssetDatabase.LoadAssetAtPath<Sprite>(matches[i].Replace("\\", "/"));
+            keys[i] = new ObjectReferenceKeyframe { time = i * 0.15f, value = s };
+        }
         
+        // 마지막 키프레임 추가하여 애니메이션 끝 보장
+        if (matches.Count > 0)
+        {
+            ArrayUtility.Add(ref keys, new ObjectReferenceKeyframe { time = matches.Count * 0.15f, value = keys[matches.Count - 1].value });
+        }
+
+        AnimationUtility.SetObjectReferenceCurve(clip, cb, keys);
+        AssetDatabase.CreateAsset(clip, savePath);
+        return clip;
+    }
+
+    private GameObject CreateProjectilePrefab(string path, string name)
+    {
+        string savePath = $"{ProjectilePrefabPath}/{name}_Bullet.prefab";
+        GameObject go = new GameObject(name + "_Bullet");
+        go.AddComponent<SpriteRenderer>().sprite = AssetDatabase.LoadAssetAtPath<Sprite>(path.Replace("\\", "/"));
+        Rigidbody2D rb = go.AddComponent<Rigidbody2D>(); rb.gravityScale = 0;
+        BoxCollider2D col = go.AddComponent<BoxCollider2D>(); col.isTrigger = true;
+        go.AddComponent<Projectile>();
         GameObject prefab = PrefabUtility.SaveAsPrefabAsset(go, savePath);
         DestroyImmediate(go);
         return prefab;
@@ -239,24 +235,10 @@ public class PrefabAutoCreator : EditorWindow
 
     private EnemyData FindEnemyData(string folderName)
     {
-        string[] dataFiles = Directory.GetFiles(EnemyDataPath, "*.asset");
+        if (!Directory.Exists(EnemyDataPath)) return null;
         string searchName = folderName.Replace("_", "").ToLower();
-        string dataPath = dataFiles.FirstOrDefault(f => Path.GetFileNameWithoutExtension(f).ToLower().Contains(searchName));
-        
-        if (!string.IsNullOrEmpty(dataPath))
-        {
-            return AssetDatabase.LoadAssetAtPath<EnemyData>(dataPath.Replace("\\", "/"));
-        }
-        return null;
-    }
-
-
-    private void SetupPlayer(GameObject go)
-    {
-        go.tag = "Player";
-        // PlayerController 추가 (Health는 PlayerController 내부에 있거나 별도로 있을 수 있음)
-        // 기존 코드 분석 결과 PlayerController는 RequireComponent로 Health를 가질 수도 있음
-        var pc = go.AddComponent<PlayerController>();
-        if (go.GetComponent<Health>() == null) go.AddComponent<Health>();
+        string[] files = Directory.GetFiles(EnemyDataPath, "*.asset");
+        string path = files.FirstOrDefault(f => Path.GetFileNameWithoutExtension(f).ToLower().Contains(searchName));
+        return string.IsNullOrEmpty(path) ? null : AssetDatabase.LoadAssetAtPath<EnemyData>(path.Replace("\\", "/"));
     }
 }

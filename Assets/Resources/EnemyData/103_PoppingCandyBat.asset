@@ -10,12 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ea097a79e5f3ae045b4d2f261ea0b260, type: 3}
-  m_Name: 101_YellowSlime
+  m_Name: 103_PoppingCandyBat
   m_EditorClassIdentifier: Assembly-CSharp::EnemyData
-  ID: 101
-  EnemyName: YellowSlime
-  HP: 60
-  Speed: 1.8
-  Damage: 7
-  DetectionRange: 5.5
-  AttackInterval: 2
+  ID: 103
+  EnemyName: PoppingCandyBat
+  HP: 30
+  Speed: 4
+  Damage: 10
+  DetectionRange: 20
+  AttackRange: 1.5
+  AttackInterval: 1.5

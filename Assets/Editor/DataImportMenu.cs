@@ -284,12 +284,25 @@ public class DataImportMenu : EditorWindow
         {
             if (string.IsNullOrWhiteSpace(lines[i])) continue;
             string[] data = lines[i].Split(',');
-            int id = int.Parse(data[0]); string assetPath = $"Assets/Resources/EnemyData/{id}_{data[1]}.asset";
+            if (data.Length < 8) continue; // ID, Name, HP, Speed, Damage, Detect, AttackR, Interval
+
+            int id = int.Parse(data[0]); 
+            string assetPath = $"Assets/Resources/EnemyData/{id}_{data[1]}.asset";
             EnemyData asset = GetOrCreateAsset<EnemyData>(assetPath);
-            asset.ID = id; asset.EnemyName = data[1]; asset.HP = float.Parse(data[2]); asset.Speed = float.Parse(data[3]);
+
+            asset.ID = id; 
+            asset.EnemyName = data[1]; 
+            asset.HP = float.Parse(data[2]); 
+            asset.Speed = float.Parse(data[3]);
+            asset.Damage = float.Parse(data[4]);
+            asset.DetectionRange = float.Parse(data[5]);
+            asset.AttackRange = float.Parse(data[6]);
+            asset.AttackInterval = float.Parse(data[7]);
+
             EditorUtility.SetDirty(asset);
         }
         AssetDatabase.SaveAssets(); AssetDatabase.Refresh();
+        Debug.Log("<color=green>[DataImport]</color> Enemy Data All Import Complete!");
     }
 
     public void ImportBiomeData()

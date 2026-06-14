@@ -11,11 +11,11 @@ GameObject:
   - component: {fileID: 7371956856284055834}
   - component: {fileID: 3567943352948446072}
   - component: {fileID: 8571308066844485979}
-  - component: {fileID: 438356215524910990}
+  - component: {fileID: 2130785298132971822}
   - component: {fileID: 2474411824161057553}
   - component: {fileID: 3529124015973776013}
   - component: {fileID: 7405718386984090849}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: PoppingCandyBat
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -111,7 +111,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 3
+  m_GravityScale: 0
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -123,7 +123,7 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 1
   m_Constraints: 4
---- !u!70 &438356215524910990
+--- !u!70 &2130785298132971822
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -199,7 +199,7 @@ Animator:
   m_GameObject: {fileID: 2885091591815432331}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 6a9cf823d74d89d42a8c5ed8169abffd, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -223,5 +223,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1261ff05723f1a449b5b4e46b20d83c5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyController
-  data: {fileID: 0}
-  autoInitialize: 0
+  data: {fileID: 11400000, guid: db8233d435e7a674a82571024fb9f3ab, type: 2}
+  autoInitialize: 1

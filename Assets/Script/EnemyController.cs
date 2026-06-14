@@ -10,8 +10,8 @@ public class EnemyController : MonoBehaviour
 {
     #region Serialized Fields
     [Header("적 설정")]
-    [SerializeField] private EnemyData data;
-    [SerializeField] private bool autoInitialize = false;
+    public EnemyData data;
+    public bool autoInitialize = false;
     #endregion
 
     #region Private Variables
@@ -37,6 +37,7 @@ public class EnemyController : MonoBehaviour
     #region Lifecycle Methods
     private void Awake()
     {
+        Debug.Log($"<color=cyan>[EnemyController]</color> Awake called on {gameObject.name}");
         _rb = GetComponent<Rigidbody2D>();
         _sr = GetComponentInChildren<SpriteRenderer>();
         _animator = GetComponentInChildren<Animator>();
@@ -56,10 +57,15 @@ public class EnemyController : MonoBehaviour
 
     private void Start()
     {
+        Debug.Log($"<color=cyan>[EnemyController]</color> Start called on {gameObject.name}");
         FindPlayer();
         if (autoInitialize && data != null)
         {
             Initialize(data);
+        }
+        else if (data == null)
+        {
+            Debug.LogWarning($"<color=red>[EnemyController]</color> {gameObject.name} has NO EnemyData!");
         }
     }
 
@@ -70,7 +76,11 @@ public class EnemyController : MonoBehaviour
         if (playerObj != null) 
         {
             _target = playerObj.transform;
-            Debug.Log($"[{name}] Target set to Player at {_target.position}");
+            Debug.Log($"<color=cyan>[EnemyController]</color> {name} Target set to Player at {_target.position}");
+        }
+        else
+        {
+            Debug.LogError($"<color=red>[EnemyController]</color> {name} CANNOT find Player! Tag: {GameObject.FindGameObjectWithTag("Player") != null}");
         }
     }
 
@@ -94,6 +104,10 @@ public class EnemyController : MonoBehaviour
 
     private void FixedUpdate()
     {
+        // 최상단 로그: 무조건 찍혀야 함
+        if (Time.frameCount % 100 == 0) // 매 프레임 찍히면 너무 많으니 100프레임마다
+            Debug.Log($"<color=white>[EnemyController]</color> FixedUpdate Running on {name}. Target: {(_target != null ? "OK" : "NULL")}, Data: {(data != null ? "OK" : "NULL")}");
+
         if (_isDead || _target == null || data == null) return;
 
         HandleMovementAndAttack();

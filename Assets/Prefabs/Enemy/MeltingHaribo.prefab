@@ -11,11 +11,11 @@ GameObject:
   - component: {fileID: 9082283309429767439}
   - component: {fileID: 5027213508022141473}
   - component: {fileID: 8291750867814486355}
-  - component: {fileID: 8484050782753609248}
+  - component: {fileID: 1370534614210301280}
   - component: {fileID: 7506376843832758695}
   - component: {fileID: 6334520531758917238}
   - component: {fileID: 6602208777958168383}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: MeltingHaribo
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -111,7 +111,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 3
+  m_GravityScale: 3.5
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -123,7 +123,7 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 1
   m_Constraints: 4
---- !u!70 &8484050782753609248
+--- !u!70 &1370534614210301280
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -199,7 +199,7 @@ Animator:
   m_GameObject: {fileID: 7407700295360949425}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 69a1e824ed6c7af4f9ddfcaeb398eb04, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0

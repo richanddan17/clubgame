@@ -19,3 +19,5 @@ MonoBehaviour:
   Cooldown: 1.5
   Icon: {fileID: 0}
   ProjectilePrefab: {fileID: 0}
+  projectileCount: 1
+  spreadAngle: 0

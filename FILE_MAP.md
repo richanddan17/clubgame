@@ -37,7 +37,6 @@
 - **Common**:
   - `Health.cs` / `HealthBar.cs`: 체력 시스템 및 UI
   - `ObjectPooler.cs`: 오브젝트 풀링 시스템
-
 ### 2.2 Editor Tools (`Assets/Editor/`)
 - **컨벤션**: 모든 툴은 `EditorWindow`를 상속받으며 `Custom Tools` 메뉴를 통해 접근 가능해야 함.
 - `PrefabAutoCreator.cs`: 스프라이트 기반 프리팹 일괄 생성 및 AI 자동 설정 도구 (신규)
@@ -48,10 +47,11 @@
 
 ### 2.3 Prefabs (`Assets/Prefabs/`)
 - `Player.prefab`: 플레이어 캐릭터
-- `MeltingHaribo.prefab`: 하리보 적
-- `Slime.prefab`: 슬라임 적
-- `Wizard2.prefab`: 마법사 적
-- `BubbleProjectile_*.prefab`: 3색 버블껌 투사체
+- **Enemy/**: 적 프리팹 (PrefabAutoCreator로 생성)
+  - `CandyTankSlime.prefab`: 캔디 탱크 슬라임 (신규)
+  - `PoppingCandyBat.prefab`: 팝핑 캔디 박쥐 (신규)
+  - `MeltingHaribo.prefab`: 녹아내리는 하리보 적
+- `BubbleProjectile_*.prefab`: 3색 버블껌 투사체 (Red, Yellow, Blue)
 
 ### 2.4 Data (`Assets/Resources/`)
 - `EnemyData/`: 적 능력치 데이터

@@ -10,12 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ea097a79e5f3ae045b4d2f261ea0b260, type: 3}
-  m_Name: 103_Bat
+  m_Name: 101_CandyTankSlime
   m_EditorClassIdentifier: Assembly-CSharp::EnemyData
-  ID: 103
-  EnemyName: Bat
-  HP: 30
-  Speed: 4
-  Damage: 10
-  DetectionRange: 8
-  AttackInterval: 1.5
+  ID: 101
+  EnemyName: CandyTankSlime
+  HP: 60
+  Speed: 6
+  Damage: 7
+  DetectionRange: 15
+  AttackRange: 3
+  AttackInterval: 2

@@ -13,6 +13,16 @@ public class CameraFollow : MonoBehaviour
 
     private Vector3 desiredPosition;
 
+    void Start()
+    {
+        if (target == null)
+        {
+            GameObject p = GameObject.Find("player");
+            if (p == null) p = GameObject.Find("Player");
+            if (p != null) target = p.transform;
+        }
+    }
+
     /// <summary>
     /// 물리 연산 후 카메라 위치 업데이트
     /// LateUpdate 사용시 플레이어 이동 후 카메라가 따라와서 더 부드러움
