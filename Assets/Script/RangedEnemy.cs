@@ -347,7 +347,8 @@ public class RangedEnemy : MonoBehaviour
         if (_isDead) return;
         _isDead = true;
         _rb.linearVelocity = Vector2.zero;
-        if (_animator != null && _animator.isActiveAndEnabled) _animator.SetTrigger("Die");
+        if (_animator != null && _animator.runtimeAnimatorController != null && _animator.isActiveAndEnabled) 
+            _animator.SetTrigger("Die");
         Destroy(gameObject, 1.5f);
     }
 }

@@ -3,12 +3,8 @@ using UnityEngine;
 
 /// <summary>
 /// MeltingHaribo 몹: 곰젤리 몬스터. 
-/// - 평소 Idle 상태였다가 플레이어가 반경 안에 들어오면 땅으로 들어감 (Burrow).
-/// - 땅 속에서는 무적이며 플레이어의 X축을 추적 (4초).
-/// - 땅에서 튀어나와 공격 (20 데미지, 플레이어 3초 경직).
-/// - 다시 땅으로 들어감.
-/// - 땅에 들어가는 애니메이션 중 풀차징 공격을 받으면 캔슬되고 2초간 경직.
-/// - 중력 효과가 적용됩니다.
+/// - Animator 기반으로 동작하며, 녹기-이동-굳기-공격 루프를 가짐.
+/// - 2D 물리 시스템(Rigidbody2D, Collider2D) 사용.
 /// </summary>
 [RequireComponent(typeof(Rigidbody2D), typeof(Collider2D), typeof(Health))]
 public class MeltingHaribo : MonoBehaviour
@@ -22,23 +18,26 @@ public class MeltingHaribo : MonoBehaviour
     public float attackDamage = 20f;
     public float undergroundDuration = 4f;
     public float stunDuration = 2f;
-    public float playerStunDuration = 3f;
+    public float playerStunDuration = 2f;
     public float gravityScale = 3.5f;
-
-    [Header("스프라이트 설정")]
-    public Sprite[] hariboSprites; // 0~18번 스프라이트 (녹는 연출)
-    public float animationSpeed = 0.05f;
 
     [Header("참조")]
     private Transform _player;
     private SpriteRenderer _sr;
     private Rigidbody2D _rb;
     private Collider2D _col;
+    private Animator _anim;
     private Health _health;
     
     private HariboState _currentState = HariboState.Idle;
     private bool _isDead = false;
     private Coroutine _currentRoutine;
+
+    // Animator Parameters
+    private static readonly int AnimWalk = Animator.StringToHash("Walk");
+    private static readonly int AnimAttack = Animator.StringToHash("Attack");
+    private static readonly int AnimDie = Animator.StringToHash("Die");
+    // 추가적인 Melting 전용 파라미터가 없을 경우를 대비해 Walk와 Attack 활용 가능
 
     void Awake()
     {
@@ -46,6 +45,7 @@ public class MeltingHaribo : MonoBehaviour
         _rb = GetComponent<Rigidbody2D>();
         _col = GetComponent<Collider2D>();
         _health = GetComponent<Health>();
+        _anim = GetComponent<Animator>();
 
         _rb.freezeRotation = true;
         _rb.gravityScale = gravityScale;
@@ -89,7 +89,7 @@ public class MeltingHaribo : MonoBehaviour
                     break;
                 case HariboState.Cooldown:
                     yield return new WaitForSeconds(1f);
-                    _currentState = HariboState.MeltingDown;
+                    _currentState = HariboState.Idle;
                     break;
             }
             yield return null;
@@ -99,6 +99,8 @@ public class MeltingHaribo : MonoBehaviour
     private IEnumerator HandleIdle()
     {
         _rb.gravityScale = gravityScale;
+        UpdateAnimation(false);
+        
         if (_player != null && Vector2.Distance(transform.position, _player.position) <= detectionRange)
         {
             _currentState = HariboState.MeltingDown;
@@ -108,19 +110,15 @@ public class MeltingHaribo : MonoBehaviour
 
     private IEnumerator HandleMeltingDown()
     {
-        if (_health != null) _health.DamageMultiplier = 0f;
+        Debug.Log($"[{name}] Melting Down...");
+        if (_health != null) _health.DamageMultiplier = 0.5f; // 녹는 중에는 데미지 반감
         
-        // 땅으로 들어갈 때는 중력 해제 및 속도 정지 (바닥 통과 방지)
         _rb.gravityScale = 0f;
         _rb.linearVelocity = Vector2.zero;
         
-        int frameCount = hariboSprites != null ? hariboSprites.Length : 0;
-        for (int i = 0; i < frameCount; i++)
-        {
-            if (hariboSprites != null && i < hariboSprites.Length)
-                _sr.sprite = hariboSprites[i];
-            yield return new WaitForSeconds(animationSpeed);
-        }
+        // 애니메이션: 녹는 연출 (별도 파라미터 없으면 Walk를 false로 하고 잠시 대기)
+        UpdateAnimation(false);
+        yield return new WaitForSeconds(1.0f); 
 
         if (_col != null) _col.isTrigger = true;
         _currentState = HariboState.Underground;
@@ -136,14 +134,16 @@ public class MeltingHaribo : MonoBehaviour
             float xDir = _player.position.x - transform.position.x;
             float moveDir = xDir > 0 ? 1 : -1;
             
-            if (Mathf.Abs(xDir) > 0.1f)
+            if (Mathf.Abs(xDir) > 0.5f)
             {
                 _rb.linearVelocity = new Vector2(moveDir * moveSpeed, 0f);
                 ApplyFlip(moveDir);
+                UpdateAnimation(true);
             }
             else
             {
                 _rb.linearVelocity = Vector2.zero;
+                UpdateAnimation(false);
             }
 
             elapsed += Time.deltaTime;
@@ -155,85 +155,53 @@ public class MeltingHaribo : MonoBehaviour
 
     private IEnumerator HandleSolidifying()
     {
-        int frameCount = hariboSprites != null ? hariboSprites.Length : 0;
-        for (int i = frameCount - 1; i >= 0; i--)
-        {
-            if (hariboSprites != null && i < hariboSprites.Length)
-                _sr.sprite = hariboSprites[i];
-            yield return new WaitForSeconds(animationSpeed);
-        }
+        Debug.Log($"[{name}] Solidifying...");
+        UpdateAnimation(false);
+        yield return new WaitForSeconds(1.0f);
 
         if (_col != null) _col.isTrigger = false;
         if (_health != null) _health.DamageMultiplier = 1f;
-        _rb.gravityScale = gravityScale; // 다시 중력 적용
+        _rb.gravityScale = gravityScale; 
         
         _currentState = HariboState.Attack;
     }
 
     private IEnumerator HandleAttack()
     {
-        if (_player != null && Vector2.Distance(transform.position, _player.position) <= attackRange)
+        float distance = _player != null ? Vector2.Distance(transform.position, _player.position) : 999f;
+        
+        if (distance <= attackRange)
         {
-            Health playerHealth = _player.GetComponent<Health>();
-            if (playerHealth != null) playerHealth.TakeDamage(attackDamage, transform.position);
-
-            MonoBehaviour playerCtrl = _player.GetComponent("PlayerController") as MonoBehaviour;
-            Rigidbody2D playerRb = _player.GetComponent<Rigidbody2D>();
+            if (_anim != null) _anim.SetTrigger(AnimAttack);
             
-            if (playerCtrl != null)
+            Health playerHealth = _player.GetComponent<Health>();
+            if (playerHealth != null) 
             {
-                playerCtrl.enabled = false;
-                if (playerRb != null) playerRb.linearVelocity = Vector2.zero;
-                StartCoroutine(ReEnablePlayer(playerCtrl, playerStunDuration));
+                playerHealth.TakeDamage(attackDamage, transform.position);
             }
+            Debug.Log($"[{name}] Attacked player!");
         }
         
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(1.0f);
         _currentState = HariboState.Cooldown;
-    }
-
-    private IEnumerator ReEnablePlayer(MonoBehaviour ctrl, float delay)
-    {
-        yield return new WaitForSeconds(delay);
-        if (ctrl != null) ctrl.enabled = true;
     }
 
     private IEnumerator HandleStunned()
     {
         _rb.linearVelocity = Vector2.zero;
-        _rb.gravityScale = gravityScale; // 스턴 중에도 중력 적용
+        _rb.gravityScale = gravityScale;
+        UpdateAnimation(false);
         
-        if (_health != null) _health.DamageMultiplier = 1f;
+        if (_health != null) _health.DamageMultiplier = 2.0f; // 스턴 중에는 데미지 2배
         if (_col != null) _col.isTrigger = false;
 
         yield return new WaitForSeconds(stunDuration);
-        
-        _currentState = HariboState.MeltingDown;
+        _currentState = HariboState.Idle;
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    private void UpdateAnimation(bool isMoving)
     {
-        if (_isDead) return;
-
-        if (_currentState == HariboState.MeltingDown || _currentState == HariboState.Underground)
-        {
-            if (collision.CompareTag("Projectile") || collision.gameObject.name.Contains("Bubble"))
-            {
-                // 풀차징 샷(크기 3.4 이상) 감지
-                if (collision.transform.localScale.x >= 3.4f)
-                {
-                    CancelBurrow();
-                }
-            }
-        }
-    }
-
-    private void CancelBurrow()
-    {
-        Debug.Log("<color=orange>[Cancel]</color> Melting Haribo burrow cancelled by Fully Charged Attack!");
-        if (_currentRoutine != null) StopCoroutine(_currentRoutine);
-        _currentState = HariboState.Stunned;
-        _currentRoutine = StartCoroutine(HariboRoutine());
+        if (_anim != null) _anim.SetBool(AnimWalk, isMoving);
     }
 
     private void ApplyFlip(float xDir)
@@ -246,7 +214,20 @@ public class MeltingHaribo : MonoBehaviour
     {
         if (_isDead) return;
         _isDead = true;
+        if (_anim != null) _anim.SetTrigger(AnimDie);
         StopAllCoroutines();
-        Destroy(gameObject, 0.5f);
+        Destroy(gameObject, 1.5f);
+    }
+
+    // 외부(Projectile 등)에서 호출하여 패턴 캔슬 가능
+    public void RequestCancelPattern()
+    {
+        if (_currentState == HariboState.MeltingDown || _currentState == HariboState.Underground)
+        {
+            Debug.Log("<color=orange>[Cancel]</color> Melting Haribo pattern cancelled!");
+            if (_currentRoutine != null) StopCoroutine(_currentRoutine);
+            _currentState = HariboState.Stunned;
+            _currentRoutine = StartCoroutine(HariboRoutine());
+        }
     }
 }

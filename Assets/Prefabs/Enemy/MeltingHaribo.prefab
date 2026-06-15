@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 1370534614210301280}
   - component: {fileID: 7506376843832758695}
   - component: {fileID: 6334520531758917238}
-  - component: {fileID: 6602208777958168383}
+  - component: {fileID: 4716973959505738635}
   m_Layer: 7
   m_Name: MeltingHaribo
   m_TagString: Enemy
@@ -211,7 +211,7 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &6602208777958168383
+--- !u!114 &4716973959505738635
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -220,8 +220,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 7407700295360949425}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1261ff05723f1a449b5b4e46b20d83c5, type: 3}
+  m_Script: {fileID: 11500000, guid: 63a9c2f058e82bb4dab93438c1818b93, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::EnemyController
-  data: {fileID: 11400000, guid: a557b47323c641940b44624562f68640, type: 2}
-  autoInitialize: 1
+  m_EditorClassIdentifier: Assembly-CSharp::MeltingHaribo
+  moveSpeed: 4
+  detectionRange: 8
+  attackRange: 1.5
+  attackDamage: 20
+  undergroundDuration: 4
+  stunDuration: 2
+  playerStunDuration: 2
+  gravityScale: 3.5

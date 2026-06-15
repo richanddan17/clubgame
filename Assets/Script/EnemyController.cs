@@ -211,7 +211,9 @@ public class EnemyController : MonoBehaviour
         {
             playerHealth.TakeDamage(data.Damage, transform.position);
             
-            if (_animator != null) _animator.SetTrigger(AnimAttack);
+            if (_animator != null && _animator.runtimeAnimatorController != null) 
+                _animator.SetTrigger(AnimAttack);
+                
             _nextAttackTime = Time.time + (data.AttackInterval > 0 ? data.AttackInterval : 1.5f);
             
             Debug.Log($"[{name}] Attacked player! Damage: {data.Damage}");
@@ -257,7 +259,7 @@ public class EnemyController : MonoBehaviour
         _isDead = true;
         _rb.linearVelocity = Vector2.zero;
         
-        if (_animator != null)
+        if (_animator != null && _animator.runtimeAnimatorController != null)
         {
             _animator.SetTrigger(AnimDie);
             Destroy(gameObject, 1.0f);

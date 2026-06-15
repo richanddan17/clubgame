@@ -60,6 +60,7 @@ public class Projectile : MonoBehaviour
         // 다양한 적 스크립트 대응
         EnemyController enemy = collision.GetComponent<EnemyController>() ?? collision.GetComponentInParent<EnemyController>();
         RangedEnemy wizard = collision.GetComponent<RangedEnemy>() ?? collision.GetComponentInParent<RangedEnemy>();
+        MeltingHaribo haribo = collision.GetComponent<MeltingHaribo>() ?? collision.GetComponentInParent<MeltingHaribo>();
 
         if (health != null)
         {
@@ -70,6 +71,7 @@ public class Projectile : MonoBehaviour
             {
                 if (enemy != null) enemy.ApplyEffect(bubbleType);
                 if (wizard != null) wizard.ApplyEffect(bubbleType);
+                if (haribo != null) haribo.RequestCancelPattern();
             }
 
             Deactivate();
@@ -77,13 +79,14 @@ public class Projectile : MonoBehaviour
         }
 
         // Health는 없지만 컨트롤러만 있는 경우나 지형 충돌 처리
-        bool isAnyEnemy = (enemy != null || wizard != null);
+        bool isAnyEnemy = (enemy != null || wizard != null || haribo != null);
         if (isAnyEnemy || collision.gameObject.layer == LayerMask.NameToLayer("Ground"))
         {
             if (isSpecial)
             {
                 if (enemy != null) enemy.ApplyEffect(bubbleType);
                 if (wizard != null) wizard.ApplyEffect(bubbleType);
+                if (haribo != null) haribo.RequestCancelPattern();
             }
             Deactivate();
         }

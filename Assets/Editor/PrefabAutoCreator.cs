@@ -86,6 +86,8 @@ public class PrefabAutoCreator : EditorWindow
             go.AddComponent<Health>();
         }
 
+        // [Fix] 프리팹 저장 전 에셋 데이터베이스와 동기화 및 Dirty 설정
+        EditorUtility.SetDirty(go);
         PrefabUtility.SaveAsPrefabAsset(go, savePath);
         DestroyImmediate(go);
     }
@@ -111,16 +113,19 @@ public class PrefabAutoCreator : EditorWindow
         // 1. 애니메이터 컨트롤러 생성
         CreateAutoAnimator(dir);
         
-        // 2. 강제 리프레시 (이게 없으면 유니티가 파일을 못 찾음)
-        AssetDatabase.Refresh();
+        // 2. [Fix] 해당 컨트롤러 에셋만 강제로 확실히 임포트
+        string animPath = Path.Combine(dir, folderName + ".controller").Replace("\\", "/");
+        AssetDatabase.ImportAsset(animPath, ImportAssetOptions.ForceUpdate);
+        AssetDatabase.SaveAssets(); // 모든 변경사항 디스크 저장
         
         // 3. 확실하게 로드해서 할당
-        string animPath = Path.Combine(dir, folderName + ".controller").Replace("\\", "/");
         RuntimeAnimatorController controller = AssetDatabase.LoadAssetAtPath<RuntimeAnimatorController>(animPath);
         
         if (controller != null)
         {
             anim.runtimeAnimatorController = controller;
+            // [Fix] 컴포넌트 Dirty 설정 (직렬화 강제)
+            EditorUtility.SetDirty(anim);
             Debug.Log($"<color=green>[PrefabCreator]</color> Assigned Controller to {prefabName}");
         }
         else
@@ -132,7 +137,14 @@ public class PrefabAutoCreator : EditorWindow
         bool hasBullet = files.Any(f => f.ToLower().Contains("bullet"));
         EnemyData data = FindEnemyData(folderName);
 
-        if (hasBullet)
+        if (prefabName.Contains("Haribo") || prefabName.Contains("Melting"))
+        {
+            MeltingHaribo haribo = go.AddComponent<MeltingHaribo>();
+            // MeltingHaribo는 자체 스크립트 내부에서 Animator를 사용하거나 수동 제어하도록 확장 가능
+            // 여기서는 스크립트만 정상 부착하고 에러 방지
+            Debug.Log($"<color=orange>[PrefabCreator]</color> Added MeltingHaribo component to {prefabName}");
+        }
+        else if (hasBullet)
         {
             RangedEnemy ranged = go.AddComponent<RangedEnemy>();
             ranged.data = data;
@@ -166,7 +178,7 @@ public class PrefabAutoCreator : EditorWindow
         controller.AddParameter("Die", AnimatorControllerParameterType.Trigger);
 
         var idle = CreateClip(dir, "idle", "Idle", true) ?? CreateClip(dir, "", "Idle", true);
-        var walk = CreateClip(dir, "moving", "Walk", true) ?? CreateClip(dir, "walk", "Walk", true);
+        var walk = CreateClip(dir, "moving", "Walk", true) ?? CreateClip(dir, "walk", "Walk", true) ?? CreateClip(dir, "heating", "Walk", true);
         var attack = CreateClip(dir, "attack", "Attack", false);
         var die = CreateClip(dir, "dead", "Die", false);
 
@@ -200,13 +212,13 @@ public class PrefabAutoCreator : EditorWindow
     private AnimationClip CreateClip(string dir, string kw, string name, bool loop)
     {
         string[] files = Directory.GetFiles(dir, "*.png");
-        var matches = files.Where(f => {
+        var textureFiles = files.Where(f => {
             string n = Path.GetFileNameWithoutExtension(f).ToLower();
             if (n.Contains("elite") || n.Contains("bullet")) return false;
             return string.IsNullOrEmpty(kw) || n.Contains(kw.ToLower());
         }).OrderBy(f => f).ToList();
 
-        if (matches.Count == 0) return null;
+        if (textureFiles.Count == 0) return null;
 
         string savePath = Path.Combine(dir, name + ".anim").Replace("\\", "/");
         AssetDatabase.DeleteAsset(savePath);
@@ -224,21 +236,31 @@ public class PrefabAutoCreator : EditorWindow
             path = "", 
             propertyName = "m_Sprite" 
         };
-        ObjectReferenceKeyframe[] keys = new ObjectReferenceKeyframe[matches.Count];
-        for (int i = 0; i < matches.Count; i++) 
+
+        // [Fix] 스프라이트 시트(Sliced Sprite) 대응 로직
+        List<Sprite> allSprites = new List<Sprite>();
+        foreach (var file in textureFiles)
         {
-            Sprite s = AssetDatabase.LoadAssetAtPath<Sprite>(matches[i].Replace("\\", "/"));
-            keys[i] = new ObjectReferenceKeyframe { time = i * 0.15f, value = s };
+            string path = file.Replace("\\", "/");
+            // 해당 경로의 모든 서브 에셋(스프라이트 포함)을 로드
+            Object[] assets = AssetDatabase.LoadAllAssetsAtPath(path);
+            var spritesInFile = assets.OfType<Sprite>().OrderBy(s => s.name).ToList();
+            allSprites.AddRange(spritesInFile);
+        }
+
+        if (allSprites.Count == 0) return null;
+
+        ObjectReferenceKeyframe[] keys = new ObjectReferenceKeyframe[allSprites.Count + 1];
+        for (int i = 0; i < allSprites.Count; i++) 
+        {
+            keys[i] = new ObjectReferenceKeyframe { time = i * 0.15f, value = allSprites[i] };
         }
         
-        // 마지막 키프레임 추가
-        if (matches.Count > 0)
-        {
-            var lastKeys = new ObjectReferenceKeyframe[keys.Length + 1];
-            System.Array.Copy(keys, lastKeys, keys.Length);
-            lastKeys[keys.Length] = new ObjectReferenceKeyframe { time = matches.Count * 0.15f, value = keys[keys.Length - 1].value };
-            keys = lastKeys;
-        }
+        // 마지막 프레임 고정
+        keys[allSprites.Count] = new ObjectReferenceKeyframe { 
+            time = allSprites.Count * 0.15f, 
+            value = allSprites[allSprites.Count - 1] 
+        };
 
         AnimationUtility.SetObjectReferenceCurve(clip, cb, keys);
         AssetDatabase.CreateAsset(clip, savePath);
