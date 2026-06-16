@@ -31,7 +31,6 @@ public class RangedEnemy : MonoBehaviour
 
     private void Awake()
     {
-        Debug.Log($"<color=orange>[RangedEnemy]</color> Awake called on {gameObject.name}");
         _rb = GetComponent<Rigidbody2D>();
         _animator = GetComponentInChildren<Animator>();
         _sr = GetComponentInChildren<SpriteRenderer>();
@@ -41,7 +40,6 @@ public class RangedEnemy : MonoBehaviour
         if (firePoint == null) 
         {
             firePoint = transform;
-            Debug.LogWarning($"<color=orange>[RangedEnemy]</color> {name} FirePoint is missing, using transform.");
         }
         if (_health != null) _health.OnDie.AddListener(Die);
     }
@@ -57,30 +55,17 @@ public class RangedEnemy : MonoBehaviour
         if (playerObj != null)
         {
             _player = playerObj.transform;
-            Debug.Log($"<color=orange>[RangedEnemy]</color> {name} Target LOCKED to: <color=yellow>{playerObj.name}</color>");
-        }
-        else
-        {
-            Debug.LogError($"<color=red>[RangedEnemy]</color> {name} CANNOT find 'player' object in scene!");
         }
     }
 
     private void Start()
     {
-        Debug.Log($"<color=orange>[RangedEnemy]</color> Start called on {gameObject.name}");
         FindPlayer();
 
         if (data != null)
         {
             if (_health != null) _health.Initialize(data.HP);
         }
-        else
-        {
-            Debug.LogError($"<color=red>[RangedEnemy]</color> {name} has NO EnemyData!");
-        }
-
-        if (projectilePrefab == null)
-            Debug.LogError($"<color=red>[RangedEnemy]</color> {name} has NO ProjectilePrefab!");
     }
 
     private void Update()
@@ -231,10 +216,9 @@ public class RangedEnemy : MonoBehaviour
     {
         yield return new WaitForSeconds(delay);
         
-        // 만약 애니메이션 이벤트(Shoot)가 이미 실행되지 않았다면 강제로 실행
-        if (!_didShootThisAttack)
+        // 투사체가 있을 때만 실행
+        if (!_didShootThisAttack && projectilePrefab != null)
         {
-            Debug.Log($"<color=yellow>[RangedEnemy]</color> {name} No Animation Event detected. Firing via fallback.");
             Shoot();
         }
     }
@@ -245,11 +229,9 @@ public class RangedEnemy : MonoBehaviour
         {
             case Projectile.BubbleType.Red:
                 _slowTimer = 3f;
-                Debug.Log($"<color=red>[Wizard Effect]</color> SLOWED for 3s");
                 break;
             case Projectile.BubbleType.Yellow:
                 _stunTimer = 1f;
-                Debug.Log($"<color=yellow>[Wizard Effect]</color> STUNNED for 1s");
                 break;
         }
     }
@@ -265,8 +247,6 @@ public class RangedEnemy : MonoBehaviour
         if (_isDead || _player == null) return;
         _didShootThisAttack = true; // 이벤트 실행됨 표시
 
-        Debug.Log($"<color=cyan>[RangedEnemy]</color> {name} MeleeSwing() called via Animation Event!");
-
         float side = transform.localScale.x > 0 ? 1f : -1f;
         Vector2 checkPos = (Vector2)transform.position + new Vector2(side * meleeOffset.x, meleeOffset.y);
         
@@ -278,7 +258,6 @@ public class RangedEnemy : MonoBehaviour
                 if (col.TryGetComponent<Health>(out var h))
                 {
                     h.TakeDamage(meleeDamage * damageMultiplier, transform.position);
-                    Debug.Log($"<color=orange>[Wizard Melee]</color> 지팡이 휘두르기 적중! 데미지: {meleeDamage * damageMultiplier}");
                 }
             }
         }
@@ -288,14 +267,11 @@ public class RangedEnemy : MonoBehaviour
     {
         if (_isDead || projectilePrefab == null || firePoint == null || _player == null) 
         {
-            Debug.LogWarning($"<color=red>[RangedEnemy]</color> {name} Shoot() failed! Prefab: {projectilePrefab!=null}, Point: {firePoint!=null}, Player: {_player!=null}");
             return;
         }
 
         if (_didShootThisAttack) return; 
         _didShootThisAttack = true;
-
-        Debug.Log($"<color=cyan>[RangedEnemy]</color> {name} Shoot() EXECUTED!");
 
         Vector2 direction = (_player.position - firePoint.position).normalized;
         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
