@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// 5초간 적을 정지시키는 시간 정지 스킬 효과
+/// 5초간 적을 정지시키는 시간 정지 스킬 효과 (플레이어를 따라다님)
 /// </summary>
 public class TimeStopEffect : MonoBehaviour
 {
@@ -10,10 +10,26 @@ public class TimeStopEffect : MonoBehaviour
     [SerializeField] private float stunDuration = 5f;
     [SerializeField] private float lifeTime = 1f; // VFX가 사라지는 시간
 
+    private Transform _player;
+
     private void Start()
     {
+        // 플레이어 찾기
+        var playerObj = GameObject.FindGameObjectWithTag("Player");
+        if (playerObj == null) playerObj = GameObject.Find("player");
+        if (playerObj != null) _player = playerObj.transform;
+
         ApplyEffect();
         Destroy(gameObject, lifeTime);
+    }
+
+    private void Update()
+    {
+        // 애니메이션 재생 중 플레이어 위치 따라가기
+        if (_player != null)
+        {
+            transform.position = _player.position;
+        }
     }
 
     private void ApplyEffect()

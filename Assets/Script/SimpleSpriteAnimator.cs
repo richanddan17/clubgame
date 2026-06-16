@@ -18,6 +18,13 @@ public class SimpleSpriteAnimator : MonoBehaviour
         _sr = GetComponent<SpriteRenderer>();
     }
 
+    private void OnEnable()
+    {
+        _frameIndex = 0;
+        _timer = 0;
+        if (frames != null && frames.Length > 0 && _sr != null) _sr.sprite = frames[0];
+    }
+
     private void Update()
     {
         if (frames == null || frames.Length == 0) return;
