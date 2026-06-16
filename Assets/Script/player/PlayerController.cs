@@ -3,11 +3,9 @@ using UnityEngine.InputSystem;
 using System.Collections.Generic;
 
 /// <summary>
-/// 최적화된 플레이어 컨트롤러 (Q키 토글 차징 모드 + 가변 속도/크기 적용)
+/// 최적화된 플레이어 컨트롤러 (Q키 토글 차징 모드 + ZXCV 스킬 시스템)
 /// </summary>
-[RequireComponent(typeof(Rigidbody2D))]
-[RequireComponent(typeof(Collider2D))]
-[RequireComponent(typeof(Animator))]
+[RequireComponent(typeof(Rigidbody2D), typeof(Collider2D), typeof(Animator))]
 [RequireComponent(typeof(Health))]
 public class PlayerController : MonoBehaviour
 {
@@ -49,14 +47,13 @@ public class PlayerController : MonoBehaviour
     private Vector3 _originalScale;
     private Vector3 _startPosition;
 
-    private int _currentSkillIndex = 0;
     private int _currentColorIndex = 0;
     private float _lastFireTime;
     private float _chargeStartTime;
-    private bool _isChargeMode = false; // Q키 토글 상태
+    private bool _isChargeMode = false;
 
     // 특수 능력 및 쿨타임
-    private float[] _abilityCooldowns = { 5f, 5f, 8f }; // Blue, Red, Yellow
+    private float[] _abilityCooldowns = { 5f, 5f, 8f }; 
     private float[] _lastUsedTime = { -10f, -10f, -10f };
     private float _speedBoostTimer = 0f;
 
@@ -64,6 +61,10 @@ public class PlayerController : MonoBehaviour
     private static readonly int AnimIsGrounded = Animator.StringToHash("isGrounded");
     private static readonly int AnimIsRunning = Animator.StringToHash("isRunning");
     private static readonly int AnimDie = Animator.StringToHash("Die");
+
+    [Header("Inventory & HUD")]
+    public GameObject inventoryPanel;
+    private bool _isInventoryOpen = false;
     #endregion
 
     #region Lifecycle
@@ -88,30 +89,9 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private float _knockbackTimer = 0f;
-
-    private void ApplyParryKnockback(Vector2 direction)
-    {
-        _knockbackTimer = 0.2f; // 0.2초 동안 이동 입력 무시
-        _rb.linearVelocity = Vector2.zero;
-        _rb.AddForce(direction * 15f, ForceMode2D.Impulse);
-    }
-
     private void Start()
     {
         UpdateSkillHUD();
-    }
-
-    public void UpdateSkillHUD()
-    {
-        if (SkillHUDManager.Instance == null) return;
-        for (int i = 0; i < 4; i++)
-        {
-            if (combatSettings.EquippedSkills.Count > i)
-                SkillHUDManager.Instance.UpdateSkillIcon(i, combatSettings.EquippedSkills[i]);
-            else
-                SkillHUDManager.Instance.UpdateSkillIcon(i, null);
-        }
     }
 
     private void Update()
@@ -124,7 +104,6 @@ public class PlayerController : MonoBehaviour
         ApplyCrouch();
         UpdateAnimations();
 
-        // 타이머 감소
         if (_speedBoostTimer > 0) _speedBoostTimer -= Time.deltaTime;
         if (_knockbackTimer > 0) _knockbackTimer -= Time.deltaTime;
     }
@@ -136,28 +115,7 @@ public class PlayerController : MonoBehaviour
     }
     #endregion
 
-    #region Mechanics
-    private void SetupPhysics()
-    {
-        _rb.gravityScale = 3.5f;
-        _rb.freezeRotation = true;
-        _rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
-
-        PhysicsMaterial2D mat = new PhysicsMaterial2D("Frictionless") { friction = 0, bounciness = 0 };
-        if (_collider != null) _collider.sharedMaterial = mat;
-
-        if (moveSettings.GroundLayer.value == 0)
-            moveSettings.GroundLayer = LayerMask.GetMask("Ground");
-    }
-
-    private float _parryCooldown = 1f;
-    private float _lastParryTime = -10f;
-    private float _parryDuration = 0.3f;
-
-    [Header("Inventory Settings")]
-    public GameObject inventoryPanel; // 인스펙터에서 할당 필요
-    private bool _isInventoryOpen = false;
-
+    #region Input & Mechanics
     private void HandleInput()
     {
         if (Keyboard.current.eKey.wasPressedThisFrame) ToggleInventory();
@@ -177,35 +135,27 @@ public class PlayerController : MonoBehaviour
 
         if (Keyboard.current.rKey.wasPressedThisFrame) CycleColor();
 
-        // F키 패링
+        // ZXCV 스킬 입력
+        if (Keyboard.current.zKey.wasPressedThisFrame) UseSkill(0);
+        if (Keyboard.current.xKey.wasPressedThisFrame) UseSkill(1);
+        if (Keyboard.current.cKey.wasPressedThisFrame) UseSkill(2);
+        if (Keyboard.current.vKey.wasPressedThisFrame) UseSkill(3);
+
         if (Keyboard.current.fKey.wasPressedThisFrame) TryParry();
 
-        // Q키 토글
         if (Keyboard.current.qKey.wasPressedThisFrame)
         {
             _isChargeMode = !_isChargeMode;
-            Debug.Log("<color=cyan>[Mode]</color> Charge Mode: " + (_isChargeMode ? "ON" : "OFF"));
         }
 
-        // 슈팅 처리
         if (_isChargeMode)
         {
-            if (Mouse.current.leftButton.wasPressedThisFrame)
-            {
-                _chargeStartTime = Time.time;
-            }
-            if (Mouse.current.leftButton.wasReleasedThisFrame)
-            {
-                float chargeTime = Time.time - _chargeStartTime;
-                TryFire(chargeTime);
-            }
+            if (Mouse.current.leftButton.wasPressedThisFrame) _chargeStartTime = Time.time;
+            if (Mouse.current.leftButton.wasReleasedThisFrame) TryFire(Time.time - _chargeStartTime);
         }
         else
         {
-            if (Mouse.current.leftButton.isPressed)
-            {
-                TryFire();
-            }
+            if (Mouse.current.leftButton.isPressed) TryFire();
         }
     }
 
@@ -237,51 +187,86 @@ public class PlayerController : MonoBehaviour
             {
                 invUI.UpdateUI();
             }
-
-            Debug.Log("<color=yellow>[Inventory]</color> " + (_isInventoryOpen ? "Opened (Paused)" : "Closed (Resumed)"));
         }
     }
 
-    private void TryParry()
+    private void UseSkill(int slotIndex)
     {
-        if (Time.time < _lastParryTime + _parryCooldown) return;
+        if (combatSettings.EquippedSkills.Count <= slotIndex) return;
         
-        StartCoroutine(ParryRoutine());
+        SkillData skill = combatSettings.EquippedSkills[slotIndex];
+        if (skill == null || skill.ProjectilePrefab == null) return;
+
+        // 투사체 발사
+        Vector3 mousePos = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
+        Vector2 direction = (mousePos - combatSettings.FirePoint.position).normalized;
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+        
+        Instantiate(skill.ProjectilePrefab, combatSettings.FirePoint.position, Quaternion.Euler(0, 0, angle));
+        
+        if (SkillHUDManager.Instance != null)
+        {
+            SkillHUDManager.Instance.TriggerCooldown(slotIndex);
+        }
     }
 
-    private System.Collections.IEnumerator ParryRoutine()
+    public void UpdateSkillHUD()
     {
-        _lastParryTime = Time.time;
-        if (_health != null) _health.IsParrying = true;
-
-        // 비주얼 효과: 버블껌처럼 분홍색으로 변경
-        SpriteRenderer sr = GetComponentInChildren<SpriteRenderer>();
-        Color originalColor = sr.color;
-        sr.color = new Color(1f, 0.5f, 0.8f); // 분홍색
-
-        yield return new WaitForSeconds(_parryDuration);
-
-        if (_health != null) _health.IsParrying = false;
-        sr.color = originalColor;
+        if (SkillHUDManager.Instance == null) return;
+        for (int i = 0; i < 4; i++)
+        {
+            if (combatSettings.EquippedSkills.Count > i)
+                SkillHUDManager.Instance.UpdateSkillIcon(i, combatSettings.EquippedSkills[i]);
+            else
+                SkillHUDManager.Instance.UpdateSkillIcon(i, null);
+        }
     }
 
+    private void TryFire(float chargeTime = 0f)
+    {
+        if (_isCrouching) return;
+        if (Time.time < _lastFireTime + 0.2f) return;
+
+        float chargeRatio = Mathf.Clamp01(chargeTime / 5f);
+        float finalDamage = Mathf.Lerp(10f, 60f, chargeRatio);
+        float finalScale = _isChargeMode ? Mathf.Lerp(1.5f, 3.5f, chargeRatio) : 1.5f;
+        float finalSpeed = _isChargeMode ? Mathf.Lerp(15f, 10f, chargeRatio) : 18f;
+
+        Vector3 mousePos = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
+        Vector2 direction = (mousePos - combatSettings.FirePoint.position).normalized;
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+
+        GameObject prefab = (combatSettings.ColorProjectilePrefabs != null && combatSettings.ColorProjectilePrefabs.Length > _currentColorIndex) 
+            ? combatSettings.ColorProjectilePrefabs[_currentColorIndex] : null;
+
+        if (prefab && combatSettings.FirePoint)
+        {
+            var obj = Instantiate(prefab, combatSettings.FirePoint.position, Quaternion.Euler(0, 0, angle));
+            obj.transform.localScale = new Vector3(finalScale, finalScale, 1f);
+            if (obj.TryGetComponent<Projectile>(out var proj)) 
+                proj.Initialize(finalDamage, _isFacingRight, finalSpeed, shooter: gameObject);
+        }
+
+        _lastFireTime = Time.time;
+    }
+    #endregion
+
+    #region Movement & Physics
+    private float _knockbackTimer = 0f;
+
+    private void SetupPhysics()
+    {
+        _rb.gravityScale = 3.5f;
+        _rb.freezeRotation = true;
+        _rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
+        if (moveSettings.GroundLayer.value == 0) moveSettings.GroundLayer = LayerMask.GetMask("Ground");
+    }
 
     private void ApplyMovement()
     {
-        if (_knockbackTimer > 0) return; // 밀려나는 중에는 이동 처리 안 함
-
+        if (_knockbackTimer > 0) return;
         float targetSpeed = _isRunning ? moveSettings.RunSpeed : moveSettings.WalkSpeed;
-        
-        // 파랑 버블 특수 능력: 스피드 부스트
         if (_speedBoostTimer > 0) targetSpeed *= 1.5f;
-
-        // [중요] 차징 모드이면서 실제로 마우스를 누르고 있을 때만 느려짐
-        bool isActivelyCharging = _isChargeMode && Mouse.current.leftButton.isPressed;
-
-        if (isActivelyCharging && _isCrouching) targetSpeed = 1f;
-        else if (isActivelyCharging) targetSpeed = 2f;
-        else if (_isCrouching) targetSpeed = 4f;
-
         _rb.linearVelocity = new Vector2(_moveInput.x * targetSpeed, _rb.linearVelocity.y);
     }
 
@@ -295,39 +280,13 @@ public class PlayerController : MonoBehaviour
 
     private void Jump()
     {
-        if (_isGrounded)
-            _rb.linearVelocity = new Vector2(_rb.linearVelocity.x, moveSettings.JumpForce);
+        if (_isGrounded) _rb.linearVelocity = new Vector2(_rb.linearVelocity.x, moveSettings.JumpForce);
     }
-
-    private void CycleColor()
-    {
-        _currentColorIndex = (_currentColorIndex + 1) % 3;
-        float remainingCooldown = Mathf.Max(0, (_lastUsedTime[_currentColorIndex] + _abilityCooldowns[_currentColorIndex]) - Time.time);
-        Debug.Log($"Bullet Color: {((ColorIndex)_currentColorIndex)} | Cooldown: {remainingCooldown:F1}s");
-    }
-
-    private enum ColorIndex { Blue = 0, Red = 1, Yellow = 2 }
 
     private void HandleFacingDirection()
     {
-        bool isPressingFire = Mouse.current.leftButton.isPressed;
-
-        if (isPressingFire)
-        {
-            // 차징 중이거나 발사 중일 때는 마우스 위치를 바라봄
-            Vector3 mousePos = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
-            float directionX = mousePos.x - transform.position.x;
-
-            if (directionX > 0.1f && !_isFacingRight) Flip();
-            else if (directionX < -0.1f && _isFacingRight) Flip();
-            return;
-        }
-
-        if (Time.time < _lastFireTime + 0.3f) return;
-
         if (Mathf.Abs(_moveInput.x) > 0.1f)
         {
-            // 평소 이동 중일 때는 이동 방향을 바라봄
             if (_moveInput.x > 0 && !_isFacingRight) Flip();
             else if (_moveInput.x < 0 && _isFacingRight) Flip();
         }
@@ -339,104 +298,44 @@ public class PlayerController : MonoBehaviour
         transform.rotation = Quaternion.Euler(0, _isFacingRight ? 0 : 180, 0);
     }
 
-    private void TryFire(float chargeTime = 0f)
+    private void ApplyCrouch()
     {
-        if (_isCrouching) return;
-        
-        float baseDamage = 10f;
-        float cooldown = 0.2f;
-        int projectileCount = 1;
-        float spreadAngle = 0f;
+        float targetY = _isCrouching ? _originalScale.y * moveSettings.CrouchScaleMultiplier : _originalScale.y;
+        transform.localScale = new Vector3(_originalScale.x, targetY, _originalScale.z);
+        if (_health != null) _health.DamageMultiplier = _isCrouching ? 0.5f : 1.0f;
+    }
 
-        SkillData currentSkill = null;
-        if (combatSettings.EquippedSkills.Count > 0)
-        {
-            currentSkill = combatSettings.EquippedSkills[_currentSkillIndex];
-            baseDamage = currentSkill.Damage;
-            cooldown = currentSkill.Cooldown;
-            projectileCount = Mathf.Max(1, currentSkill.projectileCount);
-            spreadAngle = currentSkill.spreadAngle;
-        }
+    private void UpdateAnimations()
+    {
+        _animator.SetFloat(AnimSpeed, Mathf.Abs(_moveInput.x));
+        _animator.SetBool(AnimIsGrounded, _isGrounded);
+        _animator.SetBool(AnimIsRunning, _isRunning && Mathf.Abs(_moveInput.x) > 0.1f);
+    }
+    #endregion
 
-        if (Time.time < _lastFireTime + cooldown) return;
+    #region Combat Utilities
+    private void CycleColor()
+    {
+        _currentColorIndex = (_currentColorIndex + 1) % 3;
+    }
 
-        // 특수 능력 사용 가능 여부 체크
-        bool canUseSpecial = Time.time >= _lastUsedTime[_currentColorIndex] + _abilityCooldowns[_currentColorIndex];
-        bool isSpecialShot = false;
+    private void TryParry()
+    {
+        StartCoroutine(ParryRoutine());
+    }
 
-        if (canUseSpecial)
-        {
-            isSpecialShot = true;
-            _lastUsedTime[_currentColorIndex] = Time.time;
+    private System.Collections.IEnumerator ParryRoutine()
+    {
+        if (_health != null) _health.IsParrying = true;
+        yield return new WaitForSeconds(0.3f);
+        if (_health != null) _health.IsParrying = false;
+    }
 
-            // 즉발 효과 (파랑: 스피드 부스트)
-            if (_currentColorIndex == (int)ColorIndex.Blue)
-            {
-                _speedBoostTimer = 2f;
-                Debug.Log("<color=blue>[Ability]</color> SPEED BOOST activated for 2s");
-            }
-        }
-
-        // 데미지 및 크기 계산
-        float chargeRatio = Mathf.Clamp01(chargeTime / 5f);
-        float finalDamage = Mathf.Lerp(baseDamage, 60f, chargeRatio);
-        
-        // 빨강 특수 능력: 데미지 1.5배
-        if (isSpecialShot && _currentColorIndex == (int)ColorIndex.Red)
-        {
-            finalDamage *= 1.5f;
-            Debug.Log("<color=red>[Ability]</color> POWER SHOT! Damage increased by 1.5x");
-        }
-
-        float baseScale = 1.5f;
-        float finalScale = _isChargeMode ? Mathf.Lerp(baseScale, 3.5f, chargeRatio) : baseScale;
-        Vector3 projectileScale = new Vector3(finalScale, finalScale, 1f);
-        float finalSpeed = _isChargeMode ? Mathf.Lerp(15f, 10f, chargeRatio) : 18f;
-
-        Vector3 mousePos = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
-        mousePos.z = 0f;
-
-        string[] tags = { "Blue", "Red", "Yellow" };
-        string poolTag = tags[_currentColorIndex];
-        Projectile.BubbleType bubbleType = (Projectile.BubbleType)_currentColorIndex;
-
-        // 산탄/연사 루프
-        Vector2 baseDirection = (mousePos - combatSettings.FirePoint.position).normalized;
-        float centerAngle = Mathf.Atan2(baseDirection.y, baseDirection.x) * Mathf.Rad2Deg;
-
-        for (int i = 0; i < projectileCount; i++)
-        {
-            float offset = 0f;
-            if (projectileCount > 1)
-            {
-                // spreadAngle 내에서 균등하게 배분
-                offset = (i - (projectileCount - 1) / 2f) * (spreadAngle / Mathf.Max(1, projectileCount - 1));
-            }
-            float finalAngle = centerAngle + offset;
-
-            if (ObjectPooler.Instance != null && combatSettings.FirePoint != null)
-            {
-                var obj = ObjectPooler.Instance.SpawnFromPool(poolTag, combatSettings.FirePoint.position, Quaternion.Euler(0, 0, finalAngle));
-                if (obj != null && obj.TryGetComponent<Projectile>(out var proj))
-                {
-                    proj.Initialize(finalDamage, _isFacingRight, finalSpeed, projectileScale, gameObject, bubbleType, isSpecialShot);
-                }
-            }
-            else
-            {
-                GameObject prefab = (combatSettings.ColorProjectilePrefabs != null && combatSettings.ColorProjectilePrefabs.Length > _currentColorIndex) 
-                    ? combatSettings.ColorProjectilePrefabs[_currentColorIndex] : null;
-
-                if (prefab && combatSettings.FirePoint)
-                {
-                    var obj = Instantiate(prefab, combatSettings.FirePoint.position, Quaternion.Euler(0, 0, finalAngle));
-                    if (obj.TryGetComponent<Projectile>(out var proj)) 
-                        proj.Initialize(finalDamage, _isFacingRight, finalSpeed, projectileScale, gameObject, bubbleType, isSpecialShot);
-                }
-            }
-        }
-
-        _lastFireTime = Time.time;
+    private void ApplyParryKnockback(Vector2 direction)
+    {
+        _knockbackTimer = 0.2f;
+        _rb.linearVelocity = Vector2.zero;
+        _rb.AddForce(direction * 15f, ForceMode2D.Impulse);
     }
 
     private void OnDeath()
@@ -455,54 +354,4 @@ public class PlayerController : MonoBehaviour
         _animator?.Rebind();
     }
     #endregion
-
-    private void UpdateAnimations()
-    {
-        _animator.SetFloat(AnimSpeed, Mathf.Abs(_moveInput.x));
-        _animator.SetBool(AnimIsGrounded, _isGrounded);
-        _animator.SetBool(AnimIsRunning, _isRunning && Mathf.Abs(_moveInput.x) > 0.1f);
-    }
-
-    private void ApplyCrouch()
-    {
-        float targetY = _isCrouching ? _originalScale.y * moveSettings.CrouchScaleMultiplier : _originalScale.y;
-        transform.localScale = new Vector3(_originalScale.x, targetY, _originalScale.z);
-
-        if (_health != null)
-        {
-            _health.DamageMultiplier = _isCrouching ? 0.5f : 1.0f;
-        }
-    }
-}
-er(AnimDie);
-        Invoke(nameof(Respawn), 2f);
-    }
-
-    private void Respawn()
-    {
-        transform.position = _startPosition;
-        _health.Initialize(_health.MaxHealth);
-        _isFacingRight = true;
-        transform.rotation = Quaternion.Euler(0, 0, 0);
-        _animator?.Rebind();
-    }
-    #endregion
-
-    private void UpdateAnimations()
-    {
-        _animator.SetFloat(AnimSpeed, Mathf.Abs(_moveInput.x));
-        _animator.SetBool(AnimIsGrounded, _isGrounded);
-        _animator.SetBool(AnimIsRunning, _isRunning && Mathf.Abs(_moveInput.x) > 0.1f);
-    }
-
-    private void ApplyCrouch()
-    {
-        float targetY = _isCrouching ? _originalScale.y * moveSettings.CrouchScaleMultiplier : _originalScale.y;
-        transform.localScale = new Vector3(_originalScale.x, targetY, _originalScale.z);
-
-        if (_health != null)
-        {
-            _health.DamageMultiplier = _isCrouching ? 0.5f : 1.0f;
-        }
-    }
 }
