@@ -97,6 +97,23 @@ public class PlayerController : MonoBehaviour
         _rb.AddForce(direction * 15f, ForceMode2D.Impulse);
     }
 
+    private void Start()
+    {
+        UpdateSkillHUD();
+    }
+
+    public void UpdateSkillHUD()
+    {
+        if (SkillHUDManager.Instance == null) return;
+        for (int i = 0; i < 4; i++)
+        {
+            if (combatSettings.EquippedSkills.Count > i)
+                SkillHUDManager.Instance.UpdateSkillIcon(i, combatSettings.EquippedSkills[i]);
+            else
+                SkillHUDManager.Instance.UpdateSkillIcon(i, null);
+        }
+    }
+
     private void Update()
     {
         if (_health.IsDead) return;
@@ -426,6 +443,38 @@ public class PlayerController : MonoBehaviour
     {
         _rb.linearVelocity = Vector2.zero;
         if (_animator != null) _animator.SetTrigger(AnimDie);
+        Invoke(nameof(Respawn), 2f);
+    }
+
+    private void Respawn()
+    {
+        transform.position = _startPosition;
+        _health.Initialize(_health.MaxHealth);
+        _isFacingRight = true;
+        transform.rotation = Quaternion.Euler(0, 0, 0);
+        _animator?.Rebind();
+    }
+    #endregion
+
+    private void UpdateAnimations()
+    {
+        _animator.SetFloat(AnimSpeed, Mathf.Abs(_moveInput.x));
+        _animator.SetBool(AnimIsGrounded, _isGrounded);
+        _animator.SetBool(AnimIsRunning, _isRunning && Mathf.Abs(_moveInput.x) > 0.1f);
+    }
+
+    private void ApplyCrouch()
+    {
+        float targetY = _isCrouching ? _originalScale.y * moveSettings.CrouchScaleMultiplier : _originalScale.y;
+        transform.localScale = new Vector3(_originalScale.x, targetY, _originalScale.z);
+
+        if (_health != null)
+        {
+            _health.DamageMultiplier = _isCrouching ? 0.5f : 1.0f;
+        }
+    }
+}
+er(AnimDie);
         Invoke(nameof(Respawn), 2f);
     }
 
