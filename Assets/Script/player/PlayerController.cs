@@ -3,7 +3,7 @@ using UnityEngine.InputSystem;
 using System.Collections.Generic;
 
 /// <summary>
-/// 최적화된 플레이어 컨트롤러 (Q키 토글 차징 모드 + ZXCV 스킬 시스템)
+/// 최적화된 플레이어 컨트롤러 (Q키 토글 차징 모드 + ZXCV 스킬 시스템 + ObjectPooler 슈팅)
 /// </summary>
 [RequireComponent(typeof(Rigidbody2D), typeof(Collider2D), typeof(Animator))]
 [RequireComponent(typeof(Health))]
@@ -146,6 +146,7 @@ public class PlayerController : MonoBehaviour
         if (Keyboard.current.qKey.wasPressedThisFrame)
         {
             _isChargeMode = !_isChargeMode;
+            Debug.Log("<color=cyan>[Mode]</color> Charge Mode: " + (_isChargeMode ? "ON" : "OFF"));
         }
 
         if (_isChargeMode)
@@ -175,18 +176,10 @@ public class PlayerController : MonoBehaviour
         {
             _isInventoryOpen = !_isInventoryOpen;
             inventoryPanel.SetActive(_isInventoryOpen);
-            
-            // 게임 일시 정지 / 재개
             Time.timeScale = _isInventoryOpen ? 0f : 1f;
-            
             Cursor.visible = _isInventoryOpen;
             Cursor.lockState = _isInventoryOpen ? CursorLockMode.None : CursorLockMode.Confined;
-
-            // UI 강제 갱신 시도
-            if (_isInventoryOpen && inventoryPanel.TryGetComponent<InventoryUI>(out var invUI))
-            {
-                invUI.UpdateUI();
-            }
+            if (_isInventoryOpen && inventoryPanel.TryGetComponent<InventoryUI>(out var invUI)) invUI.UpdateUI();
         }
     }
 
@@ -197,17 +190,12 @@ public class PlayerController : MonoBehaviour
         SkillData skill = combatSettings.EquippedSkills[slotIndex];
         if (skill == null || skill.ProjectilePrefab == null) return;
 
-        // 투사체 발사
         Vector3 mousePos = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
-        Vector2 direction = (mousePos - combatSettings.FirePoint.position).normalized;
-        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+        mousePos.z = 0f; 
         
-        Instantiate(skill.ProjectilePrefab, combatSettings.FirePoint.position, Quaternion.Euler(0, 0, angle));
+        Instantiate(skill.ProjectilePrefab, combatSettings.FirePoint.position, Quaternion.identity);
         
-        if (SkillHUDManager.Instance != null)
-        {
-            SkillHUDManager.Instance.TriggerCooldown(slotIndex);
-        }
+        if (SkillHUDManager.Instance != null) SkillHUDManager.Instance.TriggerCooldown(slotIndex);
     }
 
     public void UpdateSkillHUD()
@@ -225,26 +213,59 @@ public class PlayerController : MonoBehaviour
     private void TryFire(float chargeTime = 0f)
     {
         if (_isCrouching) return;
-        if (Time.time < _lastFireTime + 0.2f) return;
+        
+        float baseCooldown = 0.2f;
+        if (Time.time < _lastFireTime + baseCooldown) return;
+
+        bool canUseSpecial = Time.time >= _lastUsedTime[_currentColorIndex] + _abilityCooldowns[_currentColorIndex];
+        bool isSpecialShot = false;
+
+        if (canUseSpecial)
+        {
+            isSpecialShot = true;
+            _lastUsedTime[_currentColorIndex] = Time.time;
+            if (_currentColorIndex == 0) _speedBoostTimer = 2f;
+        }
 
         float chargeRatio = Mathf.Clamp01(chargeTime / 5f);
         float finalDamage = Mathf.Lerp(10f, 60f, chargeRatio);
-        float finalScale = _isChargeMode ? Mathf.Lerp(1.5f, 3.5f, chargeRatio) : 1.5f;
+        if (isSpecialShot && _currentColorIndex == 1) finalDamage *= 1.5f;
+
+        float finalScaleVal = _isChargeMode ? Mathf.Lerp(1.5f, 3.5f, chargeRatio) : 1.5f;
+        Vector3 projectileScale = new Vector3(finalScaleVal, finalScaleVal, 1f);
         float finalSpeed = _isChargeMode ? Mathf.Lerp(15f, 10f, chargeRatio) : 18f;
 
         Vector3 mousePos = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
+        mousePos.z = 0f;
+
+        if (combatSettings.FirePoint == null) return;
+
         Vector2 direction = (mousePos - combatSettings.FirePoint.position).normalized;
         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
 
-        GameObject prefab = (combatSettings.ColorProjectilePrefabs != null && combatSettings.ColorProjectilePrefabs.Length > _currentColorIndex) 
-            ? combatSettings.ColorProjectilePrefabs[_currentColorIndex] : null;
+        string[] tags = { "Blue", "Red", "Yellow" };
+        string poolTag = tags[_currentColorIndex];
+        Projectile.BubbleType bubbleType = (Projectile.BubbleType)_currentColorIndex;
 
-        if (prefab && combatSettings.FirePoint)
+        if (ObjectPooler.Instance != null)
         {
-            var obj = Instantiate(prefab, combatSettings.FirePoint.position, Quaternion.Euler(0, 0, angle));
-            obj.transform.localScale = new Vector3(finalScale, finalScale, 1f);
-            if (obj.TryGetComponent<Projectile>(out var proj)) 
-                proj.Initialize(finalDamage, _isFacingRight, finalSpeed, shooter: gameObject);
+            var obj = ObjectPooler.Instance.SpawnFromPool(poolTag, combatSettings.FirePoint.position, Quaternion.Euler(0, 0, angle));
+            if (obj != null && obj.TryGetComponent<Projectile>(out var proj))
+            {
+                proj.Initialize(finalDamage, _isFacingRight, finalSpeed, projectileScale, gameObject, bubbleType, isSpecialShot);
+            }
+        }
+        else
+        {
+            GameObject prefab = (combatSettings.ColorProjectilePrefabs != null && combatSettings.ColorProjectilePrefabs.Length > _currentColorIndex) 
+                ? combatSettings.ColorProjectilePrefabs[_currentColorIndex] : null;
+
+            if (prefab != null)
+            {
+                var obj = Instantiate(prefab, combatSettings.FirePoint.position, Quaternion.Euler(0, 0, angle));
+                if (obj.TryGetComponent<Projectile>(out var proj)) 
+                    proj.Initialize(finalDamage, _isFacingRight, finalSpeed, projectileScale, gameObject, bubbleType, isSpecialShot);
+            }
         }
 
         _lastFireTime = Time.time;
@@ -285,6 +306,16 @@ public class PlayerController : MonoBehaviour
 
     private void HandleFacingDirection()
     {
+        bool isPressingFire = Mouse.current.leftButton.isPressed;
+        if (isPressingFire)
+        {
+            Vector3 mousePos = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
+            float directionX = mousePos.x - transform.position.x;
+            if (directionX > 0.1f && !_isFacingRight) Flip();
+            else if (directionX < -0.1f && _isFacingRight) Flip();
+            return;
+        }
+
         if (Mathf.Abs(_moveInput.x) > 0.1f)
         {
             if (_moveInput.x > 0 && !_isFacingRight) Flip();
@@ -314,37 +345,26 @@ public class PlayerController : MonoBehaviour
     #endregion
 
     #region Combat Utilities
-    private void CycleColor()
-    {
-        _currentColorIndex = (_currentColorIndex + 1) % 3;
-    }
-
-    private void TryParry()
-    {
-        StartCoroutine(ParryRoutine());
-    }
-
+    private void CycleColor() { _currentColorIndex = (_currentColorIndex + 1) % 3; }
+    private void TryParry() { StartCoroutine(ParryRoutine()); }
     private System.Collections.IEnumerator ParryRoutine()
     {
         if (_health != null) _health.IsParrying = true;
         yield return new WaitForSeconds(0.3f);
         if (_health != null) _health.IsParrying = false;
     }
-
     private void ApplyParryKnockback(Vector2 direction)
     {
         _knockbackTimer = 0.2f;
         _rb.linearVelocity = Vector2.zero;
         _rb.AddForce(direction * 15f, ForceMode2D.Impulse);
     }
-
     private void OnDeath()
     {
         _rb.linearVelocity = Vector2.zero;
         if (_animator != null) _animator.SetTrigger(AnimDie);
         Invoke(nameof(Respawn), 2f);
     }
-
     private void Respawn()
     {
         transform.position = _startPosition;

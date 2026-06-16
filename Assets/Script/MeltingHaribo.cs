@@ -63,6 +63,18 @@ public class MeltingHaribo : MonoBehaviour
         _currentRoutine = StartCoroutine(HariboRoutine());
     }
 
+    void Update()
+    {
+        if (_isDead) return;
+
+        // 시각적 피드백 (스턴/정지 시 회색)
+        if (_sr != null)
+        {
+            if (_currentState == HariboState.Stunned) _sr.color = Color.gray;
+            else _sr.color = Color.white;
+        }
+    }
+
     IEnumerator HariboRoutine()
     {
         while (!_isDead)
@@ -219,15 +231,18 @@ public class MeltingHaribo : MonoBehaviour
         Destroy(gameObject, 1.5f);
     }
 
+    public void ApplyStun(float duration)
+    {
+        stunDuration = duration; // 임시로 현재 스턴 시간 변경
+        if (_currentRoutine != null) StopCoroutine(_currentRoutine);
+        _currentState = HariboState.Stunned;
+        _currentRoutine = StartCoroutine(HariboRoutine());
+        Debug.Log($"<color=yellow>[MeltingHaribo]</color> {name} STUNNED for {duration}s");
+    }
+
     // 외부(Projectile 등)에서 호출하여 패턴 캔슬 가능
     public void RequestCancelPattern()
     {
-        if (_currentState == HariboState.MeltingDown || _currentState == HariboState.Underground)
-        {
-            Debug.Log("<color=orange>[Cancel]</color> Melting Haribo pattern cancelled!");
-            if (_currentRoutine != null) StopCoroutine(_currentRoutine);
-            _currentState = HariboState.Stunned;
-            _currentRoutine = StartCoroutine(HariboRoutine());
-        }
+        ApplyStun(2.0f);
     }
 }

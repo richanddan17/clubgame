@@ -80,8 +80,8 @@ public class RangedEnemy : MonoBehaviour
         // 시각적 피드백
         if (_sr != null)
         {
-            if (_stunTimer > 0) _sr.color = Color.gray;
-            else if (_slowTimer > 0) _sr.color = new Color(0.5f, 0f, 0.5f);
+            if (_stunTimer > 0.01f) _sr.color = Color.gray;
+            else if (_slowTimer > 0.01f) _sr.color = new Color(0.5f, 0f, 0.5f);
             else _sr.color = Color.white;
         }
     }
@@ -316,6 +316,12 @@ public class RangedEnemy : MonoBehaviour
         // x > 0 (플레이어가 오른쪽)일 때 -스케일, x < 0 (플레이어가 왼쪽)일 때 +스케일로 반전
         if (x > 0.1f) transform.localScale = new Vector3(-Mathf.Abs(_initialScale.x), _initialScale.y, _initialScale.z);
         else if (x < -0.1f) transform.localScale = new Vector3(Mathf.Abs(_initialScale.x), _initialScale.y, _initialScale.z);
+    }
+
+    public void ApplyStun(float duration)
+    {
+        _stunTimer = Mathf.Max(_stunTimer, duration);
+        Debug.Log($"<color=yellow>[RangedEnemy]</color> {name} STUNNED for {duration}s");
     }
 
     private void Die()

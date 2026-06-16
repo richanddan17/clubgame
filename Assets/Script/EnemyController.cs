@@ -96,8 +96,8 @@ public class EnemyController : MonoBehaviour
         // 시각적 피드백
         if (_sr != null)
         {
-            if (_stunTimer > 0) _sr.color = Color.gray;
-            else if (_slowTimer > 0) _sr.color = new Color(0.5f, 0f, 0.5f);
+            if (_stunTimer > 0.01f) _sr.color = Color.gray;
+            else if (_slowTimer > 0.01f) _sr.color = new Color(0.5f, 0f, 0.5f);
             else ApplyVisualSettings();
         }
     }
@@ -247,10 +247,10 @@ public class EnemyController : MonoBehaviour
         _animator.SetBool(AnimWalk, isMoving);
     }
 
-    // 이제 Projectile이 Health.TakeDamage를 직접 호출하므로 이 메서드는 레거시 지원용
-    public void TakeDamage(float amount)
+    public void ApplyStun(float duration)
     {
-        if (_health != null) _health.TakeDamage(amount);
+        _stunTimer = Mathf.Max(_stunTimer, duration);
+        Debug.Log($"<color=yellow>[EnemyController]</color> {name} STUNNED for {duration}s");
     }
 
     private void Die()

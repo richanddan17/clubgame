@@ -100,7 +100,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -166,12 +166,12 @@ TextureImporter:
       name: pipo-btleffect210_480_0
       rect:
         serializedVersion: 2
-        x: 188
-        y: 1260
-        width: 104
-        height: 64
+        x: 0
+        y: 960
+        width: 480
+        height: 480
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -188,12 +188,12 @@ TextureImporter:
       name: pipo-btleffect210_480_1
       rect:
         serializedVersion: 2
-        x: 632
-        y: 1243
-        width: 176
-        height: 109
+        x: 480
+        y: 960
+        width: 480
+        height: 480
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -210,12 +210,12 @@ TextureImporter:
       name: pipo-btleffect210_480_2
       rect:
         serializedVersion: 2
-        x: 1077
-        y: 1227
-        width: 246
-        height: 156
+        x: 960
+        y: 960
+        width: 480
+        height: 480
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -232,12 +232,12 @@ TextureImporter:
       name: pipo-btleffect210_480_3
       rect:
         serializedVersion: 2
-        x: 1536
-        y: 1219
-        width: 288
-        height: 183
+        x: 1440
+        y: 960
+        width: 480
+        height: 480
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -254,12 +254,12 @@ TextureImporter:
       name: pipo-btleffect210_480_4
       rect:
         serializedVersion: 2
-        x: 1995
-        y: 1211
-        width: 330
-        height: 211
+        x: 1920
+        y: 960
+        width: 480
+        height: 480
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -276,12 +276,12 @@ TextureImporter:
       name: pipo-btleffect210_480_5
       rect:
         serializedVersion: 2
-        x: 188
-        y: 1076
-        width: 104
-        height: 64
+        x: 0
+        y: 480
+        width: 480
+        height: 480
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -298,12 +298,12 @@ TextureImporter:
       name: pipo-btleffect210_480_6
       rect:
         serializedVersion: 2
-        x: 632
-        y: 1048
-        width: 176
-        height: 109
+        x: 480
+        y: 480
+        width: 480
+        height: 480
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -320,12 +320,12 @@ TextureImporter:
       name: pipo-btleffect210_480_7
       rect:
         serializedVersion: 2
-        x: 1077
-        y: 1017
-        width: 246
-        height: 156
+        x: 960
+        y: 480
+        width: 480
+        height: 480
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -342,12 +342,12 @@ TextureImporter:
       name: pipo-btleffect210_480_8
       rect:
         serializedVersion: 2
-        x: 1536
-        y: 998
-        width: 288
-        height: 183
+        x: 1440
+        y: 480
+        width: 480
+        height: 480
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -364,12 +364,12 @@ TextureImporter:
       name: pipo-btleffect210_480_9
       rect:
         serializedVersion: 2
-        x: 1995
-        y: 978
-        width: 330
-        height: 211
+        x: 1920
+        y: 480
+        width: 480
+        height: 480
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -386,12 +386,12 @@ TextureImporter:
       name: pipo-btleffect210_480_10
       rect:
         serializedVersion: 2
-        x: 65
-        y: 726
-        width: 350
-        height: 227
+        x: 0
+        y: 0
+        width: 480
+        height: 480
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -408,12 +408,12 @@ TextureImporter:
       name: pipo-btleffect210_480_11
       rect:
         serializedVersion: 2
-        x: 539
-        y: 481
-        width: 362
-        height: 478
+        x: 480
+        y: 0
+        width: 480
+        height: 480
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -430,12 +430,12 @@ TextureImporter:
       name: pipo-btleffect210_480_12
       rect:
         serializedVersion: 2
-        x: 1019
-        y: 481
-        width: 362
-        height: 478
+        x: 960
+        y: 0
+        width: 480
+        height: 480
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -452,12 +452,12 @@ TextureImporter:
       name: pipo-btleffect210_480_13
       rect:
         serializedVersion: 2
-        x: 1499
-        y: 481
-        width: 362
-        height: 478
+        x: 1440
+        y: 0
+        width: 480
+        height: 480
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -474,12 +474,12 @@ TextureImporter:
       name: pipo-btleffect210_480_14
       rect:
         serializedVersion: 2
-        x: 1979
-        y: 481
-        width: 362
-        height: 478
+        x: 1920
+        y: 0
+        width: 480
+        height: 480
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -492,165 +492,11 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
-    - serializedVersion: 2
-      name: pipo-btleffect210_480_15
-      rect:
-        serializedVersion: 2
-        x: 65
-        y: 487
-        width: 350
-        height: 227
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: f29060286951720b0800000000000000
-      internalID: -5753606262771807953
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: pipo-btleffect210_480_16
-      rect:
-        serializedVersion: 2
-        x: 59
-        y: 1
-        width: 362
-        height: 478
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 15a0401c385143a50800000000000000
-      internalID: 6499843817825634897
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: pipo-btleffect210_480_17
-      rect:
-        serializedVersion: 2
-        x: 539
-        y: 1
-        width: 362
-        height: 478
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: a76adc71185540c70800000000000000
-      internalID: 8936361573548402298
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: pipo-btleffect210_480_18
-      rect:
-        serializedVersion: 2
-        x: 1019
-        y: 1
-        width: 362
-        height: 478
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: d3e3c8f2d74288500800000000000000
-      internalID: 398608687109520957
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: pipo-btleffect210_480_19
-      rect:
-        serializedVersion: 2
-        x: 1499
-        y: 1
-        width: 362
-        height: 478
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: fd212021133cc9620800000000000000
-      internalID: 2782313285331063519
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: pipo-btleffect210_480_20
-      rect:
-        serializedVersion: 2
-        x: 1979
-        y: 244
-        width: 362
-        height: 235
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: bbc105ab7fe31ad60800000000000000
-      internalID: 7899664455088217275
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: pipo-btleffect210_480_21
-      rect:
-        serializedVersion: 2
-        x: 1979
-        y: 1
-        width: 362
-        height: 235
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 5554c2489a46fcb70800000000000000
-      internalID: 8921460066073986389
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
     outline: []
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: fc44a2599808ec443990e900a9af8db5
     internalID: 0
     vertices: []
     indices: 
@@ -658,7 +504,9 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries: []
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":480.0,"y":480.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":1,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
       pipo-btleffect210_480_0: 7870487982625014355
       pipo-btleffect210_480_1: -8762255307778227030
@@ -667,14 +515,7 @@ TextureImporter:
       pipo-btleffect210_480_12: 9045817782323508842
       pipo-btleffect210_480_13: -9092934529285623155
       pipo-btleffect210_480_14: 7247756259475438741
-      pipo-btleffect210_480_15: -5753606262771807953
-      pipo-btleffect210_480_16: 6499843817825634897
-      pipo-btleffect210_480_17: 8936361573548402298
-      pipo-btleffect210_480_18: 398608687109520957
-      pipo-btleffect210_480_19: 2782313285331063519
       pipo-btleffect210_480_2: -7327785618905528873
-      pipo-btleffect210_480_20: 7899664455088217275
-      pipo-btleffect210_480_21: 8921460066073986389
       pipo-btleffect210_480_3: -1618913360321163999
       pipo-btleffect210_480_4: 6438533679466539116
       pipo-btleffect210_480_5: -803424367301359381
