@@ -1549,7 +1549,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c26761a84af8a44f8e0ccb122f874de, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MainMenuController
-  newGameSceneName: LobbyScene
+  newGameSceneName: experiment
 --- !u!4 &2018539092
 Transform:
   m_ObjectHideFlags: 0

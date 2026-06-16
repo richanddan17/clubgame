@@ -103,8 +103,8 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 713e57099bbd717488c4b272836d43ec, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::TimeStopEffect
-  radius: 8
+  EditorClassIdentifier: Assembly-CSharp::TimeStopEffect
+  radius: 20
   stunDuration: 5
   lifeTime: 1.5
 --- !u!114 &3420815432109876547

@@ -51,6 +51,7 @@ public class PlayerController : MonoBehaviour
     private float _lastFireTime;
     private float _chargeStartTime;
     private bool _isChargeMode = false;
+    private bool _isActivelyCharging = false;
 
     // 특수 능력 및 쿨타임
     private float[] _abilityCooldowns = { 5f, 5f, 8f }; 
@@ -151,12 +152,21 @@ public class PlayerController : MonoBehaviour
 
         if (_isChargeMode)
         {
-            if (Mouse.current.leftButton.wasPressedThisFrame) _chargeStartTime = Time.time;
-            if (Mouse.current.leftButton.wasReleasedThisFrame) TryFire(Time.time - _chargeStartTime);
+            if (Mouse.current.leftButton.wasPressedThisFrame) 
+            {
+                _chargeStartTime = Time.time;
+                _isActivelyCharging = true;
+            }
+            if (Mouse.current.leftButton.wasReleasedThisFrame) 
+            {
+                TryFire(Time.time - _chargeStartTime);
+                _isActivelyCharging = false;
+            }
         }
         else
         {
             if (Mouse.current.leftButton.isPressed) TryFire();
+            _isActivelyCharging = false;
         }
     }
 
@@ -287,6 +297,10 @@ public class PlayerController : MonoBehaviour
     {
         if (_knockbackTimer > 0) return;
         float targetSpeed = _isRunning ? moveSettings.RunSpeed : moveSettings.WalkSpeed;
+        
+        // 차징 모드이면서, 실제로 마우스를 눌러 차징 중일 때만 속도 50% 감소
+        if (_isChargeMode && _isActivelyCharging) targetSpeed *= 0.5f;
+        
         if (_speedBoostTimer > 0) targetSpeed *= 1.5f;
         _rb.linearVelocity = new Vector2(_moveInput.x * targetSpeed, _rb.linearVelocity.y);
     }
