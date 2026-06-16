@@ -55,6 +55,8 @@ public class Projectile : MonoBehaviour
         // 주인(쏜 사람)은 무시
         if (owner != null && collision.gameObject == owner) return;
 
+        Debug.Log($"<color=white>[Projectile]</color> {gameObject.name} hit {collision.gameObject.name} (Tag: {collision.tag}, Layer: {LayerMask.LayerToName(collision.gameObject.layer)})");
+
         Health health = collision.GetComponent<Health>() ?? collision.GetComponentInParent<Health>();
         
         // 다양한 적 스크립트 대응
