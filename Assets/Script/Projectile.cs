@@ -79,6 +79,7 @@ public class Projectile : MonoBehaviour
         }
 
         // Health는 없지만 컨트롤러만 있는 경우나 지형 충돌 처리
+        // Forced recompile
         bool isAnyEnemy = (enemy != null || wizard != null || haribo != null);
         if (isAnyEnemy || collision.gameObject.layer == LayerMask.NameToLayer("Ground"))
         {
