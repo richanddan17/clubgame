@@ -6,6 +6,7 @@ public class PoppingBullet : MonoBehaviour
     public float speed = 10f;
     public float damage = 30f;
     public float lifeTime = 5f;
+    public string poolTag = "PoppingBullet";
 
     [Header("References")]
     private Rigidbody2D _rb;
@@ -19,8 +20,18 @@ public class PoppingBullet : MonoBehaviour
         if (_anim == null) _anim = GetComponentInChildren<Animator>();
         
         if (_rb == null) Debug.LogError("[PoppingBullet] Rigidbody2D가 투사체에 없습니다!");
-        
-        Destroy(gameObject, lifeTime);
+    }
+
+    void OnEnable()
+    {
+        _hasHit = false;
+        if (_rb != null) _rb.linearVelocity = Vector2.zero;
+        Invoke(nameof(ReturnToPool), lifeTime);
+    }
+
+    void OnDisable()
+    {
+        CancelInvoke(nameof(ReturnToPool));
     }
 
     public void Launch(Vector2 direction)
@@ -38,9 +49,6 @@ public class PoppingBullet : MonoBehaviour
     {
         if (_hasHit) return;
 
-        // 무엇과 부딪혔는지 로그 출력
-        Debug.Log("[PoppingBullet] 충돌 감지: " + collision.gameObject.name);
-
         if (collision.CompareTag("Player") || 
             collision.gameObject.layer == LayerMask.NameToLayer("Ground") || 
             collision.gameObject.layer == LayerMask.NameToLayer("Wall") ||
@@ -54,23 +62,30 @@ public class PoppingBullet : MonoBehaviour
     void Explode(GameObject target)
     {
         _hasHit = true;
-        Debug.Log("[PoppingBullet] 폭발! 데미지 처리 및 애니메이션 재생");
-        
         if (_rb != null) _rb.linearVelocity = Vector2.zero;
 
         if (target.CompareTag("Player"))
         {
-            target.SendMessage("TakeDamage", damage, SendMessageOptions.DontRequireReceiver);
+            if (target.TryGetComponent<Health>(out var health))
+                health.TakeDamage(damage);
         }
 
         if (_anim != null)
         {
             _anim.SetTrigger("Explode");
-            Destroy(gameObject, 0.5f); 
+            Invoke(nameof(ReturnToPool), 0.5f);
         }
         else
         {
-            Destroy(gameObject);
+            ReturnToPool();
         }
+    }
+
+    private void ReturnToPool()
+    {
+        if (ObjectPooler.Instance != null)
+            ObjectPooler.Instance.ReturnToPool(poolTag, gameObject);
+        else
+            Destroy(gameObject);
     }
 }

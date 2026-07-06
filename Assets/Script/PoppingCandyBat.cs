@@ -26,7 +26,6 @@ public class PoppingCandyBat : MonoBehaviour
     void Start()
     {
         FindPlayer();
-        Debug.Log("[PoppingCandyBat] 시작됨. 현재 인스펙터 설정 범위: " + detectionRange);
     }
 
     void FindPlayer()
@@ -72,7 +71,9 @@ public class PoppingCandyBat : MonoBehaviour
         
         if (bulletPrefab != null && firePoint != null && _player != null)
         {
-            GameObject bullet = Instantiate(bulletPrefab, firePoint.position, Quaternion.identity);
+            GameObject bullet = ObjectPooler.Instance != null
+                ? ObjectPooler.Instance.SpawnFromPool("PoppingBullet", firePoint.position, Quaternion.identity)
+                : Instantiate(bulletPrefab, firePoint.position, Quaternion.identity);
             Vector2 direction = ((Vector2)_player.position - (Vector2)firePoint.position).normalized;
             
             var projectile = bullet.GetComponent<PoppingBullet>();

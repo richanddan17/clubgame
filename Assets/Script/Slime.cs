@@ -101,7 +101,6 @@ public class Slime : MonoBehaviour
         Health playerHealth = player.GetComponent<Health>();
         if (playerHealth != null && !playerHealth.IsDead)
         {
-            Debug.Log($"<color=cyan>[Combat]</color> {name}이(가) 공격을 시도합니다!");
             playerHealth.TakeDamage(attackDamage);
             PlayAttackAnimation();
             _nextAttackTime = Time.time + attackCooldown;
@@ -116,7 +115,6 @@ public class Slime : MonoBehaviour
     {
         if (anim != null) 
         {
-            Debug.Log($"<color=magenta>[Animation]</color> {name}의 Attack 트리거를 작동시킵니다.");
             anim.SetTrigger(AnimatorAttack);
         }
         else

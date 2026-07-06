@@ -5,7 +5,7 @@ using UnityEngine;
 [RequireComponent(typeof(Collider2D))]
 [RequireComponent(typeof(Health))]
 [RequireComponent(typeof(Animator))]
-public class MeltingHaribo : MonoBehaviour
+public class MeltingHaribo : MonoBehaviour, IBubbleAffectable
 {
     public enum HariboState { Idle, MeltingDown, Underground, Solidifying, Attack, Stunned, Cooldown }
 
@@ -168,6 +168,12 @@ public class MeltingHaribo : MonoBehaviour
     }
 
     public void RequestCancelPattern() => ApplyStun(2.0f);
+
+    public void ApplyBubbleEffect(Projectile.BubbleType type)
+    {
+        if (type == Projectile.BubbleType.Yellow)
+            RequestCancelPattern();
+    }
 
     private void ApplyFlip(float xDir) => transform.localScale = new Vector3(-Mathf.Sign(xDir) * Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
 

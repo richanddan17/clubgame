@@ -41,21 +41,8 @@ public class TimeStopEffect : MonoBehaviour
 
         foreach (var col in hitEnemies)
         {
-            // 1. 기본 적
-            if (col.TryGetComponent<EnemyController>(out var enemy))
-            {
-                enemy.ApplyStun(stunDuration);
-            }
-            // 2. 원거리/비행 적
-            else if (col.TryGetComponent<RangedEnemy>(out var ranged))
-            {
-                ranged.ApplyStun(stunDuration);
-            }
-            // 3. 하리보
-            else if (col.TryGetComponent<MeltingHaribo>(out var haribo))
-            {
-                haribo.ApplyStun(stunDuration);
-            }
+            if (col.TryGetComponent<IBubbleAffectable>(out var affectable))
+                affectable.ApplyStun(stunDuration);
         }
     }
 

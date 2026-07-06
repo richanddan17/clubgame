@@ -126,13 +126,15 @@ public class PlayerController : MonoBehaviour
             return;
         }
 
-        float h = Input.GetAxisRaw("Horizontal");
-        _moveInput.x = Mathf.Abs(h) > 0.01f ? h : 0f;
+        float h = 0f;
+        if (Keyboard.current.dKey.isPressed) h = 1f;
+        else if (Keyboard.current.aKey.isPressed) h = -1f;
+        _moveInput.x = h;
 
-        if (Input.GetButtonDown("Jump") || Input.GetKeyDown(KeyCode.Space)) Jump();
-        
-        _isCrouching = Input.GetKey(KeyCode.S);
-        _isRunning = Input.GetKey(KeyCode.LeftShift) && !_isCrouching;
+        if (Keyboard.current.spaceKey.wasPressedThisFrame) Jump();
+
+        _isCrouching = Keyboard.current.sKey.isPressed;
+        _isRunning = Keyboard.current.leftShiftKey.isPressed && !_isCrouching;
 
         if (Keyboard.current.rKey.wasPressedThisFrame) CycleColor();
 
@@ -201,10 +203,21 @@ public class PlayerController : MonoBehaviour
         if (skill == null || skill.ProjectilePrefab == null) return;
 
         Vector3 mousePos = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
-        mousePos.z = 0f; 
-        
-        Instantiate(skill.ProjectilePrefab, combatSettings.FirePoint.position, Quaternion.identity);
-        
+        mousePos.z = 0f;
+
+        if (combatSettings.FirePoint == null) return;
+        Vector2 direction = (mousePos - combatSettings.FirePoint.position).normalized;
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+
+        GameObject projObj;
+        if (ObjectPooler.Instance != null)
+            projObj = ObjectPooler.Instance.SpawnFromPool("Projectile", combatSettings.FirePoint.position, Quaternion.Euler(0, 0, angle));
+        else
+            projObj = Instantiate(skill.ProjectilePrefab, combatSettings.FirePoint.position, Quaternion.Euler(0, 0, angle));
+
+        if (projObj != null && projObj.TryGetComponent<Projectile>(out var proj))
+            proj.Initialize(skill.Damage, _isFacingRight, 15f, null, gameObject, Projectile.BubbleType.Blue, false);
+
         if (SkillHUDManager.Instance != null) SkillHUDManager.Instance.TriggerCooldown(slotIndex);
     }
 
