@@ -14,12 +14,12 @@ public class ObjectPooler : MonoBehaviour
     public static ObjectPooler Instance;
 
     public List<Pool> pools;
-    public Dictionary<string, Queue<GameObject>> poolDictionary;
+    private Dictionary<string, Queue<GameObject>> poolDictionary;
 
     private void Awake()
     {
         Instance = this;
-        
+
         poolDictionary = new Dictionary<string, Queue<GameObject>>();
 
         foreach (Pool pool in pools)
@@ -45,14 +45,35 @@ public class ObjectPooler : MonoBehaviour
             return null;
         }
 
-        GameObject objectToSpawn = poolDictionary[tag].Dequeue();
+        Queue<GameObject> pool = poolDictionary[tag];
 
-        objectToSpawn.SetActive(true);
-        objectToSpawn.transform.position = position;
-        objectToSpawn.transform.rotation = rotation;
+        foreach (GameObject obj in pool)
+        {
+            if (!obj.activeInHierarchy)
+            {
+                obj.SetActive(true);
+                obj.transform.position = position;
+                obj.transform.rotation = rotation;
+                return obj;
+            }
+        }
 
-        poolDictionary[tag].Enqueue(objectToSpawn);
+            Pool poolConfig = pools.Find(p => p.tag == tag);
+        if (poolConfig != null)
+        {
+            GameObject newObj = Instantiate(poolConfig.prefab);
+            newObj.SetActive(true);
+            newObj.transform.position = position;
+            newObj.transform.rotation = rotation;
+            pool.Enqueue(newObj);
+            return newObj;
+        }
 
-        return objectToSpawn;
+        return null;
+    }
+
+    public void ReturnToPool(string tag, GameObject obj)
+    {
+        obj.SetActive(false);
     }
 }

@@ -14,8 +14,6 @@ public class EnemySpawner : MonoBehaviour
 
     private void Start()
     {
-        Debug.Log($"[{name}] EnemySpawner Start() 호출됨. 현재 활성화 상태입니다.");
-
         // Resources에서 로드된 모든 적 데이터를 리스트에 담음
         EnemyData[] loadedData = Resources.LoadAll<EnemyData>("EnemyData");
         enemyDataList.AddRange(loadedData);
@@ -33,13 +31,6 @@ public class EnemySpawner : MonoBehaviour
     private void Update()
     {
         timer += Time.deltaTime;
-
-        // 5초마다 현재 스폰 대기 상태 로그 출력 (디버그용)
-        if (Time.frameCount % 300 == 0)
-        {
-            int currentEnemies = GameObject.FindGameObjectsWithTag("Enemy").Length;
-            // Debug.Log($"[{name}] 스폰 대기 중... 현재 적 수: {currentEnemies}/{maxEnemyCount}, 타이머: {timer:F1}/{spawnInterval}");
-        }
 
         if (timer >= spawnInterval)
         {

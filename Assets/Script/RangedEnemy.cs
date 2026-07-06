@@ -5,7 +5,7 @@ using UnityEngine;
 /// - 원거리/근접 하이브리드 공격
 /// - 슬로우/스턴 상태 이상 대응 추가
 /// </summary>
-public class RangedEnemy : MonoBehaviour
+public class RangedEnemy : MonoBehaviour, IBubbleAffectable
 {
     [Header("기본 설정")]
     public EnemyData data;
@@ -192,8 +192,6 @@ public class RangedEnemy : MonoBehaviour
 
         _didShootThisAttack = false;
 
-        Debug.Log($"<color=cyan>[AttackDebug]</color> {name} Attack Triggered!");
-
         float directionX = _player.position.x - transform.position.x;
         ApplyFlip(directionX);
 
@@ -223,7 +221,7 @@ public class RangedEnemy : MonoBehaviour
         }
     }
 
-    public void ApplyEffect(Projectile.BubbleType type)
+    public void ApplyBubbleEffect(Projectile.BubbleType type)
     {
         switch (type)
         {

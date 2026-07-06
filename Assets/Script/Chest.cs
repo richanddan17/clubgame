@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 /// <summary>
 /// 상호작용 시 전리품을 드랍하는 보물상자
@@ -29,7 +30,7 @@ public class Chest : MonoBehaviour
             // 플레이어가 E키를 누르면 상자 오픈 (New Input System 사용 여부 확인 필요)
             // 일단 단순화를 위해 플레이어 스크립트의 인터랙션 로직과 연결하거나 
             // 여기서는 간단히 F키 또는 자동 오픈으로 구현
-            if (Input.GetKeyDown(KeyCode.F)) // 기존 패링 키와 겹칠 수 있으나 일단 예시
+            if (Keyboard.current.fKey.wasPressedThisFrame) // F키로 상자 열기
             {
                 OpenChest();
             }
