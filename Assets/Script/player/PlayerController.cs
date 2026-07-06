@@ -131,8 +131,8 @@ public class PlayerController : MonoBehaviour
 
         if (Input.GetButtonDown("Jump") || Input.GetKeyDown(KeyCode.Space)) Jump();
         
-        _isRunning = Input.GetKey(KeyCode.LeftShift);
         _isCrouching = Input.GetKey(KeyCode.S);
+        _isRunning = Input.GetKey(KeyCode.LeftShift) && !_isCrouching;
 
         if (Keyboard.current.rKey.wasPressedThisFrame) CycleColor();
 
@@ -296,11 +296,15 @@ public class PlayerController : MonoBehaviour
     private void ApplyMovement()
     {
         if (_knockbackTimer > 0) return;
+
         float targetSpeed = _isRunning ? moveSettings.RunSpeed : moveSettings.WalkSpeed;
-        
+
+        // 웅크리기 속도 반감 (CrouchSpeed 적용)
+        if (_isCrouching) targetSpeed = moveSettings.CrouchSpeed;
+
         // 차징 모드이면서, 실제로 마우스를 눌러 차징 중일 때만 속도 50% 감소
         if (_isChargeMode && _isActivelyCharging) targetSpeed *= 0.5f;
-        
+
         if (_speedBoostTimer > 0) targetSpeed *= 1.5f;
         _rb.linearVelocity = new Vector2(_moveInput.x * targetSpeed, _rb.linearVelocity.y);
     }

@@ -86,7 +86,9 @@ public class PrefabAutoCreator : EditorWindow
             go.AddComponent<Health>();
         }
 
-        // [Fix] 프리팹 저장 전 에셋 데이터베이스와 동기화 및 Dirty 설정
+        // [Fix] 프리팹 저장 전 애니메이터 컨트롤러/클립 참조를 디스크에 완전히 동기화
+        AssetDatabase.SaveAssets();
+        AssetDatabase.Refresh();
         EditorUtility.SetDirty(go);
         PrefabUtility.SaveAsPrefabAsset(go, savePath);
         DestroyImmediate(go);
