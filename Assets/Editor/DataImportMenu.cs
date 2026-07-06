@@ -108,7 +108,6 @@ public class DataImportMenu : EditorWindow
             player.name = "Player"; player.tag = "Player";
         }
 
-        var legacy = player.GetComponent("PlayerMoving"); if (legacy != null) DestroyImmediate(legacy);
         if (player.GetComponent<MeshCollider>()) DestroyImmediate(player.GetComponent<MeshCollider>());
         if (!player.GetComponent<BoxCollider2D>()) player.AddComponent<BoxCollider2D>();
         var rb = player.GetComponent<Rigidbody2D>() ?? player.AddComponent<Rigidbody2D>();
