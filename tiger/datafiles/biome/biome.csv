@@ -1,0 +1,4 @@
+ID,Name,TintR,TintG,TintB,EnemyIDs,BG_Layer1
+1,SyrupCave,0.4,0.2,0.6,101;103,f44fd67bd73d546469d7c317fcd1d5ae
+2,Overgrown,0.2,0.4,0.2,101;104,
+3,RootAbyss,0.2,0.2,0.3,103,

@@ -23,8 +23,8 @@ public class EnemyFixHelper : EditorWindow
             var oldScript = instance.GetComponent("Mobs");
             if (oldScript != null) DestroyImmediate(oldScript);
 
-            var slimeScript = instance.GetComponent<Slime>();
-            if (slimeScript == null) slimeScript = instance.AddComponent<Slime>();
+            var slimeScript = instance.GetComponent<EnemyController>();
+            if (slimeScript == null) slimeScript = instance.AddComponent<EnemyController>();
             
             // 3. 컴포넌트 설정 최적화
             var rb = instance.GetComponent<Rigidbody2D>();
@@ -47,6 +47,6 @@ public class EnemyFixHelper : EditorWindow
         }
         
         AssetDatabase.Refresh();
-        EditorUtility.DisplayDialog("Enemy Fix Complete", "슬라임 몬스터 설정이 완료되었습니다!\n1. 크기가 3배로 커졌습니다.\n2. 이제 플레이어를 추격합니다.", "확인");
+        EditorApplication.delayCall += () => EditorUtility.DisplayDialog("Enemy Fix Complete", "슬라임 몬스터 설정이 완료되었습니다!\n1. 크기가 3배로 커졌습니다.\n2. 이제 플레이어를 추격합니다.", "확인");
     }
 }

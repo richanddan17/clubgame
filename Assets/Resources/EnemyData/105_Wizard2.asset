@@ -14,8 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyData
   ID: 105
   EnemyName: Wizard2
-  HP: 80
-  Speed: 2.5
-  Damage: 15
-  DetectionRange: 12
+  HP: 120
+  Speed: 1.5
+  Damage: 20
+  DetectionRange: 25
+  AttackRange: 15
   AttackInterval: 2.5

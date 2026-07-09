@@ -17,5 +17,6 @@ MonoBehaviour:
   HP: 200
   Speed: 1.2
   Damage: 25
-  DetectionRange: 10
+  DetectionRange: 15
+  AttackRange: 3
   AttackInterval: 3

@@ -6,6 +6,7 @@ public class Projectile : MonoBehaviour
 
     [SerializeField] private float speed = 15f;
     [SerializeField] private float lifeTime = 3f;
+    [SerializeField] private string poolTag = "Projectile";
     private float damage;
     private bool isFacingRight = true;
     private GameObject owner; // 투사체를 쏜 주인
@@ -42,7 +43,10 @@ public class Projectile : MonoBehaviour
 
     private void Deactivate()
     {
-        gameObject.SetActive(false);
+        if (ObjectPooler.Instance != null)
+            ObjectPooler.Instance.ReturnToPool(poolTag, gameObject);
+        else
+            gameObject.SetActive(false);
     }
 
     private void Update()
@@ -55,39 +59,24 @@ public class Projectile : MonoBehaviour
         // 주인(쏜 사람)은 무시
         if (owner != null && collision.gameObject == owner) return;
 
+        IBubbleAffectable affectable = collision.GetComponent<IBubbleAffectable>() ?? collision.GetComponentInParent<IBubbleAffectable>();
         Health health = collision.GetComponent<Health>() ?? collision.GetComponentInParent<Health>();
-        
-        // 다양한 적 스크립트 대응
-        EnemyController enemy = collision.GetComponent<EnemyController>() ?? collision.GetComponentInParent<EnemyController>();
-        Slime slime = collision.GetComponent<Slime>() ?? collision.GetComponentInParent<Slime>();
-        RangedEnemy wizard = collision.GetComponent<RangedEnemy>() ?? collision.GetComponentInParent<RangedEnemy>();
 
         if (health != null)
         {
             health.TakeDamage(damage, transform.position);
 
-            // 특수 효과 적용
-            if (isSpecial)
-            {
-                if (enemy != null) enemy.ApplyEffect(bubbleType);
-                if (slime != null) slime.ApplyEffect(bubbleType);
-                if (wizard != null) wizard.ApplyEffect(bubbleType);
-            }
+            if (isSpecial && affectable != null)
+                affectable.ApplyBubbleEffect(bubbleType);
 
             Deactivate();
             return;
         }
 
-        // Health는 없지만 컨트롤러만 있는 경우나 지형 충돌 처리
-        bool isAnyEnemy = (enemy != null || slime != null || wizard != null);
-        if (isAnyEnemy || collision.gameObject.layer == LayerMask.NameToLayer("Ground"))
+        if (affectable != null || collision.gameObject.layer == LayerMask.NameToLayer("Ground"))
         {
-            if (isSpecial)
-            {
-                if (enemy != null) enemy.ApplyEffect(bubbleType);
-                if (slime != null) slime.ApplyEffect(bubbleType);
-                if (wizard != null) wizard.ApplyEffect(bubbleType);
-            }
+            if (isSpecial && affectable != null)
+                affectable.ApplyBubbleEffect(bubbleType);
             Deactivate();
         }
     }

@@ -39,7 +39,7 @@ public class EmergencyFixer : EditorWindow
         FixFonts();
 
         AssetDatabase.Refresh();
-        EditorUtility.DisplayDialog("FIX COMPLETE", "모든 설정이 복구되었습니다!\n1. 점프/발사/태그 복구\n2. HP바 빨간색 및 위치 고정\n3. 모든 텍스트 폰트 교체 (한글 깨짐 방지)", "확인");
+        EditorApplication.delayCall += () => EditorUtility.DisplayDialog("FIX COMPLETE", "모든 설정이 복구되었습니다!\n1. 점프/발사/태그 복구\n2. HP바 빨간색 및 위치 고정\n3. 모든 텍스트 폰트 교체 (한글 깨짐 방지)", "확인");
         Debug.Log("--- [End] 긴급 복구 완료 ---");
     }
 

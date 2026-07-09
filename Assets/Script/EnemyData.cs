@@ -9,5 +9,6 @@ public class EnemyData : ScriptableObject
     public float Speed;
     public float Damage;
     public float DetectionRange;
+    public float AttackRange;
     public float AttackInterval;
 }

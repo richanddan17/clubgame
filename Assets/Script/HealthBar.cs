@@ -3,48 +3,64 @@ using UnityEngine.UI;
 using TMPro;
 
 /// <summary>
-/// Health 컴포넌트와 UI Slider를 연결해주는 스크립트
+/// Health 컴포넌트와 UI를 연결하여 숫자와 바 수치를 갱신함
 /// </summary>
 public class HealthBar : MonoBehaviour
 {
-    [Header("연결 설정")]
+    [Header("연결 설정 (비어있으면 자동 검색)")]
     [SerializeField] private Health targetHealth;
     [SerializeField] private Slider hpSlider;
-    [SerializeField] private TextMeshProUGUI hpText; // 숫자 표시용 텍스트 (선택사항)
+    [SerializeField] private TextMeshProUGUI hpText; 
 
     private void Start()
     {
-        // 대상이 설정되지 않았다면 부모나 자신에게서 찾음
-        if (targetHealth == null) targetHealth = GetComponentInParent<Health>();
-        if (hpSlider == null) hpSlider = GetComponent<Slider>();
+        // 1. 대상(플레이어) 찾기
+        if (targetHealth == null)
+        {
+            var player = GameObject.FindGameObjectWithTag("Player");
+            if (player != null) targetHealth = player.GetComponent<Health>();
+            
+            // 여전히 없다면 씬 전체에서 Health 찾기
+            if (targetHealth == null) targetHealth = Object.FindAnyObjectByType<Health>();
+        }
+
+        // 2. 슬라이더 및 텍스트 자동 연결
+        if (hpSlider == null) hpSlider = GetComponent<Slider>() ?? GetComponentInChildren<Slider>();
+        if (hpText == null) hpText = GetComponentInChildren<TextMeshProUGUI>();
 
         if (targetHealth != null)
         {
-            // 체력 변경 이벤트 구독
+            // 이벤트 연결
             targetHealth.OnHealthChanged.AddListener(UpdateBar);
             
-            // 초기값 설정
+            // 초기 수치 반영
             UpdateBar(targetHealth.CurrentHealth, targetHealth.MaxHealth);
+            Debug.Log($"[HealthBar.cs] Connected to {targetHealth.gameObject.name}");
+        }
+        else
+        {
+            Debug.LogError("[HealthBar.cs] Target Health를 찾을 수 없습니다!");
         }
     }
 
     private void UpdateBar(float current, float max)
     {
+        // 숫자 갱신 (사용자 최우선 요청 사항)
+        if (hpText != null)
+        {
+            hpText.text = $"{Mathf.CeilToInt(current)} / {max}";
+        }
+
+        // 슬라이더 바 갱신
         if (hpSlider != null)
         {
             hpSlider.maxValue = max;
             hpSlider.value = current;
         }
-
-        if (hpText != null)
-        {
-            hpText.text = $"{Mathf.CeilToInt(current)} / {max}";
-        }
     }
 
     private void OnDestroy()
     {
-        // 이벤트 구독 해제 (메모리 누수 방지)
         if (targetHealth != null)
         {
             targetHealth.OnHealthChanged.RemoveListener(UpdateBar);

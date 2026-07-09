@@ -22,6 +22,10 @@ public class EnemySpawner : MonoBehaviour
         {
             Debug.LogWarning("EnemyData를 찾을 수 없습니다. Import를 먼저 진행하세요.");
         }
+        else
+        {
+            Debug.Log($"[{name}] 로드된 적 데이터 개수: {enemyDataList.Count}");
+        }
     }
 
     private void Update()
@@ -40,29 +44,56 @@ public class EnemySpawner : MonoBehaviour
 
     private void SpawnRandomEnemy()
     {
-        if (enemyDataList.Count == 0) return;
+        // BiomeManager에서 현재 바이옴의 적 리스트 가져오기
+        EnemyData[] currentPossibleEnemies = null;
+        if (BiomeManager.Instance != null && BiomeManager.Instance.currentBiome != null)
+        {
+            currentPossibleEnemies = BiomeManager.Instance.currentBiome.allowedEnemies;
+        }
+
+        if (currentPossibleEnemies == null || currentPossibleEnemies.Length == 0)
+        {
+            // 바이옴에 적이 설정되어 있지 않으면 전역 리스트(Resources/EnemyData) 사용
+            if (enemyDataList.Count == 0)
+            {
+                // 실시간으로 다시 로드 시도
+                EnemyData[] loadedData = Resources.LoadAll<EnemyData>("EnemyData");
+                enemyDataList.AddRange(loadedData);
+                if (enemyDataList.Count == 0) return;
+            }
+            currentPossibleEnemies = enemyDataList.ToArray();
+        }
 
         // 랜덤 데이터 선택
-        EnemyData randomData = enemyDataList[Random.Range(0, enemyDataList.Count)];
-        
-        // 특수 프리팹 확인 (예: Slime 이면 Prefabs/Slime.prefab 을 찾음)
-        GameObject prefabToSpawn = enemyPrefab;
-        string specializedPrefabPath = $"Prefabs/{randomData.EnemyName.Split('_')[1]}"; // ID_Name 형태일 경우 Name만 추출
-        GameObject specializedPrefab = Resources.Load<GameObject>(specializedPrefabPath);
+        EnemyData randomData = currentPossibleEnemies[UnityEngine.Random.Range(0, currentPossibleEnemies.Length)];
+
+        // 특수 프리팹 확인 (ID_Name 또는 Name 형태)
+        string prefabName = randomData.EnemyName;
+        if (prefabName.Contains("_")) prefabName = prefabName.Split('_')[1];
+
+        GameObject specializedPrefab = Resources.Load<GameObject>($"Prefabs/{prefabName}");
         
         // Resources에 없으면 Assets/Prefabs에서 직접 로드 시도 (Editor 전용)
         if (specializedPrefab == null)
         {
             #if UNITY_EDITOR
-            specializedPrefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>($"Assets/Prefabs/{randomData.EnemyName}.prefab");
-            if (specializedPrefab == null && randomData.EnemyName.Contains("Slime"))
-                specializedPrefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Slime.prefab");
+            // 툴이 저장하는 경로인 Assets/Prefabs/Enemy/ 에서 먼저 찾음
+            specializedPrefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>($"Assets/Prefabs/Enemy/{randomData.EnemyName}.prefab");
+            
+            // 못 찾으면 기존 경로에서도 시도
+            if (specializedPrefab == null)
+                specializedPrefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>($"Assets/Prefabs/{randomData.EnemyName}.prefab");
             #endif
         }
 
-        if (specializedPrefab != null) prefabToSpawn = specializedPrefab;
-        if (prefabToSpawn == null) return;
+        if (specializedPrefab == null)
+        {
+            Debug.LogWarning($"[{name}] 스폰할 프리팹을 찾을 수 없습니다: {randomData.EnemyName}");
+            return;
+        }
 
+        GameObject prefabToSpawn = specializedPrefab;
+        
         // 플레이어 주변 랜덤 위치 계산
         Vector3 spawnPos = transform.position + new Vector3(Random.Range(-spawnRange, spawnRange), 0, 0);
         
@@ -70,14 +101,15 @@ public class EnemySpawner : MonoBehaviour
         GameObject enemyObj = Instantiate(prefabToSpawn, spawnPos, Quaternion.identity);
         enemyObj.tag = "Enemy";
         
-        // Slime 스크립트가 있으면 속도 동기화
-        Slime slimeScript = enemyObj.GetComponent<Slime>();
-        if (slimeScript != null) slimeScript.speed = randomData.Speed;
-
         EnemyController controller = enemyObj.GetComponent<EnemyController>();
         if (controller != null)
         {
             controller.Initialize(randomData);
+            Debug.Log($"[{name}] Spawned {randomData.EnemyName} at {spawnPos}");
+        }
+        else
+        {
+            Debug.LogError($"[{name}] 생성된 {enemyObj.name}에 EnemyController가 없습니다!");
         }
     }
 }

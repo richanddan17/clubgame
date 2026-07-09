@@ -1,9 +1,5 @@
 using UnityEngine;
 
-/// <summary>
-/// 슬라임 전용 AI 컨트롤러
-/// - 상태 이상(슬로우, 스턴) 대응 로직 추가
-/// </summary>
 [RequireComponent(typeof(Rigidbody2D), typeof(Health))]
 public class Slime : MonoBehaviour
 {
@@ -15,14 +11,9 @@ public class Slime : MonoBehaviour
     private Rigidbody2D rb;
     private Collider2D col;
     private Animator anim;
-    private SpriteRenderer sr; // 색상 변화용
     private Health health;
     private bool isGrounded;
     private bool isDead = false;
-
-    // 상태 이상 타이머
-    private float _slowTimer = 0f;
-    private float _stunTimer = 0f;
 
     static int AnimatorWalk = Animator.StringToHash("Walk");
     static int AnimatorAttack = Animator.StringToHash("Attack");
@@ -32,7 +23,6 @@ public class Slime : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         col = GetComponent<Collider2D>();
         anim = GetComponentInChildren<Animator>();
-        sr = GetComponentInChildren<SpriteRenderer>();
         health = GetComponent<Health>();
         FindPlayer();
 
@@ -70,23 +60,6 @@ public class Slime : MonoBehaviour
     public float attackCooldown = 1.2f;
     private float _nextAttackTime;
 
-    void Update()
-    {
-        if (isDead) return;
-
-        // 타이머 감소
-        if (_slowTimer > 0) _slowTimer -= Time.deltaTime;
-        if (_stunTimer > 0) _stunTimer -= Time.deltaTime;
-
-        // 시각적 피드백
-        if (sr != null)
-        {
-            if (_stunTimer > 0) sr.color = Color.gray; // 스턴: 회색
-            else if (_slowTimer > 0) sr.color = new Color(0.5f, 0f, 0.5f); // 슬로우: 보라색
-            else sr.color = Color.white; // 평소
-        }
-    }
-
     void FixedUpdate()
     {
         if (isDead) return;
@@ -94,21 +67,12 @@ public class Slime : MonoBehaviour
 
         UpdateGroundState();
 
-        // 스턴 상태면 움직임 중지
-        if (_stunTimer > 0)
-        {
-            rb.linearVelocity = new Vector2(0, rb.linearVelocity.y);
-            if (anim != null) anim.SetBool(AnimatorWalk, false);
-            return;
-        }
-
         float distance = Vector2.Distance(transform.position, player.position);
         float diffX = player.position.x - transform.position.x;
         float directionX = diffX > 0 ? 1 : -1;
 
-        // 슬로우 상태면 속도 50% 감소
-        float currentSpeed = _slowTimer > 0 ? speed * 0.5f : speed;
-
+        Debug.DrawLine(transform.position, player.position, (distance <= attackRange) ? Color.magenta : Color.gray);
+        
         if (distance <= attackRange)
         {
             rb.linearVelocity = new Vector2(0, rb.linearVelocity.y);
@@ -117,7 +81,7 @@ public class Slime : MonoBehaviour
         }
         else if (distance < 15f) 
         {
-            rb.linearVelocity = new Vector2(directionX * currentSpeed, rb.linearVelocity.y);
+            rb.linearVelocity = new Vector2(directionX * speed, rb.linearVelocity.y);
             if (anim != null) anim.SetBool(AnimatorWalk, true);
         }
         else
@@ -130,21 +94,6 @@ public class Slime : MonoBehaviour
         else transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
     }
 
-    public void ApplyEffect(Projectile.BubbleType type)
-    {
-        switch (type)
-        {
-            case Projectile.BubbleType.Red:
-                _slowTimer = 3f;
-                Debug.Log($"<color=red>[Slime Effect]</color> SLOWED for 3s");
-                break;
-            case Projectile.BubbleType.Yellow:
-                _stunTimer = 1f;
-                Debug.Log($"<color=yellow>[Slime Effect]</color> STUNNED for 1s");
-                break;
-        }
-    }
-
     private void TryAttack()
     {
         if (Time.time < _nextAttackTime) return;
@@ -152,9 +101,13 @@ public class Slime : MonoBehaviour
         Health playerHealth = player.GetComponent<Health>();
         if (playerHealth != null && !playerHealth.IsDead)
         {
-            playerHealth.TakeDamage(attackDamage, transform.position);
+            playerHealth.TakeDamage(attackDamage);
             PlayAttackAnimation();
             _nextAttackTime = Time.time + attackCooldown;
+        }
+        else if (playerHealth == null)
+        {
+            Debug.LogWarning($"<color=yellow>[Combat]</color> 플레이어에게 Health 컴포넌트가 없습니다!");
         }
     }
 
@@ -163,6 +116,10 @@ public class Slime : MonoBehaviour
         if (anim != null) 
         {
             anim.SetTrigger(AnimatorAttack);
+        }
+        else
+        {
+            Debug.LogError($"<color=red>[Animation]</color> {name}의 Animator가 연결되지 않아 애니메이션을 재생할 수 없습니다!");
         }
     }
 
@@ -184,6 +141,7 @@ public class Slime : MonoBehaviour
     {
         if (isDead) return;
         isDead = true;
+        Debug.Log($"<color=red>[Status]</color> {name} 처치됨!");
         Destroy(gameObject);
     }
 }

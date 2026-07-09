@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.InputSystem;
 
 public class LevelPortal : MonoBehaviour
 {
@@ -40,7 +41,7 @@ public class LevelPortal : MonoBehaviour
     private void Update()
     {
         // 플레이어가 근처에 있고 E 키를 누르면 씬 전환
-        if (isPlayerNearby && Input.GetKeyDown(KeyCode.E))
+        if (isPlayerNearby && Keyboard.current.eKey.wasPressedThisFrame)
         {
             if (!string.IsNullOrEmpty(sceneToLoad))
             {
