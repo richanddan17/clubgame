@@ -4,8 +4,9 @@ using UnityEngine;
 public class PoppingCandyBat : MonoBehaviour
 {
     [Header("Settings")]
-    [Range(0f, 100f)] // 인스펙터에서 슬라이더로 조절 가능하게 추가
+    [Range(0f, 100f)]
     public float detectionRange = 40f; 
+    public float rangeOverride = -1f;
     
     public float attackCooldown = 2f;
     public GameObject bulletPrefab;
@@ -48,8 +49,9 @@ public class PoppingCandyBat : MonoBehaviour
 
         // 2D 거리 계산
         float distance = Vector2.Distance(transform.position, _player.position);
+        float actualRange = rangeOverride > 0 ? rangeOverride : detectionRange;
 
-        if (distance <= detectionRange)
+        if (distance <= actualRange)
         {
             if (Time.time >= _lastAttackTime + attackCooldown)
             {
@@ -86,8 +88,9 @@ public class PoppingCandyBat : MonoBehaviour
 
     void OnDrawGizmos()
     {
+        float gizmoRange = rangeOverride > 0 ? rangeOverride : detectionRange;
         Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, detectionRange);
+        Gizmos.DrawWireSphere(transform.position, gizmoRange);
         
         if (_player != null)
         {
