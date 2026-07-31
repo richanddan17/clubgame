@@ -15,6 +15,8 @@ public class RangedEnemy : MonoBehaviour, IBubbleAffectable
     [Header("인스펙터 조절용")]
     public float speedMultiplier = 1f;
     public float damageMultiplier = 1f;
+    public float attackRangeOverride = -1f;
+    public float detectionRangeOverride = -1f;
 
     private Rigidbody2D _rb;
     private Animator _animator;
@@ -91,8 +93,8 @@ public class RangedEnemy : MonoBehaviour, IBubbleAffectable
         if (_isDead || _player == null || data == null) return;
 
         float distance = Vector2.Distance(transform.position, _player.position);
-        float attackRange = data.AttackRange;
-        float detectionRange = data.DetectionRange;
+        float attackRange = attackRangeOverride > 0 ? attackRangeOverride : data.AttackRange;
+        float detectionRange = detectionRangeOverride > 0 ? detectionRangeOverride : data.DetectionRange;
 
         bool isFlying = _rb.gravityScale == 0;
 
@@ -293,14 +295,16 @@ public class RangedEnemy : MonoBehaviour, IBubbleAffectable
         bool isTank = name.Contains("CandyTankSlime");
 
         // 1. 탐지 범위 (하늘색)
+        float gizmoDetectionRange = detectionRangeOverride > 0 ? detectionRangeOverride : data.DetectionRange;
         Gizmos.color = Color.cyan;
-        if (isTank) Gizmos.DrawWireCube(transform.position, new Vector3(data.DetectionRange * 2, data.DetectionRange * 2, 1));
-        else Gizmos.DrawWireSphere(transform.position, data.DetectionRange);
+        if (isTank) Gizmos.DrawWireCube(transform.position, new Vector3(gizmoDetectionRange * 2, gizmoDetectionRange * 2, 1));
+        else Gizmos.DrawWireSphere(transform.position, gizmoDetectionRange);
 
         // 2. 원거리 공격 사거리 (빨간색)
+        float gizmoAttackRange = attackRangeOverride > 0 ? attackRangeOverride : data.AttackRange;
         Gizmos.color = Color.red;
-        if (isTank) Gizmos.DrawWireCube(transform.position, new Vector3(data.AttackRange * 2, data.AttackRange * 2, 1));
-        else Gizmos.DrawWireSphere(transform.position, data.AttackRange);
+        if (isTank) Gizmos.DrawWireCube(transform.position, new Vector3(gizmoAttackRange * 2, gizmoAttackRange * 2, 1));
+        else Gizmos.DrawWireSphere(transform.position, gizmoAttackRange);
 
         // 3. 근접 공격 범위 (노란색)
         float side = transform.localScale.x > 0 ? 1f : -1f;
