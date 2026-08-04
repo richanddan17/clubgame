@@ -1,4 +1,4 @@
-ID,Name,Damage,ManaCost,Cooldown
-201,Slash,10,0,0.5
-202,HeavyStrike,25,10,2.0
-203,Whirlwind,15,15,3.0
+ID,Name,Damage,ManaCost,Cooldown,Type,Bubble,Speed,MeleeRange,MeleeArc
+201,Slash,10,0,0.5,Melee,None,15,1.5,120
+202,HeavyStrike,25,10,2.0,Melee,None,15,2.0,120
+203,Whirlwind,15,15,3.0,MeleeAoE,None,15,3.0,360

@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 6561653759693523767}
   - component: {fileID: 4008410451941861450}
   - component: {fileID: 5918841862803961086}
+  - component: {fileID: 611893847295436005}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -235,24 +236,53 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4267b224d730e204eb9be851947d4e2c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
-  walkSpeed: 5
-  runSpeed: 9
-  crouchSpeed: 3
-  crouchScaleMultiplier: 0.5
-  jumpForce: 12
-  groundLayer:
-    serializedVersion: 2
-    m_Bits: 256
-  groundCheck: {fileID: 6629921618900187695}
-  firePoint: {fileID: 1595743548204521575}
-  equippedSkills:
-  - {fileID: 11400000, guid: 09fed9c7d7c6b8441b0714045668b66c, type: 2}
-  - {fileID: 11400000, guid: 3fd73c467dc25b14b975998474f4bf76, type: 2}
-  - {fileID: 11400000, guid: dfaadd3e7af866442abf12f1ce4ce2e8, type: 2}
-  colorProjectilePrefabs:
-  - {fileID: 9095872523426729726, guid: 219cfdabb501d704f8b0208b23a1296c, type: 3}
-  - {fileID: 1413877270453038819, guid: 5f347889b1933514b8a2d9418ae2c5ee, type: 3}
-  - {fileID: 284683656639023400, guid: 0b31446d49194f24cb6c4286146271c8, type: 3}
+  moveSettings:
+    WalkSpeed: 6
+    RunSpeed: 10
+    CrouchSpeed: 3
+    JumpForce: 14
+    CrouchScaleMultiplier: 0.5
+    GroundLayer:
+      serializedVersion: 2
+      m_Bits: 0
+  combatSettings:
+    FirePoint: {fileID: 0}
+    EquippedSkills:
+    - {fileID: 11400000, guid: efe44bee28660e343b6fadf8e0258125, type: 2}
+    - {fileID: 11400000, guid: 9f1f3fb94e5820645bd4ecfa0e1b03af, type: 2}
+    - {fileID: 11400000, guid: 3b67bfe0615c36a4e885be49af8e7275, type: 2}
+    - {fileID: 11400000, guid: 9414030631036b945bae84b79d3221f0, type: 2}
+    ColorProjectilePrefabs: []
+  inventoryPanel: {fileID: 0}
+--- !u!114 &611893847295436005
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 107782187341888615}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 63e1ec1262f034b4c867fc49675831ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ClubGame.Combat::Health
+  maxHealth: 100
+  currentHealth: 0
+  OnHealthChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  OnDamaged:
+    m_PersistentCalls:
+      m_Calls: []
+  OnHealed:
+    m_PersistentCalls:
+      m_Calls: []
+  OnDie:
+    m_PersistentCalls:
+      m_Calls: []
+  OnParry:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &3465807249357987831
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,5 +1,5 @@
-ID,Name,Damage,ManaCost,Cooldown
-211,GumShot,12,2,0.4
-212,StickyBlob,20,8,1.5
-213,BigBubble,45,15,3.0
-214,PopTrap,30,12,2.5
+ID,Name,Damage,ManaCost,Cooldown,Type,Bubble,Speed,MeleeRange,MeleeArc
+211,GumShot,12,2,0.4,Projectile,None,15,0,0
+212,StickyBlob,20,8,1.5,Projectile,Red,15,0,0
+213,BigBubble,45,15,3.0,Projectile,Yellow,15,0,0
+214,PopTrap,30,12,2.5,Projectile,None,12,0,0

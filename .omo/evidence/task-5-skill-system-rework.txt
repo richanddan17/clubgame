@@ -1,0 +1,133 @@
+Task 5: Skill System Rework - Data cleanup + pipeline + re-equip
+================================================================
+Date: 2026-08-03
+Unity: 6000.3.12f1 batchmode (D:\coding\6000.3.12f1\Editor\Unity.exe)
+Method: batchmode -batchmode -quit -projectPath "D:\coding\github c\clubgame" -executeMethod <Method> -logFile <file>
+
+== CODE CHANGES (only Assets/Editor/DataImportMenu.cs) ==
+Added 6 public static batchmode methods (no existing logic changed):
+  1. ImportSkillPresetsOnly()       - static wrapper around instance ImportSkillPresets()
+     (pipeline step 4; NOT ImportAll, which would re-import enemies/biomes)
+  2. LogSkillDataReferences()       - pre-deletion dependency scan over every text asset under Assets/
+  3. DeleteDuplicateSkillData()     - deletes the 3 subfolders + 2 junk assets; verifies 301_TimeStop before/after
+  4. QaLogFindAssets201()           - QA diagnostic: logs exact FindAssets order ImportSkillPresets relies on
+  5. CreateQADuplicate201Early()    - QA helper: recreates 201_Slash duplicate in an order-first subfolder
+  6. CleanupQADuplicates()          - QA cleanup: removes temp duplicate folders
+Existing ImportSkillPresets / ImportSkillData / LinkSkillPrefabs / EquipGumMasterOnPlayer logic UNTOUCHED.
+
+== STEP A - PRE-DELETION DEPENDENCY SCAN (LogSkillDataReferences) ==
+Run: task5_scan.log, exit 0. No "error CS".
+Scanned references TO 11 delete-target assets across all text files under Assets/:
+  target[0]  Assets/Resources/SkillData/Magic/221_FireBall.asset  guid=0e2886207d3e4c0479f73cd6bc66ed0d
+  target[1]  Assets/Resources/SkillData/Magic/222_IceBlast.asset  guid=2a2d774bedd544049a9fe6a64aa04eec
+  target[2]  Assets/Resources/SkillData/Magic/223_ThunderBolt.asset guid=9605422ef5ffcfa4cb0f4ea92f48338f
+  target[3]  Assets/Resources/SkillData/Ranged/211_ArrowShot.asset  guid=09fed9c7d7c6b8441b0714045668b66c
+  target[4]  Assets/Resources/SkillData/Ranged/212_SniperShot.asset guid=3fd73c467dc25b14b975998474f4bf76
+  target[5]  Assets/Resources/SkillData/Ranged/213_TripleShot.asset guid=dfaadd3e7af866442abf12f1ce4ce2e8
+  target[6]  Assets/Resources/SkillData/Melee/201_Slash.asset      guid=d444933e48f1d7f489c1b5949501f5a4
+  target[7]  Assets/Resources/SkillData/Melee/202_GreatSwing.asset guid=2c23221d4a3888e40bea3597e707afd3
+  target[8]  Assets/Resources/SkillData/Melee/203_Stab.asset       guid=c9d993c255a906c4087f69f7e95859a7
+  target[9]  Assets/Resources/SkillData/101_Shotgun.asset          guid=8a3909b7a79631a4583ebc8f62ace5bf
+  target[10] Assets/Resources/SkillData/NewSkillData.asset         guid=5c97221871c4dec43be0b04c6a7162a3
+RESULT: "total references to delete targets = 0 (expected 0)." -> safe to delete.
+(101_Shotgun.asset's own ProjectilePrefab points TO MeleeHitbox - that direction is fine,
+ the scan only counts references TO the delete targets.)
+
+== STEP B - DELETION (DeleteDuplicateSkillData) ==
+Run: task5_delete.log, exit 0. No "error CS".
+  301_TimeStop exists before deletion = True
+  deleting child: Magic/{221,222,223}  (3)  -> DELETED folder Assets/Resources/SkillData/Magic
+  deleting child: Ranged/{211,212,213} (3)  -> DELETED folder Assets/Resources/SkillData/Ranged
+  deleting child: Melee/{201,202,203}  (3)  -> DELETED folder Assets/Resources/SkillData/Melee
+  DELETED asset Assets/Resources/SkillData/101_Shotgun.asset
+  DELETED asset Assets/Resources/SkillData/NewSkillData.asset
+  301_TimeStop exists after deletion = True
+  remaining SkillData assets under Assets/Resources/SkillData: 11 (all at root, no subfolders)
+Independent disk check: exactly 11 .asset files at root, 0 subfolders.
+
+== STEP C - PIPELINE (exact order, each exit 0, no "error CS") ==
+Run 1 ImportSkillDataOnly    (task5_import.log):  "Skill Data Import Complete!" + "[DataImportMenu] ImportSkillDataOnly complete!"
+Run 2 LinkSkillPrefabs       (task5_link.log):    "LinkSkillPrefabs complete. Linked=10 MeleeHitboxExists=True"
+Run 3 EquipGumMasterOnPlayer (task5_equip.log):   "EquippedSkills=[211_GumShot, 212_StickyBlob, 213_BigBubble, 214_PopTrap]"
+Run 4 ImportSkillPresetsOnly (task5_presets.log): "Skill Presets Import Complete!" + "[DataImportMenu] ImportSkillPresetsOnly complete!"
+  (preset re-import ran AFTER deletion, so recursive FindAssets prefix search cannot match deleted subfolder dupes)
+NOTE: task5_link.log shows benign offline licensing noise ([Licensing::Client] HandshakeResponse
+  error) - Unity continued and completed the method successfully; not a project error.
+
+== STEP D - FINAL VERIFICATION ==
+1. Assets/Resources/SkillData/ contains EXACTLY 11 .asset at ROOT, ZERO subfolders:
+   201_Slash, 202_HeavyStrike, 203_Whirlwind, 211_GumShot, 212_StickyBlob, 213_BigBubble,
+   214_PopTrap, 221_FireBall, 222_IceBlast, 223_ThunderBolt, 301_TimeStop
+2. No leftover references: full text scan of every file under Assets/ (.asset/.prefab/.unity/
+   .mat/.controller/.anim/.asmdef/.cs/.json/.meta) for all 11 deleted GUIDs -> "CLEAN: no files
+   under Assets reference any deleted GUID". No .meta files for deleted assets remain.
+3. Player.prefab EquippedSkills (4 GumMaster root GUIDs, all 4 .meta files exist):
+   efe44bee28660e343b6fadf8e0258125 = 211_GumShot.meta
+   9f1f3fb94e5820645bd4ecfa0e1b03af = 212_StickyBlob.meta
+   3b67bfe0615c36a4e885be49af8e7275 = 213_BigBubble.meta
+   9414030631036b945bae84b79d3221f0 = 214_PopTrap.meta
+4. 301_TimeStop.asset UNCHANGED:
+   SHA256 = 7A50766F76D16B831107C527F659F96F6F3F61B4487B1E0B8FE09ABDF1BDDDE3
+   Length = 738 bytes, LastWriteTime = 2026-07-10 12:44:21 (pre-dates this task by weeks)
+   YAML head: ID=301, SkillName=Time Stop, ManaCost=50, Cooldown=15,
+     Icon guid 58f146e2... , ProjectilePrefab guid b9d01243... (TimeStop_Effect)
+5. Hybrid preset resolves to ROOT canonical GUIDs after cleanup:
+   - 085dfe0b541b5aa41a2002312477360d = root 201_Slash.meta
+   - efe44bee28660e343b6fadf8e0258125 = root 211_GumShot.meta
+   - 9c1d83fd4110494458fb26f0814ed6cb = root 221_FireBall.meta
+   All 4 presets reference only root assets:
+   GumMaster: efe44bee, 9f1f3fb9, 3b67bfe0, 94140306 (root 211-214)
+   Warrior:   085dfe0b, dbd46f15, 09f8cbfe            (root 201-203)
+   Mage:      9c1d83fd, 5e5bb22a, 67eef544            (root 221-223)
+   Hybrid:    085dfe0b, efe44bee, 9c1d83fd            (root 201/211/221)
+6. Canonical ProjectilePrefab links intact (10/10, all match expected prefab GUIDs):
+   201_Slash       b5dd3b4469f60074f8b7403a684ade8a -> MeleeHitbox.prefab
+   202_HeavyStrike b5dd3b4469f60074f8b7403a684ade8a -> MeleeHitbox.prefab
+   203_Whirlwind   b5dd3b4469f60074f8b7403a684ade8a -> MeleeHitbox.prefab
+   211_GumShot     219cfdabb501d704f8b0208b23a1296c -> BubbleProjectile_blue.prefab
+   212_StickyBlob  5f347889b1933514b8a2d9418ae2c5ee -> BubbleProjectile_red.prefab
+   213_BigBubble   0b31446d49194f24cb6c4286146271c8 -> BubbleProjectile_yellow.prefab
+   214_PopTrap     219cfdabb501d704f8b0208b23a1296c -> BubbleProjectile_blue.prefab
+   221_FireBall    703a1409083f4d37b0b4925407dafd8f -> FireBallProjectile.prefab
+   222_IceBlast    8848af9573f94566931e5824012b1f93 -> IceBlastProjectile.prefab
+   223_ThunderBolt 98c92f04b93743ab9449d1312f3e3d3b -> ThunderBoltProjectile.prefab
+
+== STEP D6 - ImportSkillPresets QA (failure-proof) ==
+Premise: ImportSkillPresets resolves via FindAssets("NNN_ t:SkillData")[0] - recursive prefix search,
+  so a duplicate with the same name prefix can steal the resolution. Proven below.
+
+a) QaLogFindAssets201 with Melee/201_Slash.asset present (task5_qa_diag.log):
+   match[0] guid=085dfe0b... path=Assets/Resources/SkillData/201_Slash.asset       (root)
+   match[1] guid=b7a2bdc5... path=Assets/Resources/SkillData/Melee/201_Slash.asset (duplicate)
+   -> 2 candidates; resolution is purely guids[0]-dependent. In this project the root sorts
+      first ('2' < 'M'), so the Melee-path duplicate alone did NOT steal the resolution
+      (Hybrid stayed on 085dfe0b after re-import with Melee dup present).
+
+b) CreateQADuplicate201Early -> Assets/Resources/SkillData/0QA_Temp/201_Slash.asset
+   guid=3bd1ec6f73fdf62439de4dd9dd98ce87 (folder sorts before root: '0' < '2')
+   Re-ran ImportSkillPresetsOnly (task5_qa4_presets.log):
+   Hybrid.asset skills[0] = guid 3bd1ec6f73fdf62439de4dd9dd98ce87  <-- WRONG duplicate asset
+   (was 085dfe0b... root). PROVES: when the duplicate is picked by FindAssets ordering,
+   the preset silently resolves to the wrong asset. Deletion is required for correctness.
+
+c) CleanupQADuplicates (task5_qa5_cleanup.log): DELETED 0QA_Temp + Melee temp folders, exit 0.
+   Re-ran ImportSkillPresetsOnly (task5_qa6_presets.log):
+   Hybrid.asset skills[0] = 085dfe0b541b5aa41a2002312477360d  <-- correct ROOT 201_Slash
+   Confirm resolution correct after deletion.
+
+== STEP E - CONCLUSION ==
+All expectations met:
+- 0 pre-deletion references to any delete target.
+- 5 targets deleted (3 subfolders: 9 dup assets, 101_Shotgun, NewSkillData); 301_TimeStop intact.
+- Pipeline ImportSkillDataOnly -> LinkSkillPrefabs -> EquipGumMasterOnPlayer -> ImportSkillPresetsOnly
+  all exit 0 with expected log lines.
+- Final state: 11 root .asset files, 0 subfolders, no dangling GUID references anywhere in Assets.
+- Player.prefab equips the 4 root GumMaster skills (211-214).
+- QA failure-proof: duplicate 201_Slash causes Hybrid to resolve to the WRONG asset;
+  after deletion it resolves to the correct root asset.
+- 301_TimeStop.asset untouched (same SHA256, mtime weeks old).
+
+Logs: .omo/evidence/logs/task5_scan.log, task5_delete.log, task5_import.log, task5_link.log,
+      task5_equip.log, task5_presets.log, task5_qa1_create.log, task5_qa2_presets.log,
+      task5_qa_diag.log, task5_qa3_createearly.log, task5_qa4_presets.log, task5_qa5_cleanup.log,
+      task5_qa6_presets.log

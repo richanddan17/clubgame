@@ -18,6 +18,14 @@ MonoBehaviour:
   ManaCost: 15
   Cooldown: 1.5
   Icon: {fileID: 0}
-  ProjectilePrefab: {fileID: 0}
+  ProjectilePrefab: {fileID: 9095872523426729726, guid: 703a1409083f4d37b0b4925407dafd8f, type: 3}
   projectileCount: 1
   spreadAngle: 0
+  SkillType: 0
+  ProjectileSpeed: 18
+  UseBubbleEffect: 0
+  BubbleEffect: 0
+  MeleeRange: 0
+  MeleeArc: 0
+  HitboxLifetime: 0.15
+  AoERadius: 3

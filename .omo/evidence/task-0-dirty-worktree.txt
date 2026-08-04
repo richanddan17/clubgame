@@ -1,0 +1,107 @@
+﻿ M .omo/drafts/skill-system-rework.md
+ M .omo/plans/skill-system-rework.md
+ M .omo/run-continuation/ses_047b07dd7ffe7j4BYbCvAutMyf.json
+ M Assets/Editor/DataImportMenu.cs
+ M Assets/Prefabs/Player.prefab
+ D Assets/Resources/SkillData/101_Shotgun.asset
+ D Assets/Resources/SkillData/101_Shotgun.asset.meta
+ M Assets/Resources/SkillData/201_Slash.asset
+ M Assets/Resources/SkillData/202_HeavyStrike.asset
+ M Assets/Resources/SkillData/203_Whirlwind.asset
+ M Assets/Resources/SkillData/211_GumShot.asset
+ M Assets/Resources/SkillData/212_StickyBlob.asset
+ M Assets/Resources/SkillData/213_BigBubble.asset
+ M Assets/Resources/SkillData/214_PopTrap.asset
+ M Assets/Resources/SkillData/221_FireBall.asset
+ M Assets/Resources/SkillData/222_IceBlast.asset
+ M Assets/Resources/SkillData/223_ThunderBolt.asset
+ D Assets/Resources/SkillData/Magic.meta
+ D Assets/Resources/SkillData/Magic/221_FireBall.asset
+ D Assets/Resources/SkillData/Magic/221_FireBall.asset.meta
+ D Assets/Resources/SkillData/Magic/222_IceBlast.asset
+ D Assets/Resources/SkillData/Magic/222_IceBlast.asset.meta
+ D Assets/Resources/SkillData/Magic/223_ThunderBolt.asset
+ D Assets/Resources/SkillData/Magic/223_ThunderBolt.asset.meta
+ D Assets/Resources/SkillData/Melee.meta
+ D Assets/Resources/SkillData/Melee/201_Slash.asset
+ D Assets/Resources/SkillData/Melee/201_Slash.asset.meta
+ D Assets/Resources/SkillData/Melee/202_GreatSwing.asset
+ D Assets/Resources/SkillData/Melee/202_GreatSwing.asset.meta
+ D Assets/Resources/SkillData/Melee/203_Stab.asset
+ D Assets/Resources/SkillData/Melee/203_Stab.asset.meta
+ D Assets/Resources/SkillData/NewSkillData.asset
+ D Assets/Resources/SkillData/NewSkillData.asset.meta
+ D Assets/Resources/SkillData/Ranged.meta
+ D Assets/Resources/SkillData/Ranged/211_ArrowShot.asset
+ D Assets/Resources/SkillData/Ranged/211_ArrowShot.asset.meta
+ D Assets/Resources/SkillData/Ranged/212_SniperShot.asset
+ D Assets/Resources/SkillData/Ranged/212_SniperShot.asset.meta
+ D Assets/Resources/SkillData/Ranged/213_TripleShot.asset
+ D Assets/Resources/SkillData/Ranged/213_TripleShot.asset.meta
+ M Assets/Scenes/mainscene.unity
+ D Assets/Script/Health.cs
+ D Assets/Script/Health.cs.meta
+ D Assets/Script/IBubbleAffectable.cs
+ D Assets/Script/IBubbleAffectable.cs.meta
+ D Assets/Script/ObjectPooler.cs
+ D Assets/Script/ObjectPooler.cs.meta
+ D Assets/Script/Projectile.cs
+ D Assets/Script/Projectile.cs.meta
+ D Assets/Script/SkillData.cs
+ D Assets/Script/SkillData.cs.meta
+ M Assets/Script/player/PlayerController.cs
+ M clubgame.slnx
+ M tiger/datafiles/skill/magicskill.csv
+ M tiger/datafiles/skill/meleeskill.csv
+ M tiger/datafiles/skill/rangedskill.csv
+?? .omo/boulder.json
+?? .omo/drafts/magic-skill-vfx.md
+?? .omo/evidence/
+?? .omo/notepads/
+?? .omo/plans/fix-opencode-model-config.md
+?? .omo/plans/magic-skill-vfx.md
+?? .omo/run-continuation/ses_0380c0bb9ffewvYmiCaKkoqY2x.json
+?? .omo/run-continuation/ses_0380d09e8ffeFpK5SfUiFyRwpD.json
+?? .omo/run-continuation/ses_0383f0ff3ffegWXFBp6FbwRhvo.json
+?? .omo/run-continuation/ses_038427e86ffe47R2DpkAkOUV0K.json
+?? .omo/run-continuation/ses_0385e0657ffeE5k50GOmOKyMoI.json
+?? .omo/run-continuation/ses_038889ea4ffeEJ8j9VrHBjwncW.json
+?? .omo/run-continuation/ses_038d22a64ffe6gkY79yIcO11pl.json
+?? .omo/run-continuation/ses_038d27ea0ffeyN5GVtn3Hi2QEt.json
+?? .omo/run-continuation/ses_039132e9affeib1pf1bY6o6aQL.json
+?? .omo/run-continuation/ses_03913573cffeLmnQxCWB4noTkS.json
+?? .omo/run-continuation/ses_039179453ffeoBPxSmf1awMAfp.json
+?? .omo/run-continuation/ses_03917d4e4ffee5H1A361yrnV3n.json
+?? .omo/run-continuation/ses_0391939eeffed5tR9epZyvb46W.json
+?? .omo/run-continuation/ses_0391e1011ffexWp5pn2oElPSA6.json
+?? .omo/run-continuation/ses_0391e13c1ffeLBuH4yPleQ76do.json
+?? .omo/run-continuation/ses_039205ab3ffeXs95J8lwfLPH7S.json
+?? .omo/run-continuation/ses_039205debffeH70dpUaVBhW34T.json
+?? .omo/run-continuation/ses_03920615bffeXiNBOhSp8cs9YJ.json
+?? .omo/run-continuation/ses_0392063c0ffeck5mSx2msJqJEe.json
+?? .omo/run-continuation/ses_0392069a0ffeFxPsOaWvfuYYOL.json
+?? .omo/run-continuation/ses_03923ecfdffetZ17CbX05o3bGD.json
+?? .omo/run-continuation/ses_039248e1bffeJmB6C4r0r8Q7dw.json
+?? .omo/run-continuation/ses_039369972ffe28Pl5Sb6dfanKG.json
+?? .omo/run-continuation/ses_0393f5d0effeIz1YtPSbLBn7Y7.json
+?? .omo/run-continuation/ses_0394165feffesVg9WbgH1ZcnCM.json
+?? .omo/run-continuation/ses_0394a3fa8ffe3dsD1fuUVEeYxd.json
+?? .omo/run-continuation/ses_03991e00cffexryVl1XXaw9zy4.json
+?? .omo/run-continuation/ses_03991e814ffeoVvGELo015GH3b.json
+?? .omo/run-continuation/ses_03991f2f0ffeuMLcfHIKkrWJza.json
+?? .omo/run-continuation/ses_039974145ffeBN3tNqPSVQhQmm.json
+?? Assets/Prefabs/Projectiles/FireBallProjectile.prefab
+?? Assets/Prefabs/Projectiles/FireBallProjectile.prefab.meta
+?? Assets/Prefabs/Projectiles/IceBlastProjectile.prefab
+?? Assets/Prefabs/Projectiles/IceBlastProjectile.prefab.meta
+?? Assets/Prefabs/Projectiles/MeleeHitbox.prefab
+?? Assets/Prefabs/Projectiles/MeleeHitbox.prefab.meta
+?? Assets/Prefabs/Projectiles/ThunderBoltProjectile.prefab
+?? Assets/Prefabs/Projectiles/ThunderBoltProjectile.prefab.meta
+?? Assets/Script/Combat.meta
+?? Assets/Script/Combat/
+?? Assets/Tests.meta
+?? Assets/Tests/
+
+SUMMARY: 104 changed/untracked entries in working tree at task-0 snapshot (this is the baseline).
+NOTE: The 'rework' plan's ~97 uncommitted files live in this worktree and must NOT be committed by any executor.

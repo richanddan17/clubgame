@@ -1051,12 +1051,16 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5918841862803961086, guid: 0d25e10f315caa24fb6de1bc8afb0b2e, type: 3}
       propertyPath: combatSettings.EquippedSkills.Array.size
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 5918841862803961086, guid: 0d25e10f315caa24fb6de1bc8afb0b2e, type: 3}
       propertyPath: 'combatSettings.EquippedSkills.Array.data[0]'
       value: 
       objectReference: {fileID: 11400000, guid: 443b08b5bde4fdb47aa3dfdd050e2a8f, type: 2}
+    - target: {fileID: 5918841862803961086, guid: 0d25e10f315caa24fb6de1bc8afb0b2e, type: 3}
+      propertyPath: 'combatSettings.EquippedSkills.Array.data[1]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 085dfe0b541b5aa41a2002312477360d, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

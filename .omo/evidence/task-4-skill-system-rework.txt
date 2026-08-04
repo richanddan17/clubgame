@@ -1,0 +1,134 @@
+Task 4: Skill System Rework - SkillData CSV schema + import/link/equip pipeline
+================================================================================
+Date: 2026-08-03
+Unity: 6000.3.12f1 batchmode (D:\coding\6000.3.12f1\Editor\Unity.exe)
+
+== FILES MODIFIED ==
+1. tiger/datafiles/skill/meleeskill.csv   - header + new columns + rows 201-203
+2. tiger/datafiles/skill/rangedskill.csv  - header + new columns + rows 211-214
+3. tiger/datafiles/skill/magicskill.csv   - header + new columns + rows 221-223
+4. Assets/Editor/DataImportMenu.cs        - dynamic header parser + 3 static batchmode methods
+5. Assets/Resources/SkillData/*.asset     - fields populated via ImportSkillDataOnly (10 root assets)
+6. Assets/Prefabs/Player.prefab           - combatSettings.EquippedSkills set to 4 GumMaster skills
+
+== CSV HEADER (all 3 files) ==
+ID,Name,Damage,ManaCost,Cooldown,Type,Bubble,Speed,MeleeRange,MeleeArc
+
+== RUN 1: ImportSkillDataOnly ==
+Log: task4_import.log -> "Skill Data Import Complete!" + "[DataImportMenu] ImportSkillDataOnly complete!" + exit 0.
+No CS compile errors. Old Damage/ManaCost/Cooldown/Name/ID values unchanged (verified 201:10/0/0.5, 211:12/2/0.4, etc.).
+Enum serialization in YAML is by int: SkillType Projectile=0/Melee=1/MeleeAoE=2; BubbleType Blue=0/Red=1.
+
+Per-asset field verification (Assets/Resources/SkillData/<id>.asset):
+ 201_Slash       SkillType=1(Melee) UseBubbleEffect=0 BubbleEffect=0 Speed=15 MeleeRange=1.5 MeleeArc=120
+ 202_HeavyStrike SkillType=1(Melee) UseBubbleEffect=0 BubbleEffect=0 Speed=15 MeleeRange=2.0 MeleeArc=120
+ 203_Whirlwind   SkillType=2(MeleeAoE) UseBubbleEffect=0 BubbleEffect=0 Speed=15 MeleeRange=3.0 MeleeArc=360
+ 211_GumShot     SkillType=0 UseBubbleEffect=0 BubbleEffect=0 Speed=15 MeleeRange=0 MeleeArc=0
+ 212_StickyBlob  SkillType=0 UseBubbleEffect=1 BubbleEffect=1(Red) Speed=15 MeleeRange=0 MeleeArc=0
+ 213_BigBubble   SkillType=0 UseBubbleEffect=1 BubbleEffect=0(Blue) Speed=15 MeleeRange=0 MeleeArc=0
+ 214_PopTrap     SkillType=0 UseBubbleEffect=0 BubbleEffect=0 Speed=12 MeleeRange=0 MeleeArc=0
+ 221_FireBall    SkillType=0 UseBubbleEffect=0 BubbleEffect=0 Speed=18 MeleeRange=0 MeleeArc=0
+ 222_IceBlast    SkillType=0 UseBubbleEffect=1 BubbleEffect=0(Blue) Speed=14 MeleeRange=0 MeleeArc=0
+ 223_ThunderBolt SkillType=0 UseBubbleEffect=0 BubbleEffect=0 Speed=20 MeleeRange=0 MeleeArc=0
+
+== RUN 2: LinkSkillPrefabs (2 attempts) ==
+Attempt 1 (before fix): Linked=7 - melee 201/202/203 were skipped because those IDs were
+  missing from prefabMap (my bug). Gum+magic (7) linked correctly.
+Fix: added prefabMap[201]=prefabMap[202]=prefabMap[203]=Assets/Prefabs/Projectiles/MeleeHitbox.prefab.
+Attempt 2 (after fix): Linked=11 MeleeHitboxExists=True, exit 0. 10 expected + 1 extra:
+  101_Shotgun.asset was also given the MeleeHitbox prefab by the PARALLEL Todo 2 agent
+  (not by my code - 101 is not in my prefabMap; noted as external modification).
+
+Per-asset ProjectilePrefab assignment (guid -> prefab):
+ 201_Slash       b5dd3b4469f60074f8b7403a684ade8a -> MeleeHitbox.prefab (existed during linking: YES)
+ 202_HeavyStrike b5dd3b4469f60074f8b7403a684ade8a -> MeleeHitbox.prefab
+ 203_Whirlwind   b5dd3b4469f60074f8b7403a684ade8a -> MeleeHitbox.prefab
+ 211_GumShot     219cfdabb501d704f8b0208b23a1296c -> BubbleProjectile_blue.prefab
+ 212_StickyBlob  5f347889b1933514b8a2d9418ae2c5ee -> BubbleProjectile_red.prefab
+ 213_BigBubble   219cfdabb501d704f8b0208b23a1296c -> BubbleProjectile_blue.prefab
+ 214_PopTrap     0b31446d49194f24cb6c4286146271c8 -> BubbleProjectile_yellow.prefab
+ 221_FireBall    703a1409083f4d37b0b4925407dafd8f -> FireBallProjectile.prefab
+ 222_IceBlast    8848af9573f94566931e5824012b1f93 -> IceBlastProjectile.prefab
+ 223_ThunderBolt 98c92f04b93743ab9449d1312f3e3d3b -> ThunderBoltProjectile.prefab
+
+Prefab mapping decisions (212/213/214):
+ - 212 StickyBlob (CSV Bubble=Red)   -> BubbleProjectile_red.prefab    (exists under Assets/Prefabs/)
+ - 213 BigBubble  (CSV Bubble=Blue)  -> BubbleProjectile_blue.prefab   (matches BubbleEffect=Blue; no "big"/yellow variant intended - yellow is a separate color)
+ - 214 PopTrap    (CSV Bubble=None)  -> BubbleProjectile_yellow.prefab (distinct color left over after 211/212/213 used blue/red/blue; no bubble effect required)
+Prefabs existing under Assets/Prefabs/: BubbleProjectile_blue.prefab, BubbleProjectile_red.prefab,
+BubbleProjectile_yellow.prefab (+ Assets/Prefabs/Projectiles/: FireBall/IceBlast/ThunderBolt,
+TimeStop_Effect, CandyTankSlime_Bullet). All three bubble prefabs are identical except
+sprite/animator (scale 3, speed 15, Projectile component).
+
+== RUN 3: EquipGumMasterOnPlayer ==
+Log: task4_equip.log -> "EquippedSkills=[211_GumShot, 212_StickyBlob, 213_BigBubble, 214_PopTrap]" + success log, exit 0.
+Player.prefab YAML now has nested combatSettings.EquippedSkills with exactly 4 entries:
+ - efe44bee28660e343b6fadf8e0258125 -> 211_GumShot.asset.meta guid
+ - 9f1f3fb94e5820645bd4ecfa0e1b03af -> 212_StickyBlob.asset.meta guid
+ - 3b67bfe0615c36a4e885be49af8e7275 -> 213_BigBubble.asset.meta guid
+ - 9414030631036b945bae84b79d3221f0 -> 214_PopTrap.asset.meta guid
+All 4 GUIDs match the .asset .meta files exactly. Prefab edit done via SerializedObject +
+PrefabUtility.SavePrefabAsset (no hand-YAML). Stale flat fields (old walkSpeed/equippedSkills/...)
+were dropped on re-save; PlayerController now serializes current field layout (moveSettings/
+combatSettings). Health component auto-added by RequireComponent during save (harmless).
+
+== LOCK/RETRY NOTES ==
+- Initial import: no lock, ran immediately.
+- Link run 1: lock held by parallel Todo 2 agent -> waited 90s x5; lock cleared, then a second
+  Unity instance grabbed it (fatal error log) -> waited 90s x3; lock cleared; link ran OK.
+- MeleeHitbox.prefab did NOT exist at first check, appeared later (Todo 2 finished in parallel).
+- Batchmode processes logged "Exiting batchmode successfully now!" (exit 0) but occasionally
+  hung during shutdown; were force-killed AFTER completion was confirmed in the log (saves flushed).
+
+== VERDICT ==
+All expected outcomes met:
+- 10/10 root skill assets have correct SkillType/UseBubbleEffect/BubbleEffect/ProjectileSpeed/MeleeRange/MeleeArc.
+- 10/10 root skill assets have correct ProjectilePrefab (201-203 -> MeleeHitbox, 211-214 -> bubble prefabs, 221-223 -> magic prefabs).
+- Player.prefab EquippedSkills contains exactly 211_GumShot, 212_StickyBlob, 213_BigBubble, 214_PopTrap.
+
+== CORRECTION (2026-08-03): bubble effect design fix (before Todo 5) ==
+Design inconsistency found: plan Todo 4 section had typos for the Bubble column.
+Plan Todo 6 data-integrity tests + game design (EnemyController.ApplyBubbleEffect:
+Red=slow 3s, Yellow=stun 1s, Blue=no effect; "stunning big bubble" for BigBubble)
+require 213=Yellow (stun) and 222=Red (slow). Fixed BEFORE Todo 5.
+
+CSV changes (only the Bubble column value changed, all other columns identical):
+  rangedskill.csv: 213,BigBubble,45,15,3.0,Projectile,Blue ,15,0,0  ->  ...,Yellow,...
+  magicskill.csv:  222,IceBlast,25,20,2.0,Projectile,Blue ,14,0,0  ->  ...,Red,...
+DataImportMenu.cs changes:
+  1. Bubble parser now also handles "Yellow" (UseBubbleEffect=true, BubbleEffect=Yellow).
+  2. prefabMap: 213 -> BubbleProjectile_yellow.prefab, 214 -> BubbleProjectile_blue.prefab
+     (final: 211=blue, 212=red, 213=yellow, 214=blue; 214 has no bubble effect and reuses blue).
+
+Re-ran ImportSkillDataOnly + LinkSkillPrefabs (exit 0). Verified YAML (enum as int;
+BubbleType Blue=0, Red=1, Yellow=2):
+
+BEFORE -> AFTER (Assets/Resources/SkillData/<id>.asset):
+  213_BigBubble: UseBubbleEffect 0->1, BubbleEffect 0->2(Yellow),
+                 ProjectilePrefab 219cfdab(blue)->0b31446d(yellow)  [0b31446d = BubbleProjectile_yellow.prefab.meta]
+  222_IceBlast:  UseBubbleEffect 1 (unchanged), BubbleEffect 0->1(Red),
+                 ProjectilePrefab 8848af95 (IceBlast, unchanged)
+  214_PopTrap:   UseBubbleEffect 0 (unchanged), BubbleEffect 0 (unchanged),
+                 ProjectilePrefab 0b31446d(yellow)->219cfdab(blue)  [219cfdab = BubbleProjectile_blue.prefab.meta]
+
+Unchanged and still correct (post-fix full verification):
+  201_Slash  SkillType=1 Bubble=0/0 prefab=b5dd3b44 (MeleeHitbox)
+  202_HeavyStrike SkillType=1 Bubble=0/0 prefab=b5dd3b44 (MeleeHitbox)
+  203_Whirlwind SkillType=2 Bubble=0/0 prefab=b5dd3b44 (MeleeHitbox)
+  211_GumShot SkillType=0 Bubble=0/0 Speed=15 prefab=219cfdab (blue)
+  212_StickyBlob SkillType=0 Bubble=1/1(Red) Speed=15 prefab=5f347889 (red)
+  221_FireBall SkillType=0 Bubble=0/0 Speed=18 prefab=703a1409 (FireBall)
+  222_IceBlast SkillType=0 Bubble=1/1(Red) Speed=14 prefab=8848af95 (IceBlast)
+  223_ThunderBolt SkillType=0 Bubble=0/0 Speed=20 prefab=98c92f04 (ThunderBolt)
+
+Player.prefab EquippedSkills GUIDs re-verified UNCHANGED after re-import and still
+match the .asset .meta GUIDs exactly (assets were updated in place, not recreated):
+  efe44bee28660e343b6fadf8e0258125 = 211_GumShot.meta
+  9f1f3fb94e5820645bd4ecfa0e1b03af = 212_StickyBlob.meta
+  3b67bfe0615c36a4e885be49af8e7275 = 213_BigBubble.meta
+  9414030631036b945bae84b79d3221f0 = 214_PopTrap.meta
+EquipGumMasterOnPlayer did NOT need re-running.
+
+Note: 101_Shotgun.asset still holds the MeleeHitbox prefab link made by the parallel
+Todo 2 agent (untouched by me; not in any CSV, not in my prefabMap).
+

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="8" result="Passed" total="8" passed="8" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-08-03 13:04:38Z" end-time="2026-08-03 13:04:46Z" duration="8.0531426">
+  <test-suite type="TestSuite" id="1000" name="clubgame" fullname="clubgame" runstate="Runnable" testcasecount="8" result="Passed" start-time="2026-08-03 13:04:38Z" end-time="2026-08-03 13:04:46Z" duration="8.053143" total="8" passed="8" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <test-suite type="Assembly" id="1011" name="ClubGame.EditModeTests.dll" fullname="D:/coding/github c/clubgame/Library/ScriptAssemblies/ClubGame.EditModeTests.dll" runstate="Runnable" testcasecount="8" result="Passed" start-time="2026-08-03 13:04:38Z" end-time="2026-08-03 13:04:46Z" duration="8.023528" total="8" passed="8" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="8620" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <test-suite type="TestFixture" id="1001" name="SkillDataIntegrityTests" fullname="SkillDataIntegrityTests" classname="SkillDataIntegrityTests" runstate="Runnable" testcasecount="7" result="Passed" start-time="2026-08-03 13:04:38Z" end-time="2026-08-03 13:04:46Z" duration="8.015653" total="7" passed="7" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-case id="1004" name="CanonicalSkillsWired" fullname="SkillDataIntegrityTests.CanonicalSkillsWired" methodname="CanonicalSkillsWired" classname="SkillDataIntegrityTests" runstate="Runnable" seed="1399265882" result="Passed" start-time="2026-08-03 13:04:38Z" end-time="2026-08-03 13:04:40Z" duration="1.792291" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1006" name="PlayerEquipsGumMaster" fullname="SkillDataIntegrityTests.PlayerEquipsGumMaster" methodname="PlayerEquipsGumMaster" classname="SkillDataIntegrityTests" runstate="Runnable" seed="341461980" result="Passed" start-time="2026-08-03 13:04:40Z" end-time="2026-08-03 13:04:40Z" duration="0.293418" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1008" name="PresetsResolveToRoot" fullname="SkillDataIntegrityTests.PresetsResolveToRoot" methodname="PresetsResolveToRoot" classname="SkillDataIntegrityTests" runstate="Runnable" seed="227234309" result="Passed" start-time="2026-08-03 13:04:40Z" end-time="2026-08-03 13:04:40Z" duration="0.067561" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1003" name="SkillIdsUnique" fullname="SkillDataIntegrityTests.SkillIdsUnique" methodname="SkillIdsUnique" classname="SkillDataIntegrityTests" runstate="Runnable" seed="566315325" result="Passed" start-time="2026-08-03 13:04:40Z" end-time="2026-08-03 13:04:46Z" duration="5.776679" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1002" name="SkillInventoryClean" fullname="SkillDataIntegrityTests.SkillInventoryClean" methodname="SkillInventoryClean" classname="SkillDataIntegrityTests" runstate="Runnable" seed="1102391890" result="Passed" start-time="2026-08-03 13:04:46Z" end-time="2026-08-03 13:04:46Z" duration="0.019348" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1005" name="SkillPrefabStructure" fullname="SkillDataIntegrityTests.SkillPrefabStructure" methodname="SkillPrefabStructure" classname="SkillDataIntegrityTests" runstate="Runnable" seed="1538250133" result="Passed" start-time="2026-08-03 13:04:46Z" end-time="2026-08-03 13:04:46Z" duration="0.033650" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1007" name="TimeStopUntouched" fullname="SkillDataIntegrityTests.TimeStopUntouched" methodname="TimeStopUntouched" classname="SkillDataIntegrityTests" runstate="Runnable" seed="1964482245" result="Passed" start-time="2026-08-03 13:04:46Z" end-time="2026-08-03 13:04:46Z" duration="0.001333" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+      </test-suite>
+      <test-suite type="TestFixture" id="1009" name="SkillDataModelTests" fullname="SkillDataModelTests" classname="SkillDataModelTests" runstate="Runnable" testcasecount="1" result="Passed" start-time="2026-08-03 13:04:46Z" end-time="2026-08-03 13:04:46Z" duration="0.003845" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-case id="1010" name="FreshSkillData_HasExpectedDefaults" fullname="SkillDataModelTests.FreshSkillData_HasExpectedDefaults" methodname="FreshSkillData_HasExpectedDefaults" classname="SkillDataModelTests" runstate="Runnable" seed="724024711" result="Passed" start-time="2026-08-03 13:04:46Z" end-time="2026-08-03 13:04:46Z" duration="0.001055" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <output><![CDATA[Saving results to: C:/Users/midme/AppData/LocalLow/DefaultCompany/clubgame\TestResults.xml
+]]></output>
+        </test-case>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

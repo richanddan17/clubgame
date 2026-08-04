@@ -216,27 +216,453 @@ public class DataImportMenu : EditorWindow
         if (!File.Exists(path)) return;
         string[] lines = File.ReadAllLines(path);
         EnsureFolder("Assets/Resources/SkillData");
-        
+
+        if (lines.Length < 2) return;
+
+        // Parse header dynamically by column name so BOTH old (ID,Name,Damage,ManaCost,Cooldown)
+        // and new (…,Type,Bubble,Speed,MeleeRange,MeleeArc) schemas work.
+        string[] header = lines[0].Split(',');
+        Dictionary<string, int> col = new Dictionary<string, int>();
+        for (int h = 0; h < header.Length; h++)
+        {
+            string key = header[h].Trim();
+            if (!string.IsNullOrEmpty(key) && !col.ContainsKey(key)) col[key] = h;
+        }
+
         for (int i = 1; i < lines.Length; i++)
         {
             if (string.IsNullOrWhiteSpace(lines[i])) continue;
             string[] data = lines[i].Split(',');
-            
+
             if (data.Length < 5) continue;
 
-            int id = int.Parse(data[0]);
-            string skillName = data[1];
+            int id = int.Parse(data[col["ID"]]);
+            string skillName = data[col["Name"]];
             string assetPath = $"Assets/Resources/SkillData/{id}_{skillName}.asset";
-            
+
             SkillData asset = GetOrCreateAsset<SkillData>(assetPath);
             asset.ID = id;
             asset.SkillName = skillName;
-            asset.Damage = float.Parse(data[2]);
-            asset.ManaCost = float.Parse(data[3]);
-            asset.Cooldown = float.Parse(data[4]);
-            
+            asset.Damage = float.Parse(data[col["Damage"]]);
+            asset.ManaCost = float.Parse(data[col["ManaCost"]]);
+            asset.Cooldown = float.Parse(data[col["Cooldown"]]);
+
+            // --- NEW schema columns (absent in old CSV files) ---
+            if (col.ContainsKey("Type"))
+            {
+                string raw = data[col["Type"]];
+                SkillType parsed;
+                asset.SkillType = string.IsNullOrEmpty(raw) || !System.Enum.TryParse(raw, out parsed)
+                    ? SkillType.Projectile
+                    : parsed;
+            }
+
+            if (col.ContainsKey("Bubble"))
+            {
+                string raw = data[col["Bubble"]];
+                // None / empty -> no bubble effect (BubbleEffect defaults to Blue)
+                asset.UseBubbleEffect = raw == "Red" || raw == "Blue" || raw == "Yellow";
+                asset.BubbleEffect = raw == "Red" ? Projectile.BubbleType.Red
+                                    : raw == "Yellow" ? Projectile.BubbleType.Yellow
+                                    : raw == "Blue" ? Projectile.BubbleType.Blue
+                                    : Projectile.BubbleType.Blue;
+            }
+
+            if (col.ContainsKey("Speed"))
+            {
+                string raw = data[col["Speed"]];
+                asset.ProjectileSpeed = string.IsNullOrEmpty(raw) ? 15f : float.Parse(raw);
+            }
+
+            if (col.ContainsKey("MeleeRange"))
+            {
+                string raw = data[col["MeleeRange"]];
+                asset.MeleeRange = string.IsNullOrEmpty(raw) ? 0f : float.Parse(raw);
+            }
+
+            if (col.ContainsKey("MeleeArc"))
+            {
+                string raw = data[col["MeleeArc"]];
+                asset.MeleeArc = string.IsNullOrEmpty(raw) ? 0f : float.Parse(raw);
+            }
+
             EditorUtility.SetDirty(asset);
         }
+    }
+
+    /// <summary>Batchmode entry: imports only the 3 skill CSVs (no window interaction needed).</summary>
+    public static void ImportSkillDataOnly()
+    {
+        DataImportMenu window = GetWindow<DataImportMenu>();
+        window.InitializePaths();
+        window.ImportSkillData();
+        Debug.Log("[DataImportMenu] ImportSkillDataOnly complete!");
+    }
+
+    /// <summary>Batchmode entry: assigns ProjectilePrefab to the root SkillData assets (201..223).</summary>
+    public static void LinkSkillPrefabs()
+    {
+        const string rootFolder = "Assets/Resources/SkillData";
+        const string meleePrefabPath = "Assets/Prefabs/Projectiles/MeleeHitbox.prefab";
+
+        bool meleePrefabExists = AssetDatabase.LoadAssetAtPath<GameObject>(meleePrefabPath) != null;
+
+        Dictionary<int, string> prefabMap = new Dictionary<int, string>();
+        prefabMap[201] = meleePrefabPath;   // Slash
+        prefabMap[202] = meleePrefabPath;   // HeavyStrike
+        prefabMap[203] = meleePrefabPath;   // Whirlwind
+        prefabMap[211] = "Assets/Prefabs/BubbleProjectile_blue.prefab";   // GumShot
+        prefabMap[212] = "Assets/Prefabs/BubbleProjectile_red.prefab";    // StickyBlob (Bubble=Red)
+        prefabMap[213] = "Assets/Prefabs/BubbleProjectile_yellow.prefab"; // BigBubble (Bubble=Yellow, stun)
+        prefabMap[214] = "Assets/Prefabs/BubbleProjectile_blue.prefab";   // PopTrap (no bubble effect, reuse blue)
+        prefabMap[221] = "Assets/Prefabs/Projectiles/FireBallProjectile.prefab";
+        prefabMap[222] = "Assets/Prefabs/Projectiles/IceBlastProjectile.prefab";
+        prefabMap[223] = "Assets/Prefabs/Projectiles/ThunderBoltProjectile.prefab";
+
+        // Iterate ONLY root SkillData assets directly under Assets/Resources/SkillData
+        // (skip subfolder assets like Ranged/Melee/Magic/*).
+        string[] guids = AssetDatabase.FindAssets("t:SkillData", new[] { rootFolder });
+        int linked = 0;
+        foreach (string guid in guids)
+        {
+            string path = AssetDatabase.GUIDToAssetPath(guid);
+            if (path.IndexOf("/", rootFolder.Length + 1) >= 0) continue; // subfolder asset -> skip
+
+            SkillData skill = AssetDatabase.LoadAssetAtPath<SkillData>(path);
+            if (skill == null || !prefabMap.ContainsKey(skill.ID)) continue;
+
+            string prefabPath = prefabMap[skill.ID];
+            if (skill.ID >= 201 && skill.ID <= 203)
+            {
+                if (!meleePrefabExists)
+                {
+                    Debug.LogWarning("[DataImportMenu] LinkSkillPrefabs: MeleeHitbox.prefab missing, leaving melee skills " + skill.ID + " unlinked (retry expected).");
+                    continue;
+                }
+                prefabPath = meleePrefabPath;
+            }
+
+            GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
+            if (prefab == null)
+            {
+                Debug.LogError("[DataImportMenu] LinkSkillPrefabs: prefab not found: " + prefabPath);
+                continue;
+            }
+
+            skill.ProjectilePrefab = prefab;
+            EditorUtility.SetDirty(skill);
+            linked++;
+        }
+
+        AssetDatabase.SaveAssets();
+        AssetDatabase.Refresh();
+        Debug.Log("[DataImportMenu] LinkSkillPrefabs complete. Linked=" + linked + " MeleeHitboxExists=" + meleePrefabExists);
+    }
+
+    /// <summary>Batchmode entry: equips the 4 GumMaster skills (211..214) on Player.prefab.</summary>
+    public static void EquipGumMasterOnPlayer()
+    {
+        const string prefabPath = "Assets/Prefabs/Player.prefab";
+        GameObject playerPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
+        if (playerPrefab == null)
+        {
+            Debug.LogError("[DataImportMenu] EquipGumMasterOnPlayer: Player.prefab not found at " + prefabPath);
+            return;
+        }
+
+        PlayerController controller = playerPrefab.GetComponent<PlayerController>();
+        if (controller == null)
+        {
+            Debug.LogError("[DataImportMenu] EquipGumMasterOnPlayer: PlayerController not found on Player.prefab");
+            return;
+        }
+
+        string[] skillPaths =
+        {
+            "Assets/Resources/SkillData/211_GumShot.asset",
+            "Assets/Resources/SkillData/212_StickyBlob.asset",
+            "Assets/Resources/SkillData/213_BigBubble.asset",
+            "Assets/Resources/SkillData/214_PopTrap.asset"
+        };
+
+        List<SkillData> skills = new List<SkillData>();
+        foreach (string p in skillPaths)
+        {
+            SkillData s = AssetDatabase.LoadAssetAtPath<SkillData>(p);
+            if (s == null)
+            {
+                Debug.LogError("[DataImportMenu] EquipGumMasterOnPlayer: missing skill asset " + p);
+                continue;
+            }
+            skills.Add(s);
+        }
+        if (skills.Count != 4)
+        {
+            Debug.LogError("[DataImportMenu] EquipGumMasterOnPlayer: expected 4 GumMaster skills, found " + skills.Count + ". Aborting.");
+            return;
+        }
+
+        SerializedObject so = new SerializedObject(controller);
+        SerializedProperty equipped = so.FindProperty("combatSettings.EquippedSkills");
+        if (equipped == null)
+        {
+            Debug.LogError("[DataImportMenu] EquipGumMasterOnPlayer: property 'combatSettings.EquippedSkills' not found");
+            return;
+        }
+
+        equipped.ClearArray();
+        for (int i = 0; i < skills.Count; i++)
+        {
+            equipped.InsertArrayElementAtIndex(i);
+            equipped.GetArrayElementAtIndex(i).objectReferenceValue = skills[i];
+        }
+        so.ApplyModifiedProperties();
+
+        PrefabUtility.SavePrefabAsset(playerPrefab);
+
+        GameObject reloaded = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
+        if (reloaded != null)
+        {
+            SerializedObject verify = new SerializedObject(reloaded.GetComponent<PlayerController>());
+            SerializedProperty list = verify.FindProperty("combatSettings.EquippedSkills");
+            if (list != null)
+            {
+                string[] names = new string[list.arraySize];
+                for (int i = 0; i < list.arraySize; i++)
+                    names[i] = list.GetArrayElementAtIndex(i).objectReferenceValue != null
+                        ? list.GetArrayElementAtIndex(i).objectReferenceValue.name
+                        : "<null>";
+                Debug.Log("[DataImportMenu] EquipGumMasterOnPlayer: EquippedSkills=[" + string.Join(", ", names) + "]");
+            }
+        }
+
+        Debug.Log("[DataImportMenu] EquipGumMasterOnPlayer: Player.prefab equipped with 211/212/213/214 GumMaster skills.");
+    }
+
+    /// <summary>Batchmode entry: static wrapper around the instance ImportSkillPresets() so -executeMethod can target presets only.</summary>
+    public static void ImportSkillPresetsOnly()
+    {
+        DataImportMenu window = GetWindow<DataImportMenu>();
+        window.InitializePaths();
+        window.ImportSkillPresets();
+        Debug.Log("[DataImportMenu] ImportSkillPresetsOnly complete!");
+    }
+
+    /// <summary>
+    /// Batchmode pre-deletion dependency scan: scans every text asset under Assets/
+    /// for any reference to the delete-target GUIDs (Magic/Ranged/Melee subfolder dupes,
+    /// 101_Shotgun, NewSkillData). Expected: 0 references. Any reference -> log error (caller must STOP).
+    /// </summary>
+    public static void LogSkillDataReferences()
+    {
+        string[] targets =
+        {
+            "Assets/Resources/SkillData/Magic",
+            "Assets/Resources/SkillData/Ranged",
+            "Assets/Resources/SkillData/Melee",
+            "Assets/Resources/SkillData/101_Shotgun.asset",
+            "Assets/Resources/SkillData/NewSkillData.asset"
+        };
+
+        List<string> deleteGuids = new List<string>();
+        List<string> deletePaths = new List<string>();
+        foreach (string t in targets)
+        {
+            if (AssetDatabase.IsValidFolder(t))
+            {
+                string[] guids = AssetDatabase.FindAssets("", new[] { t });
+                foreach (string g in guids)
+                {
+                    string p = AssetDatabase.GUIDToAssetPath(g);
+                    if (!AssetDatabase.IsValidFolder(p)) { deleteGuids.Add(g); deletePaths.Add(p); }
+                }
+            }
+            else if (File.Exists(t))
+            {
+                string g = AssetDatabase.AssetPathToGUID(t);
+                if (!string.IsNullOrEmpty(g)) { deleteGuids.Add(g); deletePaths.Add(t); }
+            }
+            else
+            {
+                Debug.LogWarning("[DataImportMenu] LogSkillDataReferences: delete target not found: " + t);
+            }
+        }
+
+        Debug.Log("[DataImportMenu] LogSkillDataReferences: scanning references TO " + deleteGuids.Count + " delete-target assets.");
+        for (int i = 0; i < deletePaths.Count; i++)
+            Debug.Log("[DataImportMenu]   target[" + i + "] " + deletePaths[i] + " guid=" + deleteGuids[i]);
+
+        string projectRoot = Path.GetDirectoryName(Application.dataPath);
+        string[] all = AssetDatabase.GetAllAssetPaths();
+        int totalRefs = 0;
+        foreach (string path in all)
+        {
+            if (!path.StartsWith("Assets")) continue;
+            if (path.EndsWith(".meta")) continue;
+            if (deletePaths.Contains(path)) continue; // skip the delete target itself
+
+            string full = Path.Combine(projectRoot, path.Replace('/', Path.DirectorySeparatorChar));
+            if (!File.Exists(full)) continue;
+            string text;
+            try { text = File.ReadAllText(full); }
+            catch { continue; }
+            foreach (string g in deleteGuids)
+            {
+                if (text.IndexOf(g, System.StringComparison.OrdinalIgnoreCase) >= 0)
+                {
+                    Debug.LogError("[DataImportMenu] REFERENCE FOUND: " + path + " contains delete-target guid " + g);
+                    totalRefs++;
+                }
+            }
+        }
+
+        Debug.Log("[DataImportMenu] LogSkillDataReferences done. total references to delete targets = " + totalRefs + " (expected 0).");
+    }
+
+    /// <summary>Batchmode entry: deletes the duplicate subfolder assets and the two junk assets. Never touches 301_TimeStop.</summary>
+    public static void DeleteDuplicateSkillData()
+    {
+        const string timestop = "Assets/Resources/SkillData/301_TimeStop.asset";
+        bool tsBefore = File.Exists(timestop);
+        Debug.Log("[DataImportMenu] DeleteDuplicateSkillData: 301_TimeStop exists before deletion = " + tsBefore);
+        if (!tsBefore)
+        {
+            Debug.LogError("[DataImportMenu] DeleteDuplicateSkillData: ABORT - 301_TimeStop missing before deletion!");
+            return;
+        }
+
+        string[] targets =
+        {
+            "Assets/Resources/SkillData/Magic",
+            "Assets/Resources/SkillData/Ranged",
+            "Assets/Resources/SkillData/Melee",
+            "Assets/Resources/SkillData/101_Shotgun.asset",
+            "Assets/Resources/SkillData/NewSkillData.asset"
+        };
+
+        foreach (string t in targets)
+        {
+            if (AssetDatabase.IsValidFolder(t))
+            {
+                string[] inside = AssetDatabase.FindAssets("", new[] { t });
+                foreach (string g in inside)
+                {
+                    string p = AssetDatabase.GUIDToAssetPath(g);
+                    if (!AssetDatabase.IsValidFolder(p))
+                        Debug.Log("[DataImportMenu]   deleting child: " + p + " guid=" + g);
+                }
+                if (AssetDatabase.DeleteAsset(t))
+                    Debug.Log("[DataImportMenu] DELETED folder " + t);
+                else
+                    Debug.LogError("[DataImportMenu] FAILED to delete folder " + t);
+            }
+            else if (File.Exists(t))
+            {
+                if (AssetDatabase.DeleteAsset(t))
+                    Debug.Log("[DataImportMenu] DELETED asset " + t);
+                else
+                    Debug.LogError("[DataImportMenu] FAILED to delete asset " + t);
+            }
+            else
+            {
+                Debug.LogWarning("[DataImportMenu] delete target already gone (ok): " + t);
+            }
+        }
+
+        AssetDatabase.Refresh();
+
+        bool tsAfter = File.Exists(timestop);
+        Debug.Log("[DataImportMenu] DeleteDuplicateSkillData: 301_TimeStop exists after deletion = " + tsAfter);
+        if (!tsAfter) Debug.LogError("[DataImportMenu] DeleteDuplicateSkillData: CRITICAL - 301_TimeStop was deleted!");
+
+        string[] remaining = AssetDatabase.FindAssets("t:SkillData", new[] { "Assets/Resources/SkillData" });
+        Debug.Log("[DataImportMenu] remaining SkillData assets under Assets/Resources/SkillData: " + remaining.Length);
+        foreach (string g in remaining)
+        {
+            string p = AssetDatabase.GUIDToAssetPath(g);
+            string root = "Assets/Resources/SkillData";
+            bool isSubfolder = p.IndexOf("/", root.Length + 1) >= 0;
+            if (isSubfolder)
+                Debug.LogWarning("[DataImportMenu]   SUBFOLDER REMAINS: " + p);
+            else
+                Debug.Log("[DataImportMenu]   root: " + p);
+        }
+    }
+
+    /// <summary>Batchmode QA diagnostic: logs the exact FindAssets order ImportSkillPresets relies on (guids[0]).</summary>
+    public static void QaLogFindAssets201()
+    {
+        string[] guids = AssetDatabase.FindAssets("201_ t:SkillData", new[] { "Assets/Resources/SkillData" });
+        Debug.Log("[DataImportMenu] QaLogFindAssets201: " + guids.Length + " matches for filter '201_ t:SkillData'");
+        for (int i = 0; i < guids.Length; i++)
+            Debug.Log("[DataImportMenu]   match[" + i + "] guid=" + guids[i] + " path=" + AssetDatabase.GUIDToAssetPath(guids[i]));
+    }
+
+    /// <summary>Batchmode QA helper: recreates a 201_Slash duplicate in a subfolder that FindAssets ordering picks FIRST.</summary>
+    public static void CreateQADuplicate201Early()
+    {
+        EnsureFolder("Assets/Resources/SkillData/0QA_Temp");
+        const string path = "Assets/Resources/SkillData/0QA_Temp/201_Slash.asset";
+        SkillData dup = AssetDatabase.LoadAssetAtPath<SkillData>(path);
+        if (dup == null)
+        {
+            dup = CreateInstance<SkillData>();
+            AssetDatabase.CreateAsset(dup, path);
+        }
+        dup.ID = 201;
+        dup.SkillName = "Slash";
+        dup.Damage = 10;
+        dup.ManaCost = 0;
+        dup.Cooldown = 0.5f;
+        dup.SkillType = SkillType.Melee;
+        dup.ProjectilePrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Projectiles/MeleeHitbox.prefab");
+        EditorUtility.SetDirty(dup);
+        AssetDatabase.SaveAssets();
+        AssetDatabase.Refresh();
+        Debug.Log("[DataImportMenu] QA early duplicate created: " + path + " guid=" + AssetDatabase.AssetPathToGUID(path));
+    }
+
+    /// <summary>Batchmode QA cleanup: removes the temporary duplicate folders created by the QA helpers.</summary>
+    public static void CleanupQADuplicates()
+    {
+        foreach (string t in new[] { "Assets/Resources/SkillData/0QA_Temp", "Assets/Resources/SkillData/Melee" })
+        {
+            if (AssetDatabase.IsValidFolder(t))
+            {
+                if (AssetDatabase.DeleteAsset(t))
+                    Debug.Log("[DataImportMenu] QA cleanup DELETED " + t);
+                else
+                    Debug.LogError("[DataImportMenu] QA cleanup FAILED " + t);
+            }
+            else
+                Debug.Log("[DataImportMenu] QA cleanup target already gone: " + t);
+        }
+        AssetDatabase.Refresh();
+        Debug.Log("[DataImportMenu] CleanupQADuplicates done");
+    }
+
+    /// <summary>Batchmode QA helper: recreates the Melee/201_Slash duplicate to prove preset resolution needs the deletion.</summary>
+    public static void CreateQADuplicate201()
+    {
+        EnsureFolder("Assets/Resources/SkillData/Melee");
+        const string path = "Assets/Resources/SkillData/Melee/201_Slash.asset";
+        SkillData dup = AssetDatabase.LoadAssetAtPath<SkillData>(path);
+        if (dup == null)
+        {
+            dup = CreateInstance<SkillData>();
+            AssetDatabase.CreateAsset(dup, path);
+        }
+        dup.ID = 201;
+        dup.SkillName = "Slash";
+        dup.Damage = 10;
+        dup.ManaCost = 0;
+        dup.Cooldown = 0.5f;
+        dup.SkillType = SkillType.Melee;
+        dup.ProjectilePrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Projectiles/MeleeHitbox.prefab");
+        EditorUtility.SetDirty(dup);
+        AssetDatabase.SaveAssets();
+        AssetDatabase.Refresh();
+        Debug.Log("[DataImportMenu] QA duplicate created: " + path + " guid=" + AssetDatabase.AssetPathToGUID(path));
     }
 
     public void ImportSkillPresets()

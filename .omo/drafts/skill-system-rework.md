@@ -1,10 +1,30 @@
 ---
 slug: skill-system-rework
-status: approved
+status: executing
 intent: clear
-pending-action: write .omo/plans/skill-system-rework.md
+review_required: true
+pending-action: EXECUTION STALLED AT COMMIT GATE — Todo 1-6 implemented+verified (evidence present), but 0/6 commits made, FILE_MAP.md not updated, F1-F4 wave incomplete. Execution session ses_0391939eeffed5tR9epZyvb46W stopped 2026-08-03 13:11 waiting for commit approval that never came. Next: get user decision on committing the 97 uncommitted files, then run F-wave + FILE_MAP updates + plan checkbox pass.
 approach: Make the attack skill system actually work: SkillType-driven SkillData, dedicated VFX prefabs, type-based dispatch in UseSkill, canonical root/CSV skill set, cooldown gate, data-integrity tests.
 ---
+
+## Session 2026-08-03 — USER DECISIONS at commit gate (answered question batch)
+- **커밋**: "내가 직접 브랜치에 커밋함" — 사용자가 직접 커밋. 실행 세션은 커밋 안 함. → 준비물: 커밋 시 포함할 파일 목록/분할 정보를 제공하고, 커밋 후 F1~F4 감사 재개.
+- **Combat/ 폴더 이동**: 사용자 반응 "그게 중요한거임?" → 답변 완료 (아래). 실행 에이전트가 플랜 지시 없이 `Assets/Script/Combat/` 폴더 + `Combat.asmdef`(ClubGame.Combat, autoReferenced) 생성, Health/IBubbleAffectable/ObjectPooler/Projectile/SkillData/MeleeHitbox.cs 이동시킴. 기능상 문제 없음 (EditMode 8/8 green으로 컴파일+참조 정상 증명됨). 주의: 커밋 시 "옛 위치 삭제 + 새 위치 신규" 둘 다 포함해야 깨지지 않음. F1 감사 항목.
+- **F3 수동 QA**: "커밋 후 내가 직접 확인" — 사용자가 직접 Unity에서 플레이 확인.
+- **근접 스킬 키 할당**: "메이플처럼 스킬프리셋시스템으로 할예정" — 근접 3종(201-203) 키 미할당 유지 (플랜대로). 향후 "스킬 프리셋 시스템" 기획에 활용 예정 → 향후 플랜 주제 후보로 기록.
+
+## Session 2026-08-03 — EXECUTION STATUS (verified from evidence + session transcript)
+- Todo 1-6 ALL executed with evidence under .omo/evidence/ (task-1..task-6 files): EditMode suite green 8/8 (`result="Passed" total=8 passed=8 failed=0`, final XML task-6-skill-system-rework.xml), QA failure-proofing documented (task-6-qa-fail.xml + qa-note). Todo 5 pipeline (ImportSkillDataOnly→LinkSkillPrefabs→EquipGumMasterOnPlayer→ImportSkillPresets) all exit 0; SkillData root = 11 assets, subfolders deleted; Player.prefab equips 211/212/213/214; 301_TimeStop byte-identical (SHA256 verified).
+- KNOWN DEVIATIONS (documented, fact-checked not weakened): (1) TimeStop test asserts SkillName=="Time Stop" (asset field) vs plan's "TimeStop" (file-name shorthand); (2) PlayerEquipsGumMaster reads EquippedSkills via combatSettings nesting; (3) importer gained a Yellow bubble parse branch (pre-existing bug, required for 213=Yellow).
+- STALLED: 0 commits (97 changed files uncommitted per session transcript 13:07); FILE_MAP.md not updated; plan checkboxes unchecked; F2 background review never reported; F1/F3/F4 not run. Executor flagged `Assets/Script/` → `Combat/` folder moves (git D+untracked) observed during F-audit — needs F1 scope audit attention.
+- RESUME POINT: ask user (a) approve committing the rework files now, (b) then run F1-F4 + FILE_MAP.md + checkbox pass in a fresh execution session.
+
+## Session 2026-08-03 — re-approval + quality modifier
+- User re-confirmed direction in discussion: "A. 스킬 플랜 실행" (execute the approved skill-system-rework plan). No club deadline ("없음, 여유 있음").
+- Quality modifier: "최대한 잘 만들고싶어 / 퀄리티있게 시간걸려도" → `review_required: true` (high-accuracy review gate REQUIRED before execution greenlight).
+- Plan re-validation vs current repo (2026-08-03): ALL references still match — UseSkill at PlayerController.cs:198-222, TryFire at :236-295 (read:198-296); SkillData.cs still legacy 17-line fields (read); skill asset inventory root 13 + subfolder 9 matches Todo-5 table (glob); 4 CSVs present (glob); com.unity.test-framework 1.6.0 present (Packages/manifest.json:16). No plan edits needed; plan is execution-ready.
+- Pending before execution: Momus high-accuracy review receipt → then present start gate and wait for explicit /start-work.
+
 
 # Draft: skill-system-rework
 
@@ -63,7 +83,7 @@ approach: Make the attack skill system actually work: SkillType-driven SkillData
 - Melee/MeleeAoE: MeleeHitbox.cs (trigger, lifetime, single-hit-per-target, damage from SO).
 - InstantArea: enum member exists as data-model capability only; NO implementation work (canonical set has no InstantArea skill).
 - Prefabs: 3 projectile VFX prefabs (GumShot bubble, FireBall, IceBlast, ThunderBolt — 4 total), 1 melee hitbox prefab, bubble effect variants.
-- Data: root/CSV set canonical, delete subfolder duplicates, fix 101_Shotgun.asset stale data, Player.prefab re-equip.
+- Data: root/CSV set canonical, delete subfolder duplicates, delete junk assets (101_Shotgun, NewSkillData), Player.prefab re-equip.
 - DataImportMenu.cs: new field support.
 - EditMode tests: data integrity.
 - .omo/evidence for QA artifacts.

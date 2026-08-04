@@ -1,0 +1,44 @@
+{
+  "schema_version": 2,
+  "active_work_id": "magic-skill-vfx",
+  "works": {
+    "fix-opencode-model-config-v2": {
+      "work_id": "fix-opencode-model-config-v2",
+      "active_plan": ".omo/plans/fix-opencode-model-config.md",
+      "plan_name": "fix-opencode-model-config",
+      "session_ids": [
+        "opencode:ses_0394a3fa8ffe3dsD1fuUVEeYxd"
+      ],
+      "status": "completed",
+      "worktree_path": null,
+      "session_origins": {},
+      "ended_at": "2026-08-03T08:43:20.087Z",
+      "updated_at": "2026-08-03T08:43:20.087Z",
+      "task_sessions": {}
+    },
+    "magic-skill-vfx": {
+      "work_id": "magic-skill-vfx",
+      "active_plan": ".omo/plans/magic-skill-vfx.md",
+      "plan_name": "magic-skill-vfx",
+      "session_ids": [
+        "opencode:ses_0383f0ff3ffegWXFBp6FbwRhvo"
+      ],
+      "status": "paused",
+      "worktree_path": null,
+      "session_origins": {},
+      "paused_at": "2026-08-03T14:35:00.000Z",
+      "updated_at": "2026-08-03T14:35:00.000Z",
+      "task_sessions": {}
+    }
+  },
+  "session_ids": [
+    "opencode:ses_0394a3fa8ffe3dsD1fuUVEeYxd",
+    "opencode:ses_0383f0ff3ffegWXFBp6FbwRhvo"
+  ],
+  "session_origins": {},
+  "task_sessions": {},
+  "active_plan": ".omo/plans/magic-skill-vfx.md",
+  "plan_name": "magic-skill-vfx",
+  "status": "active",
+  "worktree_path": null
+}
