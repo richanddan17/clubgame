@@ -20,9 +20,10 @@ public class SkillDataIntegrityTests
         "201_Slash.asset", "202_HeavyStrike.asset", "203_Whirlwind.asset",
         "211_GumShot.asset", "212_StickyBlob.asset", "213_BigBubble.asset", "214_PopTrap.asset",
         "221_FireBall.asset", "222_IceBlast.asset", "223_ThunderBolt.asset",
+        "224_DarkBolt.asset", "225_Holy.asset", "226_Acid.asset",
     };
 
-    /// <summary>스킬 ID -> 기대 ProjectilePrefab 경로 (캐노니컬 링크 10개).</summary>
+    /// <summary>스킬 ID -> 기대 ProjectilePrefab 경로 (캐노니컬 링크 13개).</summary>
     private static readonly Dictionary<int, string> CanonicalPrefabLinks = new Dictionary<int, string>
     {
         { 201, "Assets/Prefabs/Projectiles/MeleeHitbox.prefab" },
@@ -35,6 +36,9 @@ public class SkillDataIntegrityTests
         { 221, "Assets/Prefabs/Projectiles/FireBallProjectile.prefab" },
         { 222, "Assets/Prefabs/Projectiles/IceBlastProjectile.prefab" },
         { 223, "Assets/Prefabs/Projectiles/ThunderBoltProjectile.prefab" },
+        { 224, "Assets/Prefabs/Projectiles/DarkBoltProjectile.prefab" },
+        { 225, "Assets/Prefabs/Projectiles/HolyProjectile.prefab" },
+        { 226, "Assets/Prefabs/Projectiles/AcidProjectile.prefab" },
     };
 
     // ------------------------------------------------------------------
@@ -43,12 +47,12 @@ public class SkillDataIntegrityTests
     [Test]
     public void SkillInventoryClean()
     {
-        // 루트에 정확히 11개 에셋 (하위 폴더 제외)
+        // 루트에 정확히 14개 에셋 (하위 폴더 제외)
         List<string> rootPaths = GetRootSkillDataPaths();
-        Assert.AreEqual(11, rootPaths.Count,
-            $"Assets/Resources/SkillData 루트에는 정확히 11개의 SkillData 에셋이 있어야 합니다. 실제: {rootPaths.Count}");
+        Assert.AreEqual(14, rootPaths.Count,
+            $"Assets/Resources/SkillData 루트에는 정확히 14개의 SkillData 에셋이 있어야 합니다. 실제: {rootPaths.Count}");
 
-        // 기대하는 11개 파일이 전부 존재하는지 확인 (301 포함)
+        // 기대하는 13개 캐노니컬 파일이 전부 존재하는지 확인 (301 은 아래에서 별도 확인)
         for (int i = 0; i < CanonicalAssetNames.Length; i++)
         {
             string path = $"{SkillDataFolder}/{CanonicalAssetNames[i]}";
@@ -77,7 +81,7 @@ public class SkillDataIntegrityTests
     {
         Dictionary<int, string> seen = new Dictionary<int, string>();
         string[] guids = AssetDatabase.FindAssets("t:SkillData");
-        Assert.GreaterOrEqual(guids.Length, 11, "프로젝트에 최소 11개의 SkillData 에셋이 있어야 합니다.");
+        Assert.GreaterOrEqual(guids.Length, 14, "프로젝트에 최소 14개의 SkillData 에셋이 있어야 합니다.");
 
         foreach (string guid in guids)
         {
@@ -106,7 +110,7 @@ public class SkillDataIntegrityTests
             Assert.AreEqual(CanonicalPrefabLinks[id], AssetDatabase.GetAssetPath(skill.ProjectilePrefab),
                 $"ID {id} 스킬의 ProjectilePrefab 경로가 캐노니컬 링크와 다릅니다.");
 
-            // SkillType (Todo-4 테이블): 211-214 & 221-223 = Projectile, 201-202 = Melee, 203 = MeleeAoE
+            // SkillType (Todo-4 테이블): 211-214 & 221-226 = Projectile, 201-202 = Melee, 203 = MeleeAoE
             SkillType expectedType = id >= 211 ? SkillType.Projectile
                 : id == 201 || id == 202 ? SkillType.Melee
                 : SkillType.MeleeAoE;
@@ -124,6 +128,49 @@ public class SkillDataIntegrityTests
                     id == 213 ? Projectile.BubbleType.Yellow : Projectile.BubbleType.Red;
                 Assert.AreEqual(expectedType2, skill.BubbleEffect,
                     $"ID {id} 스킬의 BubbleEffect 가 기대값({expectedType2})과 다릅니다.");
+            }
+        }
+    }
+
+    // ------------------------------------------------------------------
+    // 3b. MagicVFXAnimatorWired
+    // ------------------------------------------------------------------
+    [Test]
+    public void MagicVFXAnimatorWired()
+    {
+        // 마법 투사체 221-226 6종 전부 SpriteVFXAnimator 가 배선돼 있어야 한다.
+        // frames/fps 는 [SerializeField] private 이므로 SerializedObject 로 읽는다
+        // (Todo-3 MagicVFXBuilder 도 같은 경로로 쓰므로 읽기가 보장된다).
+        for (int id = 221; id <= 226; id++)
+        {
+            SkillData skill = LoadRootSkillById(id);
+            Assert.IsNotNull(skill, $"ID {id} 에 해당하는 루트 스킬 에셋이 없습니다.");
+            Assert.IsNotNull(skill.ProjectilePrefab, $"ID {id} 스킬의 ProjectilePrefab 이 null 입니다.");
+
+            SpriteVFXAnimator vfx = skill.ProjectilePrefab.GetComponentInChildren<SpriteVFXAnimator>(true);
+            Assert.IsNotNull(vfx, $"ID {id} 프리팹({skill.ProjectilePrefab.name})에 SpriteVFXAnimator 가 없습니다.");
+
+            SerializedObject so = new SerializedObject(vfx);
+
+            SerializedProperty loop = so.FindProperty("loopFrames");
+            Assert.IsNotNull(loop, $"ID {id} 프리팹({skill.ProjectilePrefab.name})에 loopFrames 필드가 없습니다.");
+            Assert.Greater(loop.arraySize, 0, $"ID {id} 프리팹의 loopFrames 가 비어 있습니다.");
+
+            SerializedProperty hit = so.FindProperty("hitFrames");
+            Assert.IsNotNull(hit, $"ID {id} 프리팹({skill.ProjectilePrefab.name})에 hitFrames 필드가 없습니다.");
+            Assert.Greater(hit.arraySize, 0, $"ID {id} 프리팹의 hitFrames 가 비어 있습니다.");
+
+            SerializedProperty fps = so.FindProperty("fps");
+            Assert.IsNotNull(fps, $"ID {id} 프리팹({skill.ProjectilePrefab.name})에 fps 필드가 없습니다.");
+            Assert.Greater(fps.floatValue, 0f, $"ID {id} 프리팹의 fps 가 0 이하입니다.");
+
+            // start 는 221/222/225 에만 필수 (223/224/226 은 의도적으로 비어 있을 수 있음)
+            if (id == 221 || id == 222 || id == 225)
+            {
+                SerializedProperty start = so.FindProperty("startFrames");
+                Assert.IsNotNull(start, $"ID {id} 프리팹({skill.ProjectilePrefab.name})에 startFrames 필드가 없습니다.");
+                Assert.Greater(start.arraySize, 0,
+                    $"ID {id} 프리팹의 startFrames 가 비어 있습니다 (221/222/225 는 start 필수).");
             }
         }
     }

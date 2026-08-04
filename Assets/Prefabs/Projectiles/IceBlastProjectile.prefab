@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 8842436487919056244}
   - component: {fileID: 2516611282932313456}
   - component: {fileID: 1998364007404994284}
+  - component: {fileID: 5696487285749395004}
   m_Layer: 0
   m_Name: IceBlastProjectile
   m_TagString: Untagged
@@ -83,7 +84,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 10
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -8327306063690401027, guid: 01edeb9a83d21ce41b52c9bca3a1c818, type: 3}
+  m_Sprite: {fileID: 3137368756443884653, guid: 5a4313c030efb61428be58cb1d17b5d0, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -143,3 +144,43 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Projectile
   speed: 15
   lifeTime: 3
+  poolTag: Projectile
+--- !u!114 &5696487285749395004
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9095872523426729726}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 29c649f6c8305d04297c68dea4fbdc10, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ClubGame.Combat::SpriteVFXAnimator
+  startFrames:
+  - {fileID: -1926066427928392248, guid: 6eafd06352f69984aa0b864a68d36926, type: 3}
+  - {fileID: -4920490723282065943, guid: 9abd81f1d43463f449e78d16a5a87d6c, type: 3}
+  - {fileID: -2958126304325536945, guid: 2b874b1bfb5cb2940bab86cee146b4cd, type: 3}
+  loopFrames:
+  - {fileID: 3137368756443884653, guid: 5a4313c030efb61428be58cb1d17b5d0, type: 3}
+  - {fileID: 7151682116088091699, guid: 6c503416473f51347ab2e3f3960573e6, type: 3}
+  - {fileID: 5206846106671516069, guid: 2db57066c45d427429c44bf14ec0eb84, type: 3}
+  - {fileID: -619296112176075229, guid: 6ad66be7adb4b2a4d8eaa6ec74089a33, type: 3}
+  - {fileID: -4383038215245066090, guid: 9c4036b236a3dfc4f866039177e8f563, type: 3}
+  - {fileID: -2561954220131689171, guid: e30f9534cf5028e46b05e6937a9ba109, type: 3}
+  - {fileID: 3437465585280036741, guid: 39bcf43109021be43b239d327de898cd, type: 3}
+  - {fileID: 893903486931394242, guid: 2d6ef2c922edfc546984ce1aa81e4108, type: 3}
+  - {fileID: 8964436411391970337, guid: 6699e10866f5280448aa1a34e0344a8d, type: 3}
+  - {fileID: -5310579735513068975, guid: 8f5f0b96d84ee7945a1e4b85193d7da6, type: 3}
+  hitFrames:
+  - {fileID: 1349240978568538576, guid: 3cc7c23f37faf9c498445f3a06151442, type: 3}
+  - {fileID: -73015609377868368, guid: 28109f3db935c7746a8f674ff8422c69, type: 3}
+  - {fileID: -4011083200100843413, guid: b92966e717ee75649a9b39fdfdadcaaf, type: 3}
+  - {fileID: -9184846752569804953, guid: 3017c73cada7d4c4185fce686d8745c0, type: 3}
+  - {fileID: -7887432650448756624, guid: 93ebe29af526d5641a773d7fb4a7d01a, type: 3}
+  - {fileID: -5277157852635238559, guid: 6d1c6af6da59439419c7bc3f2f0eda63, type: 3}
+  - {fileID: -8198515550464484277, guid: f1066000d306ecc4c9f9adca28cd5aca, type: 3}
+  - {fileID: 2920949208033981048, guid: 3616139f6ca604f4a962eac5a49b09b3, type: 3}
+  fps: 12
+  autoPlay: 1
+  destroyOnHitEnd: 0

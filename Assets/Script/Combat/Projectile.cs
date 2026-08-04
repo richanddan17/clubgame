@@ -12,6 +12,8 @@ public class Projectile : MonoBehaviour
     private GameObject owner; // 투사체를 쏜 주인
     private BubbleType bubbleType;
     private bool isSpecial;
+    private SpriteVFXAnimator _vfx;
+    private bool _deactivated;
 
     public void Initialize(float damageAmount, bool facingRight, float customSpeed = 15f, Vector3? customScale = null, GameObject shooter = null, BubbleType type = BubbleType.Blue, bool special = false)
     {
@@ -37,16 +39,38 @@ public class Projectile : MonoBehaviour
 
     private void OnEnable()
     {
+        _deactivated = false;
+        _vfx = GetComponent<SpriteVFXAnimator>();
         CancelInvoke(nameof(Deactivate));
         Invoke(nameof(Deactivate), lifeTime);
     }
 
     private void Deactivate()
     {
+        if (_deactivated) return;
+        _deactivated = true;
+
         if (ObjectPooler.Instance != null)
             ObjectPooler.Instance.ReturnToPool(poolTag, gameObject);
         else
             gameObject.SetActive(false);
+    }
+
+    private void HandleImpact()
+    {
+        if (_vfx != null && _vfx.HitDuration > 0f)
+        {
+            var col = GetComponent<Collider2D>();
+            if (col != null) col.enabled = false;
+            speed = 0f;
+            _vfx.PlayHit();
+            CancelInvoke(nameof(Deactivate));
+            Invoke(nameof(Deactivate), _vfx.HitDuration);
+        }
+        else
+        {
+            Deactivate();
+        }
     }
 
     private void Update()
@@ -69,7 +93,7 @@ public class Projectile : MonoBehaviour
             if (isSpecial && affectable != null)
                 affectable.ApplyBubbleEffect(bubbleType);
 
-            Deactivate();
+            HandleImpact();
             return;
         }
 
@@ -77,7 +101,7 @@ public class Projectile : MonoBehaviour
         {
             if (isSpecial && affectable != null)
                 affectable.ApplyBubbleEffect(bubbleType);
-            Deactivate();
+            HandleImpact();
         }
     }
 }

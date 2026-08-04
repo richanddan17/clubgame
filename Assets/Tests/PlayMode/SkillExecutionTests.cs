@@ -26,6 +26,7 @@ namespace ClubGame.PlayModeTests
         private TestBubbleAffectable _bubbleAffectable;
         private SkillData _projectileSkill;
         private SkillData _meleeSkill;
+        private SkillData _fireBallSkill;
 
         [UnitySetUp]
         public IEnumerator SetUp()
@@ -100,6 +101,7 @@ namespace ClubGame.PlayModeTests
             UnityEngine.Object.Destroy(_cameraGo);
             if (_projectileSkill != null) ScriptableObject.DestroyImmediate(_projectileSkill);
             if (_meleeSkill != null) ScriptableObject.DestroyImmediate(_meleeSkill);
+            if (_fireBallSkill != null) ScriptableObject.DestroyImmediate(_fireBallSkill);
             yield return null;
         }
 
@@ -113,6 +115,20 @@ namespace ClubGame.PlayModeTests
             skill.SkillType = SkillType.Projectile;
             skill.ProjectilePrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/BubbleProjectile_blue.prefab");
             skill.ProjectileSpeed = 15f;
+            skill.UseBubbleEffect = false;
+            return skill;
+        }
+
+        private static SkillData CreateFireBallSkill()
+        {
+            SkillData skill = ScriptableObject.CreateInstance<SkillData>();
+            skill.ID = 221;
+            skill.SkillName = "FireBall";
+            skill.Damage = 30f;
+            skill.Cooldown = 0.1f;
+            skill.SkillType = SkillType.Projectile;
+            skill.ProjectilePrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Projectiles/FireBallProjectile.prefab");
+            skill.ProjectileSpeed = 18f;
             skill.UseBubbleEffect = false;
             return skill;
         }
@@ -212,6 +228,35 @@ namespace ClubGame.PlayModeTests
             Assert.Less(_enemyHealth.CurrentHealth, _enemyHealth.MaxHealth, "근접 히트박스에 맞은 적의 체력이 감소해야 함");
             Assert.AreEqual(1, _bubbleAffectable.ApplyCount, "거품 효과가 정확히 한 번 적용되어야 함");
             Assert.AreEqual(Projectile.BubbleType.Red, _bubbleAffectable.LastBubbleType, "Red 거품 효과가 적용되어야 함");
+        }
+
+        [UnityTest]
+        public IEnumerator ProjectileWithVFX_PlaysHitAndDelaysDeactivation()
+        {
+            GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Projectiles/FireBallProjectile.prefab");
+            SpriteVFXAnimator prefabVfx = prefab != null ? prefab.GetComponent<SpriteVFXAnimator>() : null;
+            if (prefabVfx == null || prefabVfx.HitDuration <= 0f)
+            {
+                Assert.Ignore("FireBall prefab VFX not built yet (Todo 3)");
+            }
+            float hitDuration = prefabVfx.HitDuration;
+
+            _fireBallSkill = CreateFireBallSkill();
+            EquipSkill(0, _fireBallSkill);
+            InvokeUseSkill(0);
+
+            Assert.AreEqual(1, UnityEngine.Object.FindObjectsByType<Projectile>(FindObjectsSortMode.None).Length, "파이어볼 사용 직후 Projectile이 1개 존재해야 함");
+
+            yield return new WaitForSeconds(0.2f);
+
+            Assert.Less(_enemyHealth.CurrentHealth, _enemyHealth.MaxHealth, "파이어볼에 맞은 적의 체력이 감소해야 함(대미지 정상)");
+            Assert.AreEqual(1, UnityEngine.Object.FindObjectsByType<Projectile>(FindObjectsSortMode.None).Length,
+                "임팩트 직후에는 VFX 히트 연출이 재생되는 동안 프로젝타일이 즉시 사라지면 안 됨(지연 Deactivate)");
+
+            yield return new WaitForSeconds(hitDuration + 0.5f);
+
+            Assert.AreEqual(0, UnityEngine.Object.FindObjectsByType<Projectile>(FindObjectsSortMode.None).Length,
+                "HitDuration 경과 후 프로젝타일이 반환/비활성화되어야 함");
         }
     }
 

@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 8842436487919056244}
   - component: {fileID: 2516611282932313456}
   - component: {fileID: 1998364007404994284}
+  - component: {fileID: 1768767379556993600}
   m_Layer: 0
   m_Name: FireBallProjectile
   m_TagString: Untagged
@@ -83,7 +84,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 10
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 4208818756308097753, guid: 61bb3a31796a4be4b8f74b28ae8d3823, type: 3}
+  m_Sprite: {fileID: 7136840768476993500, guid: 9571761652804ba46b10fe54a25aaa5d, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -143,3 +144,37 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Projectile
   speed: 15
   lifeTime: 3
+  poolTag: Projectile
+--- !u!114 &1768767379556993600
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9095872523426729726}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 29c649f6c8305d04297c68dea4fbdc10, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ClubGame.Combat::SpriteVFXAnimator
+  startFrames:
+  - {fileID: 2990173858917992984, guid: 11b3bb942c2d4b3449ec7fab3f304074, type: 3}
+  - {fileID: 4488251938942763654, guid: 1e0c4252051883941972b7346d62b837, type: 3}
+  - {fileID: 2163142813784713866, guid: c56567d7961765144b6d34c30e9e9ecf, type: 3}
+  loopFrames:
+  - {fileID: 7136840768476993500, guid: 9571761652804ba46b10fe54a25aaa5d, type: 3}
+  - {fileID: 475513406931832269, guid: 5a47f7b6bf7c4a64b965efe7cf568130, type: 3}
+  - {fileID: 3533357675415360317, guid: 0bee9fc7cf5014d4680b2d2ff0694506, type: 3}
+  - {fileID: -2810176379929789420, guid: ab4673fb015e0a74c93a0d64340f8e26, type: 3}
+  hitFrames:
+  - {fileID: -1419236733835816984, guid: ee84c2f901e82ba4c8fb7de5950c0f7b, type: 3}
+  - {fileID: 2919723921315673472, guid: 3bbcab8078b3310449aac2f9ce8fc0c0, type: 3}
+  - {fileID: 7177728944666773433, guid: 29c1fee871420a242af8e866f36fcef5, type: 3}
+  - {fileID: 341210372791745635, guid: 841ac643dc28a65498e2f32faa510809, type: 3}
+  - {fileID: 5656354071003018028, guid: 68375738cab74d14e8ceefee4e5a260e, type: 3}
+  - {fileID: 2906728510567091902, guid: 6c59c020ff8db6c419e4d12b58f08ddf, type: 3}
+  - {fileID: -4220494189297800514, guid: e1e9a2d9422cb1440be2f638f9b25cc9, type: 3}
+  - {fileID: 5130617095322527228, guid: 9251ec20af3c38d43b86825f948b6d47, type: 3}
+  fps: 12
+  autoPlay: 1
+  destroyOnHitEnd: 0

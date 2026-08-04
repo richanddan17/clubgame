@@ -17,7 +17,8 @@
   - `BiomeData.cs`: 바이옴별 생성 규칙(노이즈, 타일), 배경, 몬스터 정보를 담는 데이터 (SO)
   - `BiomeManager.cs`: 현재 플레이어 위치(청크)에 따른 바이옴 상태 관리 및 전환
   - `WorldGenerator.cs`: (설계 중) 청크 기반 절차적 맵 생성 (Perlin Noise 동굴 생성)
-  - `Projectile.cs`: 투사체 충돌 및 데미지 처리
+  - `Projectile.cs`: 투사체 충돌 및 데미지 처리 + 임팩트 훅 (VFX 보유 시 이동 정지·콜라이더 비활성·PlayHit 후 HitDuration 지연 Deactivate, 멱등 가드)
+  - `SpriteVFXAnimator.cs`: 마법 스킬 3단계(Start→Loop→Hit) 코드 기반 스프라이트 애니메이션 컴포넌트 (신규)
   - `InventoryManager.cs`: 스킬/아이템/단서(Clue) 목록 관리
   - `InventoryUI.cs`: 인벤토리 데이터의 시각적 표시 및 슬롯 관리
 - **Exploration & Loot**:
