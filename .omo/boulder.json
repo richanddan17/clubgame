@@ -1,44 +1,145 @@
 {
   "schema_version": 2,
-  "active_work_id": "magic-skill-vfx",
+  "active_work_id": "timestop-style-magic-skills-0246db17",
   "works": {
-    "fix-opencode-model-config-v2": {
-      "work_id": "fix-opencode-model-config-v2",
-      "active_plan": ".omo/plans/fix-opencode-model-config.md",
-      "plan_name": "fix-opencode-model-config",
-      "session_ids": [
-        "opencode:ses_0394a3fa8ffe3dsD1fuUVEeYxd"
-      ],
+    "timestop-style-magic-skills-0246db17": {
+      "work_id": "timestop-style-magic-skills-0246db17",
+      "active_plan": "D:\\coding\\github c\\clubgame\\.omo\\plans\\timestop-style-magic-skills.md",
+      "plan_name": "timestop-style-magic-skills",
       "status": "completed",
-      "worktree_path": null,
-      "session_origins": {},
-      "ended_at": "2026-08-03T08:43:20.087Z",
-      "updated_at": "2026-08-03T08:43:20.087Z",
-      "task_sessions": {}
-    },
-    "magic-skill-vfx": {
-      "work_id": "magic-skill-vfx",
-      "active_plan": ".omo/plans/magic-skill-vfx.md",
-      "plan_name": "magic-skill-vfx",
+      "started_at": "2026-08-05T04:50:22.839Z",
+      "updated_at": "2026-08-06T07:17:28.919Z",
       "session_ids": [
-        "opencode:ses_0383f0ff3ffegWXFBp6FbwRhvo"
+        "opencode:ses_03065d9b8ffegK271dwv4sbzXA",
+        "opencode:ses_02a4dfe77ffeIev6l5pP92RYW3"
       ],
-      "status": "paused",
-      "worktree_path": null,
-      "session_origins": {},
-      "paused_at": "2026-08-03T14:35:00.000Z",
-      "updated_at": "2026-08-03T14:35:00.000Z",
-      "task_sessions": {}
+      "session_origins": {
+        "opencode:ses_03065d9b8ffegK271dwv4sbzXA": "direct",
+        "opencode:ses_02a4dfe77ffeIev6l5pP92RYW3": "direct"
+      },
+      "agent": "atlas",
+      "task_sessions": {
+        "todo:1": {
+          "task_key": "todo:1",
+          "task_label": "1",
+          "task_title": "PlayerController.cs InstantArea 케이스 구현 + 301_TimeStop.asset SkillType:3 + PlayMode InstantArea 테스트",
+          "session_id": "opencode:ses_02fbbfdfeffel2eNQlbBsrSPs3",
+          "agent": "Sisyphus-Junior",
+          "category": "unspecified-high",
+          "updated_at": "2026-08-05T05:26:23.545Z",
+          "started_at": "2026-08-05T05:25:13.704Z",
+          "status": "completed",
+          "ended_at": "2026-08-05T05:26:23.544Z",
+          "elapsed_ms": 69840
+        },
+        "todo:2": {
+          "task_key": "todo:2",
+          "task_label": "2",
+          "task_title": "magicskill.csv 227행 + DataImportMenu.prefabMap + ImportSkillDataOnly 배치 (227_TimeWarp.asset 생성)",
+          "session_id": "opencode:ses_02f9c4528ffeGh6LV30yTRvrUy",
+          "agent": "Sisyphus-Junior",
+          "category": "unspecified-high",
+          "updated_at": "2026-08-05T05:42:48.639Z",
+          "started_at": "2026-08-05T05:40:10.535Z",
+          "status": "completed",
+          "ended_at": "2026-08-05T05:42:48.639Z",
+          "elapsed_ms": 158104
+        },
+        "todo:3": {
+          "task_key": "todo:3",
+          "task_label": "3",
+          "task_title": "TimeStopEffectBuilder.cs + TimeWarp_Effect.prefab 생성(209 시트) + 227 Icon 설정",
+          "session_id": "opencode:ses_02a4dfe77ffeIev6l5pP92RYW3",
+          "agent": "Sisyphus-Junior",
+          "category": "unspecified-high",
+          "started_at": "2026-08-06T06:26:24.047Z",
+          "updated_at": "2026-08-06T06:26:24.047Z",
+          "status": "completed",
+          "ended_at": "2026-08-06T06:26:24.047Z"
+        },
+        "todo:4": {
+          "task_key": "todo:4",
+          "task_label": "4",
+          "task_title": "LinkSkillPrefabs 배치 + 무결성 스위트 갱신 (14→15, TimeStopUntouched+SkillType, InstantAreaSkillsWired)",
+          "session_id": "opencode:ses_02a4dfe77ffeIev6l5pP92RYW3",
+          "agent": "Sisyphus-Junior",
+          "category": "unspecified-high",
+          "started_at": "2026-08-06T15:31:05.934Z",
+          "updated_at": "2026-08-06T15:56:11.928Z",
+          "status": "completed",
+          "ended_at": "2026-08-06T15:56:11.928Z"
+        }
+      },
+      "ended_at": "2026-08-06T07:17:28.919Z",
+      "elapsed_ms": 95226080
     }
   },
+  "active_plan": "D:\\coding\\github c\\clubgame\\.omo\\plans\\timestop-style-magic-skills.md",
+  "started_at": "2026-08-05T04:50:22.839Z",
+  "status": "completed",
+  "updated_at": "2026-08-06T07:17:28.919Z",
   "session_ids": [
-    "opencode:ses_0394a3fa8ffe3dsD1fuUVEeYxd",
-    "opencode:ses_0383f0ff3ffegWXFBp6FbwRhvo"
+    "opencode:ses_03065d9b8ffegK271dwv4sbzXA",
+    "opencode:ses_02a4dfe77ffeIev6l5pP92RYW3"
   ],
-  "session_origins": {},
-  "task_sessions": {},
-  "active_plan": ".omo/plans/magic-skill-vfx.md",
-  "plan_name": "magic-skill-vfx",
-  "status": "active",
-  "worktree_path": null
+  "session_origins": {
+    "opencode:ses_03065d9b8ffegK271dwv4sbzXA": "direct",
+    "opencode:ses_02a4dfe77ffeIev6l5pP92RYW3": "direct"
+  },
+  "plan_name": "timestop-style-magic-skills",
+  "task_sessions": {
+    "todo:1": {
+      "task_key": "todo:1",
+      "task_label": "1",
+      "task_title": "PlayerController.cs InstantArea 케이스 구현 + 301_TimeStop.asset SkillType:3 + PlayMode InstantArea 테스트",
+      "session_id": "opencode:ses_02fbbfdfeffel2eNQlbBsrSPs3",
+      "agent": "Sisyphus-Junior",
+      "category": "unspecified-high",
+      "updated_at": "2026-08-05T05:26:23.545Z",
+      "started_at": "2026-08-05T05:25:13.704Z",
+      "status": "completed",
+      "ended_at": "2026-08-05T05:26:23.544Z",
+      "elapsed_ms": 69840
+    },
+    "todo:2": {
+      "task_key": "todo:2",
+      "task_label": "2",
+      "task_title": "magicskill.csv 227행 + DataImportMenu.prefabMap + ImportSkillDataOnly 배치 (227_TimeWarp.asset 생성)",
+      "session_id": "opencode:ses_02f9c4528ffeGh6LV30yTRvrUy",
+      "agent": "Sisyphus-Junior",
+      "category": "unspecified-high",
+      "updated_at": "2026-08-05T05:42:48.639Z",
+      "started_at": "2026-08-05T05:40:10.535Z",
+      "status": "completed",
+      "ended_at": "2026-08-05T05:42:48.639Z",
+      "elapsed_ms": 158104
+    },
+    "todo:3": {
+      "task_key": "todo:3",
+      "task_label": "3",
+      "task_title": "TimeStopEffectBuilder.cs + TimeWarp_Effect.prefab 생성(209 시트) + 227 Icon 설정",
+      "session_id": "opencode:ses_02a4dfe77ffeIev6l5pP92RYW3",
+      "agent": "Sisyphus-Junior",
+      "category": "unspecified-high",
+      "started_at": "2026-08-06T06:26:24.047Z",
+      "updated_at": "2026-08-06T06:26:24.047Z",
+      "status": "completed",
+      "ended_at": "2026-08-06T06:26:24.047Z"
+    },
+    "todo:4": {
+      "task_key": "todo:4",
+      "task_label": "4",
+      "task_title": "LinkSkillPrefabs 배치 + 무결성 스위트 갱신 (14→15, TimeStopUntouched+SkillType, InstantAreaSkillsWired)",
+      "session_id": "opencode:ses_02a4dfe77ffeIev6l5pP92RYW3",
+      "agent": "Sisyphus-Junior",
+      "category": "unspecified-high",
+      "started_at": "2026-08-06T15:31:05.934Z",
+      "updated_at": "2026-08-06T15:56:11.928Z",
+      "status": "completed",
+      "ended_at": "2026-08-06T15:56:11.928Z"
+    }
+  },
+  "agent": "atlas",
+  "ended_at": "2026-08-06T07:17:28.919Z",
+  "elapsed_ms": 95226080
 }

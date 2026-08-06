@@ -21,6 +21,7 @@ public class SkillDataIntegrityTests
         "211_GumShot.asset", "212_StickyBlob.asset", "213_BigBubble.asset", "214_PopTrap.asset",
         "221_FireBall.asset", "222_IceBlast.asset", "223_ThunderBolt.asset",
         "224_DarkBolt.asset", "225_Holy.asset", "226_Acid.asset",
+        "227_TimeWarp.asset",
     };
 
     /// <summary>스킬 ID -> 기대 ProjectilePrefab 경로 (캐노니컬 링크 13개).</summary>
@@ -47,12 +48,12 @@ public class SkillDataIntegrityTests
     [Test]
     public void SkillInventoryClean()
     {
-        // 루트에 정확히 14개 에셋 (하위 폴더 제외)
+        // 루트에 정확히 15개 에셋 (하위 폴더 제외) — 14개 캐노니컬 + 227_TimeWarp(신규) + 301_TimeStop
         List<string> rootPaths = GetRootSkillDataPaths();
-        Assert.AreEqual(14, rootPaths.Count,
-            $"Assets/Resources/SkillData 루트에는 정확히 14개의 SkillData 에셋이 있어야 합니다. 실제: {rootPaths.Count}");
+        Assert.AreEqual(15, rootPaths.Count,
+            $"Assets/Resources/SkillData 루트에는 정확히 15개의 SkillData 에셋이 있어야 합니다. 실제: {rootPaths.Count}");
 
-        // 기대하는 13개 캐노니컬 파일이 전부 존재하는지 확인 (301 은 아래에서 별도 확인)
+        // 기대하는 14개 캐노니컬 파일이 전부 존재하는지 확인 (301 은 아래에서 별도 확인)
         for (int i = 0; i < CanonicalAssetNames.Length; i++)
         {
             string path = $"{SkillDataFolder}/{CanonicalAssetNames[i]}";
@@ -81,7 +82,7 @@ public class SkillDataIntegrityTests
     {
         Dictionary<int, string> seen = new Dictionary<int, string>();
         string[] guids = AssetDatabase.FindAssets("t:SkillData");
-        Assert.GreaterOrEqual(guids.Length, 14, "프로젝트에 최소 14개의 SkillData 에셋이 있어야 합니다.");
+        Assert.GreaterOrEqual(guids.Length, 15, "프로젝트에 최소 15개의 SkillData 에셋이 있어야 합니다.");
 
         foreach (string guid in guids)
         {
@@ -273,6 +274,7 @@ public class SkillDataIntegrityTests
         Assert.IsNotNull(timeStop, "301_TimeStop.asset 을 로드할 수 없습니다.");
 
         Assert.AreEqual(301, timeStop.ID, "301 스킬의 ID 가 301이 아닙니다.");
+        Assert.AreEqual(SkillType.InstantArea, timeStop.SkillType, "301 스킬의 SkillType 이 InstantArea(3)가 아닙니다.");
         Assert.AreEqual("Time Stop", timeStop.SkillName, "301 스킬의 SkillName 이 'Time Stop'이 아닙니다.");
         Assert.AreEqual(50f, timeStop.ManaCost, "301 스킬의 ManaCost 가 50이 아닙니다.");
         Assert.AreEqual(15f, timeStop.Cooldown, "301 스킬의 Cooldown 이 15가 아닙니다.");
@@ -280,6 +282,49 @@ public class SkillDataIntegrityTests
         Assert.AreEqual("Assets/Prefabs/Projectiles/TimeStop_Effect.prefab",
             AssetDatabase.GetAssetPath(timeStop.ProjectilePrefab),
             "301 스킬의 ProjectilePrefab 이 TimeStop_Effect.prefab 을 가리키지 않습니다.");
+    }
+
+    // ------------------------------------------------------------------
+    // 6b. InstantAreaSkillsWired
+    // ------------------------------------------------------------------
+    [Test]
+    public void InstantAreaSkillsWired()
+    {
+        // InstantArea 스킬 301/227: 프리팹 링크 + TimeStopEffect 스크립트 존재 계약.
+        // TimeStopEffect 는 Assembly-CSharp 타입이라 asmdef 테스트에서 직접 참조 불가
+        // -> MonoScript + 각 컴포넌트 SerializedObject 의 m_Script 참조 비교로 우회.
+        (int id, string expectedPath)[] cases =
+        {
+            (301, "Assets/Prefabs/Projectiles/TimeStop_Effect.prefab"),
+            (227, "Assets/Prefabs/Projectiles/TimeWarp_Effect.prefab"),
+        };
+
+        MonoScript timeStopScript = AssetDatabase.LoadAssetAtPath<MonoScript>("Assets/Script/TimeStopEffect.cs");
+        Assert.IsNotNull(timeStopScript, "TimeStopEffect.cs MonoScript 를 로드할 수 없습니다.");
+
+        foreach ((int id, string expectedPath) in cases)
+        {
+            SkillData skill = LoadRootSkillById(id);
+            Assert.IsNotNull(skill, $"ID {id} 에 해당하는 루트 스킬 에셋이 없습니다.");
+            Assert.AreEqual(SkillType.InstantArea, skill.SkillType,
+                $"ID {id} 스킬의 SkillType 이 InstantArea(3)가 아닙니다.");
+            Assert.IsNotNull(skill.ProjectilePrefab, $"ID {id} 스킬의 ProjectilePrefab 이 null 입니다.");
+            Assert.AreEqual(expectedPath, AssetDatabase.GetAssetPath(skill.ProjectilePrefab),
+                $"ID {id} 스킬의 ProjectilePrefab 경로가 기대값과 다릅니다.");
+
+            Component[] components = skill.ProjectilePrefab.GetComponentsInChildren<Component>(true);
+            bool hasTimeStopEffect = false;
+            foreach (Component c in components)
+            {
+                if (c == null) continue;
+                SerializedObject so = new SerializedObject(c);
+                SerializedProperty script = so.FindProperty("m_Script");
+                if (script == null || script.objectReferenceValue == null) continue;
+                if (script.objectReferenceValue == timeStopScript) { hasTimeStopEffect = true; break; }
+            }
+            Assert.IsTrue(hasTimeStopEffect,
+                $"ID {id} 프리팹({skill.ProjectilePrefab.name})에 TimeStopEffect 컴포넌트가 없습니다.");
+        }
     }
 
     // ------------------------------------------------------------------

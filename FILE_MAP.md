@@ -79,3 +79,25 @@
 - `Assets/Scenes/`: 메인 스테이지 및 로비 씬
 - `Assets/Sprite/`: 캐릭터, 배경, UI 스프라이트 리소스 (하리보 이미지 포함)
 - `Assets/Animation/`: 캐릭터 애니메이션 클립 및 컨트롤러
+
+---
+
+## 부록: Timestop 스타일 마법 스킬 작업 (2026-08-05, v1.3 증분)
+- `Assets/Script/player/PlayerController.cs`: `SkillType.InstantArea` 케이스 구현 (프리팹 null 가드 → `transform.position`에 즉시 `Instantiate` → `spawned = true`). 기존 MeleeAoE 패턴 미러링.
+- `Assets/Resources/SkillData/301_TimeStop.asset`: `SkillType: 3`(InstantArea) 필드 추가 — 이전엔 필드가 없어 enum 0(Projectile)으로 직렬화되어 스킬이 발사되지 않던 루트 원인 해결.
+- `Assets/Tests/PlayMode/SkillExecutionTests.cs`: `InstantAreaSkill_SpawnsEffectAndStunsEnemy` 테스트 추가 (InstantArea 스킬이 TimeStop_Effect를 스폰하고 범위 내 적에게 스턴 1회 적용 검증). `TestBubbleAffectable`에 `StunCount` 카운터 추가, `CreateTimeStopSkill()` 헬퍼 추가.
+
+- (Todo 2, 2026-08-05) Skill 227 TimeWarp added to data pipeline:
+  - `tiger/datafiles/skill/magicskill.csv`: appended row `227,TimeWarp,0,30,10,InstantArea,None,0,0,0` (Type=InstantArea -> SkillType 3).
+  - `Assets/Editor/DataImportMenu.cs`: prefabMap[227] = `Assets/Prefabs/Projectiles/TimeWarp_Effect.prefab` (linked in Todo 4).
+  - Generated `Assets/Resources/SkillData/227_TimeWarp.asset` (+.meta) via DataImportMenu.ImportSkillDataOnly (SkillType 3, Damage 0, ManaCost 30, Cooldown 10, UseBubbleEffect 0).
+
+- (Todo 3, 2026-08-06) TimeWarp_Effect prefab built + 227 icon set:
+  - `Assets/Editor/TimeStopEffectBuilder.cs` (신규, 223줄): 209 시트(`pipo-btleffect209_192.png`, guid `3014f866b966d1240bfb57efd1ac6ac0`) 서브스프라이트 15개를 `int.Parse` 자연 정렬로 로드 → `Assets/Prefabs/Projectiles/TimeWarp_Effect.prefab` 생성 (Transform scale (5,5,1) / SpriteRenderer sortingOrder 20 / TimeStopEffect radius 15·stunDuration 3·lifeTime 1.5 / SimpleSpriteAnimator frames 15·fps 12·loop false) + 227 어셋 Icon 설정. 배치 진입점 `TimeStopEffectBuilder.BuildTimeWarpEffect()`.
+  - `Assets/Prefabs/Projectiles/TimeWarp_Effect.prefab` (+.meta, guid `6a0f50631e104e9458759451f1ef339f`): 빌더가 자동 생성. 멱등 — 프리팹 삭제(meta 유지) 후 재실행 시 재생성 + GUID 유지 확인.
+  - `Assets/Resources/SkillData/227_TimeWarp.asset`: `Icon` 설정 — 209 시트 guid `3014f866b966d1240bfb57efd1ac6ac0`의 첫 스프라이트(`fileID: 7241654760395862158`, LoadAssetAtPath<Sprite> 반환값) 참조.
+
+- (Todo 4, 2026-08-06) LinkSkillPrefabs 배치 + 무결성 스위트 15-스킬 end-state:
+  - `Assets/Resources/SkillData/227_TimeWarp.asset`: `ProjectilePrefab` 링크 — `{fileID: 5684612262389042782, guid: 6a0f50631e104e9458759451f1ef339f, type: 3}` (TimeWarp_Effect.prefab). `DataImportMenu.LinkSkillPrefabs` 배치 실행, 로그 `Linked=14` (13→14).
+  - `Assets/Tests/EditMode/SkillDataIntegrityTests.cs` (변경): `CanonicalAssetNames` +`"227_TimeWarp.asset"`(14개) / `SkillInventoryClean` 루트 14→15 / `SkillIdsUnique` 14→15 / `TimeStopUntouched` +SkillType==InstantArea 단언 / 신규 `InstantAreaSkillsWired` (301+227: 타입·프리팹 경로·TimeStopEffect 스크립트 존재 — MonoScript↔m_Script SerializedObject 비교). `CanonicalPrefabLinks`는 13개 유지(227 미등록).
+  - 증거: `task-4-timestop-style-magic-skills-link.log`, `task-4-timestop-style-magic-skills-compile.log`, `task-4-timestop-style-magic-skills.xml`(EditMode 17/17), `task-4-timestop-style-magic-skills-playmode.xml`(PlayMode 5/5), `task-4-qa-fail.xml`, `task-4-qa-fail-301.xml` (+ rerun XMLs).

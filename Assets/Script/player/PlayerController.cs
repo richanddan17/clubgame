@@ -263,8 +263,14 @@ public class PlayerController : MonoBehaviour
                 break;
 
             case SkillType.InstantArea:
-                Debug.LogWarning("InstantArea skill type is not implemented yet.");
-                return;
+                if (skill.ProjectilePrefab == null)
+                {
+                    Debug.LogWarning($"[Skill] '{skill.SkillName}' has no area effect prefab assigned. (slot {slotIndex})");
+                    return;
+                }
+                Instantiate(skill.ProjectilePrefab, transform.position, Quaternion.identity);
+                spawned = true;
+                break;
         }
 
         if (spawned)

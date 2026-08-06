@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="16" result="Failed(Child)" total="16" passed="11" failed="5" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-08-04 08:40:46Z" end-time="2026-08-04 08:40:48Z" duration="2.2535247">
+  <test-suite type="TestSuite" id="1000" name="clubgame" fullname="clubgame" runstate="Runnable" testcasecount="16" result="Failed" site="Child" start-time="2026-08-04 08:40:46Z" end-time="2026-08-04 08:40:48Z" duration="2.253525" total="16" passed="11" failed="5" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <failure>
+      <message><![CDATA[One or more child tests had errors]]></message>
+    </failure>
+    <test-suite type="Assembly" id="1020" name="ClubGame.EditModeTests.dll" fullname="D:/coding/github c/clubgame/Library/ScriptAssemblies/ClubGame.EditModeTests.dll" runstate="Runnable" testcasecount="16" result="Failed" site="Child" start-time="2026-08-04 08:40:46Z" end-time="2026-08-04 08:40:48Z" duration="2.243475" total="16" passed="11" failed="5" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="11800" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <failure>
+        <message><![CDATA[One or more child tests had errors]]></message>
+      </failure>
+      <test-suite type="TestFixture" id="1001" name="SkillDataIntegrityTests" fullname="SkillDataIntegrityTests" classname="SkillDataIntegrityTests" runstate="Runnable" testcasecount="8" result="Failed" site="Child" start-time="2026-08-04 08:40:46Z" end-time="2026-08-04 08:40:48Z" duration="2.067390" total="8" passed="3" failed="5" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <failure>
+          <message><![CDATA[One or more child tests had errors]]></message>
+        </failure>
+        <test-case id="1004" name="CanonicalSkillsWired" fullname="SkillDataIntegrityTests.CanonicalSkillsWired" methodname="CanonicalSkillsWired" classname="SkillDataIntegrityTests" runstate="Runnable" seed="1380920386" result="Failed" start-time="2026-08-04 08:40:46Z" end-time="2026-08-04 08:40:48Z" duration="1.657330" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <failure>
+            <message><![CDATA[  ID 226 에 해당하는 루트 스킬 에셋이 없습니다.
+  Expected: not null
+  But was:  null
+]]></message>
+            <stack-trace><![CDATA[at SkillDataIntegrityTests.CanonicalSkillsWired () [0x00024] in D:\coding\github c\clubgame\Assets\Tests\EditMode\SkillDataIntegrityTests.cs:106
+]]></stack-trace>
+          </failure>
+        </test-case>
+        <test-case id="1005" name="MagicVFXAnimatorWired" fullname="SkillDataIntegrityTests.MagicVFXAnimatorWired" methodname="MagicVFXAnimatorWired" classname="SkillDataIntegrityTests" runstate="Runnable" seed="1665117638" result="Failed" start-time="2026-08-04 08:40:48Z" end-time="2026-08-04 08:40:48Z" duration="0.078030" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <failure>
+            <message><![CDATA[  ID 226 에 해당하는 루트 스킬 에셋이 없습니다.
+  Expected: not null
+  But was:  null
+]]></message>
+            <stack-trace><![CDATA[at SkillDataIntegrityTests.MagicVFXAnimatorWired () [0x00012] in D:\coding\github c\clubgame\Assets\Tests\EditMode\SkillDataIntegrityTests.cs:147
+]]></stack-trace>
+          </failure>
+        </test-case>
+        <test-case id="1007" name="PlayerEquipsGumMaster" fullname="SkillDataIntegrityTests.PlayerEquipsGumMaster" methodname="PlayerEquipsGumMaster" classname="SkillDataIntegrityTests" runstate="Runnable" seed="93945599" result="Passed" start-time="2026-08-04 08:40:48Z" end-time="2026-08-04 08:40:48Z" duration="0.106263" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1009" name="PresetsResolveToRoot" fullname="SkillDataIntegrityTests.PresetsResolveToRoot" methodname="PresetsResolveToRoot" classname="SkillDataIntegrityTests" runstate="Runnable" seed="1425717419" result="Passed" start-time="2026-08-04 08:40:48Z" end-time="2026-08-04 08:40:48Z" duration="0.049790" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1003" name="SkillIdsUnique" fullname="SkillDataIntegrityTests.SkillIdsUnique" methodname="SkillIdsUnique" classname="SkillDataIntegrityTests" runstate="Runnable" seed="1735283637" result="Failed" start-time="2026-08-04 08:40:48Z" end-time="2026-08-04 08:40:48Z" duration="0.132865" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <failure>
+            <message><![CDATA[  프로젝트에 최소 14개의 SkillData 에셋이 있어야 합니다.
+  Expected: greater than or equal to 14
+  But was:  13
+]]></message>
+            <stack-trace><![CDATA[at SkillDataIntegrityTests.SkillIdsUnique () [0x00010] in D:\coding\github c\clubgame\Assets\Tests\EditMode\SkillDataIntegrityTests.cs:84
+]]></stack-trace>
+          </failure>
+        </test-case>
+        <test-case id="1002" name="SkillInventoryClean" fullname="SkillDataIntegrityTests.SkillInventoryClean" methodname="SkillInventoryClean" classname="SkillDataIntegrityTests" runstate="Runnable" seed="935045246" result="Failed" start-time="2026-08-04 08:40:48Z" end-time="2026-08-04 08:40:48Z" duration="0.001619" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <failure>
+            <message><![CDATA[  Assets/Resources/SkillData 루트에는 정확히 14개의 SkillData 에셋이 있어야 합니다. 실제: 13
+  Expected: 14
+  But was:  13
+]]></message>
+            <stack-trace><![CDATA[at SkillDataIntegrityTests.SkillInventoryClean () [0x00006] in D:\coding\github c\clubgame\Assets\Tests\EditMode\SkillDataIntegrityTests.cs:52
+]]></stack-trace>
+          </failure>
+        </test-case>
+        <test-case id="1006" name="SkillPrefabStructure" fullname="SkillDataIntegrityTests.SkillPrefabStructure" methodname="SkillPrefabStructure" classname="SkillDataIntegrityTests" runstate="Runnable" seed="1079139532" result="Failed" start-time="2026-08-04 08:40:48Z" end-time="2026-08-04 08:40:48Z" duration="0.017754" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <failure>
+            <message><![CDATA[  ID 226 에 해당하는 루트 스킬 에셋이 없습니다.
+  Expected: not null
+  But was:  null
+]]></message>
+            <stack-trace><![CDATA[at SkillDataIntegrityTests.SkillPrefabStructure () [0x00023] in D:\coding\github c\clubgame\Assets\Tests\EditMode\SkillDataIntegrityTests.cs:187
+]]></stack-trace>
+          </failure>
+        </test-case>
+        <test-case id="1008" name="TimeStopUntouched" fullname="SkillDataIntegrityTests.TimeStopUntouched" methodname="TimeStopUntouched" classname="SkillDataIntegrityTests" runstate="Runnable" seed="789859666" result="Passed" start-time="2026-08-04 08:40:48Z" end-time="2026-08-04 08:40:48Z" duration="0.001051" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+      </test-suite>
+      <test-suite type="TestFixture" id="1010" name="SkillDataModelTests" fullname="SkillDataModelTests" classname="SkillDataModelTests" runstate="Runnable" testcasecount="1" result="Passed" start-time="2026-08-04 08:40:48Z" end-time="2026-08-04 08:40:48Z" duration="0.027164" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-case id="1011" name="FreshSkillData_HasExpectedDefaults" fullname="SkillDataModelTests.FreshSkillData_HasExpectedDefaults" methodname="FreshSkillData_HasExpectedDefaults" classname="SkillDataModelTests" runstate="Runnable" seed="384302313" result="Passed" start-time="2026-08-04 08:40:48Z" end-time="2026-08-04 08:40:48Z" duration="0.001150" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+      </test-suite>
+      <test-suite type="TestFixture" id="1012" name="SpriteVFXAnimatorTests" fullname="SpriteVFXAnimatorTests" classname="SpriteVFXAnimatorTests" runstate="Runnable" testcasecount="7" result="Passed" start-time="2026-08-04 08:40:48Z" end-time="2026-08-04 08:40:48Z" duration="0.146613" total="7" passed="7" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-case id="1018" name="DestroyOnHitEndDestroysGameObject" fullname="SpriteVFXAnimatorTests.DestroyOnHitEndDestroysGameObject" methodname="DestroyOnHitEndDestroysGameObject" classname="SpriteVFXAnimatorTests" runstate="Runnable" seed="404748686" result="Passed" start-time="2026-08-04 08:40:48Z" end-time="2026-08-04 08:40:48Z" duration="0.092779" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1017" name="FpsGuardResetsNonPositiveFps" fullname="SpriteVFXAnimatorTests.FpsGuardResetsNonPositiveFps" methodname="FpsGuardResetsNonPositiveFps" classname="SpriteVFXAnimatorTests" runstate="Runnable" seed="331382100" result="Passed" start-time="2026-08-04 08:40:48Z" end-time="2026-08-04 08:40:48Z" duration="0.038785" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1014" name="LoopOnlyWhenStartFramesEmpty" fullname="SpriteVFXAnimatorTests.LoopOnlyWhenStartFramesEmpty" methodname="LoopOnlyWhenStartFramesEmpty" classname="SpriteVFXAnimatorTests" runstate="Runnable" seed="1789662794" result="Passed" start-time="2026-08-04 08:40:48Z" end-time="2026-08-04 08:40:48Z" duration="0.004343" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1019" name="NoSpriteRendererIsNullSafe" fullname="SpriteVFXAnimatorTests.NoSpriteRendererIsNullSafe" methodname="NoSpriteRendererIsNullSafe" classname="SpriteVFXAnimatorTests" runstate="Runnable" seed="2055695766" result="Passed" start-time="2026-08-04 08:40:48Z" end-time="2026-08-04 08:40:48Z" duration="0.002393" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1016" name="PlayHitGuardWhenHitFramesEmpty" fullname="SpriteVFXAnimatorTests.PlayHitGuardWhenHitFramesEmpty" methodname="PlayHitGuardWhenHitFramesEmpty" classname="SpriteVFXAnimatorTests" runstate="Runnable" seed="404789146" result="Passed" start-time="2026-08-04 08:40:48Z" end-time="2026-08-04 08:40:48Z" duration="0.001328" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1015" name="PlayHitSwitchesToHitAndDone" fullname="SpriteVFXAnimatorTests.PlayHitSwitchesToHitAndDone" methodname="PlayHitSwitchesToHitAndDone" classname="SpriteVFXAnimatorTests" runstate="Runnable" seed="1521028538" result="Passed" start-time="2026-08-04 08:40:48Z" end-time="2026-08-04 08:40:48Z" duration="0.002298" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1013" name="StartToLoopAutoTransition" fullname="SpriteVFXAnimatorTests.StartToLoopAutoTransition" methodname="StartToLoopAutoTransition" classname="SpriteVFXAnimatorTests" runstate="Runnable" seed="2045839927" result="Passed" start-time="2026-08-04 08:40:48Z" end-time="2026-08-04 08:40:48Z" duration="0.001305" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <output><![CDATA[Saving results to: C:/Users/midme/AppData/LocalLow/DefaultCompany/clubgame\TestResults.xml
+]]></output>
+        </test-case>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

@@ -1,0 +1,82 @@
+Task 4 evidence — 3 new magic skills (224 DarkBolt / 225 Holy / 226 Acid) created + linked
+Date: 2026-08-04  (plan .omo/plans/magic-skill-vfx.md, Wave 3)
+
+== Files modified (product) ==
+1. tiger/datafiles/skill/magicskill.csv  (+3 rows appended, header unchanged)
+2. Assets/Editor/DataImportMenu.cs       (prefabMap +3, after prefabMap[223])
+
+== CSV rows added (10-col schema confirmed: ID,Name,Damage,ManaCost,Cooldown,Type,Bubble,Speed,MeleeRange,MeleeArc) ==
+224,DarkBolt,35,25,3.0,Projectile,None,16,0,0
+225,Holy,30,22,2.5,Projectile,None,15,0,0
+226,Acid,25,20,2.0,Projectile,None,12,0,0
+
+== prefabMap lines added (Assets/Editor/DataImportMenu.cs, LinkSkillPrefabs, after line 320) ==
+prefabMap[224] = "Assets/Prefabs/Projectiles/DarkBoltProjectile.prefab";
+prefabMap[225] = "Assets/Prefabs/Projectiles/HolyProjectile.prefab";
+prefabMap[226] = "Assets/Prefabs/Projectiles/AcidProjectile.prefab";
+
+== Real asset naming convention (confirmed from importer source, DataImportMenu.cs:241) ==
+  string assetPath = $"Assets/Resources/SkillData/{id}_{skillName}.asset";  ->  <id>_<Name>.asset
+New files created:
+  Assets/Resources/SkillData/224_DarkBolt.asset
+  Assets/Resources/SkillData/225_Holy.asset
+  Assets/Resources/SkillData/226_Acid.asset
+
+== Root count ==
+Before: 11  (201,202,203,211,212,213,214,221,222,223 + 301_TimeStop)
+After:  14  (11 + 224,225,226)  — matches Todo-5 expectation. No other assets added/removed.
+
+== Commands + exit codes (all single-string -ArgumentList, mutex guard before each) ==
+1. Compile check:
+   Start-Process Unity.exe -ArgumentList '-batchmode -quit -projectPath "D:\coding\github c\clubgame" -logFile "...\.omo\evidence\task-4-compile.log"' -Wait -PassThru
+   -> EXITCODE=0, 0 error CS, log ends "Exiting batchmode successfully now!"
+2. Import:
+   ... '-batchmode -quit -executeMethod DataImportMenu.ImportSkillDataOnly -projectPath "..." -logFile "...\task-4-import.log"'
+   -> EXITCODE=0, "Skill Data Import Complete!" + "[DataImportMenu] ImportSkillDataOnly complete!", 0 error CS
+3. Link:
+   ... '-batchmode -quit -executeMethod DataImportMenu.LinkSkillPrefabs -projectPath "..." -logFile "...\task-4-link.log"'
+   -> EXITCODE=0, "[DataImportMenu] LinkSkillPrefabs complete. Linked=13 MeleeHitboxExists=True", 0 error CS
+   (Linked=13 = 10 canonical + 3 new; 301_TimeStop intentionally not in prefabMap)
+Re-runs after QA revert: Import EXITCODE=0, Link EXITCODE=0 (identical messages).
+
+== Per-skill value + linkage verification (from .asset YAML; SkillType enum: Projectile=0) ==
+224_DarkBolt.asset: Damage=35 ManaCost=25 Cooldown=3 ProjectileSpeed=16 SkillType=0(Projectile) MeleeRange=0 MeleeArc=0
+                     ProjectilePrefab {fileID 8434671787476748086, guid 94bbea5897d984d43ac61cb3aa92e595} = DarkBoltProjectile.prefab root GameObject (Projectile component) MATCH
+225_Holy.asset:      Damage=30 ManaCost=22 Cooldown=2.5 ProjectileSpeed=15 SkillType=0(Projectile) MeleeRange=0 MeleeArc=0
+                     ProjectilePrefab {fileID 5753692853680353, guid 19ba22d2d26a6d248a7ff728d8920d39} = HolyProjectile.prefab MATCH
+226_Acid.asset:      Damage=25 ManaCost=20 Cooldown=2 ProjectileSpeed=12 SkillType=0(Projectile) MeleeRange=0 MeleeArc=0
+                     ProjectilePrefab {fileID 8450421945144030931, guid 81d6c65737314f541a1f2082d2830c2b} = AcidProjectile.prefab MATCH
+Prefab GUIDs cross-checked against Todo-3 evidence (task-3-magic-skill-vfx.txt): all 3 match.
+fileIDs confirmed as the prefabs' root GameObjects carrying ClubGame.Combat::Projectile (grep of prefab YAML).
+
+== QA failure injection (mandatory) ==
+Injected: row 224 Speed column set to "abc" (non-numeric). Ran ImportSkillDataOnly.
+Result: FormatException: Input string was not in a correct format @ DataImportMenu.cs:274
+  (asset.ProjectileSpeed = string.IsNullOrEmpty(raw) ? 15f : float.Parse(raw);)
+  stack: ImportSkillFile -> ImportSkillData -> ImportSkillDataOnly
+  "executeMethod method DataImportMenu.ImportSkillDataOnly threw exception."
+  EXITCODE=1, NO "complete" message emitted (COMPLETE_MSG_COUNT=0).
+  Log: .omo/evidence/task-4-qa-fail.log
+FINDING / DEVIATION vs plan: plan expected "importer logs an error and SKIPS the row without crashing".
+  Actual code has NO try/catch in ImportSkillFile -> float.Parse throws -> whole batch aborts (exit 1).
+  The importer is strict/fail-fast, not row-skipping. Bad input is loudly detected (non-zero exit) but
+  aborts the entire import instead of skipping one row. Recommended for Todo 5/plan owner: wrap per-row
+  parsing in try/catch (log error + continue) or pre-validate numeric columns.
+REVERTED: row 224 Speed restored to 16. Full pipeline re-run to green (see commands above). Bad CSV NOT left in place.
+Note: during the QA crash, 224_DarkBolt.asset was created with defaults (GetOrCreateAsset writes the file,
+  but SetDirty at :289 and SaveAssets at :210 never ran). The green re-import fully repopulated it
+  (verified YAML: all CSV values + prefab link correct after re-run).
+
+== Evidence files (all gitignored under .omo/evidence/) ==
+task-4-compile.log        compile check, 0 error CS, exit 0
+task-4-import.log         ImportSkillDataOnly, exit 0 (overwritten by final green run)
+task-4-link.log           LinkSkillPrefabs, Linked=13, exit 0 (overwritten by final green run)
+task-4-qa-fail.log        FormatException @ :274, exit 1, no complete msg
+task-4-magic-skill-vfx.txt  this file
+
+== Handoff to Todo 5 ==
+- Assert root SkillData = 14, canonical = 13 (201-203, 211-214, 221-226); 301_TimeStop stays.
+- MagicVFXAnimatorWired will assert per-skill: ProjectilePrefab non-null, and prefab has SpriteVFXAnimator
+  with fps=12 and frames 224: start0/loop4/hit8, 225: start2/loop8/hit7, 226: start0/loop12/hit6
+  (frame inventory from Todo 3). ProjectileSpeed from CSV: 224=16, 225=15, 226=12.
+- Robustness gap found (no row-level error handling in ImportSkillFile) if tests ever feed bad CSV.

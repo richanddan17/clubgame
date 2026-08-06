@@ -5,3 +5,4 @@ ID,Name,Damage,ManaCost,Cooldown,Type,Bubble,Speed,MeleeRange,MeleeArc
 224,DarkBolt,35,25,3.0,Projectile,None,16,0,0
 225,Holy,30,22,2.5,Projectile,None,15,0,0
 226,Acid,25,20,2.0,Projectile,None,12,0,0
+227,TimeWarp,0,30,10,InstantArea,None,0,0,0

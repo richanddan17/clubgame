@@ -27,6 +27,7 @@ namespace ClubGame.PlayModeTests
         private SkillData _projectileSkill;
         private SkillData _meleeSkill;
         private SkillData _fireBallSkill;
+        private SkillData _timeStopSkill;
 
         [UnitySetUp]
         public IEnumerator SetUp()
@@ -102,6 +103,7 @@ namespace ClubGame.PlayModeTests
             if (_projectileSkill != null) ScriptableObject.DestroyImmediate(_projectileSkill);
             if (_meleeSkill != null) ScriptableObject.DestroyImmediate(_meleeSkill);
             if (_fireBallSkill != null) ScriptableObject.DestroyImmediate(_fireBallSkill);
+            if (_timeStopSkill != null) ScriptableObject.DestroyImmediate(_timeStopSkill);
             yield return null;
         }
 
@@ -129,6 +131,19 @@ namespace ClubGame.PlayModeTests
             skill.SkillType = SkillType.Projectile;
             skill.ProjectilePrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Projectiles/FireBallProjectile.prefab");
             skill.ProjectileSpeed = 18f;
+            skill.UseBubbleEffect = false;
+            return skill;
+        }
+
+        private static SkillData CreateTimeStopSkill()
+        {
+            SkillData skill = ScriptableObject.CreateInstance<SkillData>();
+            skill.ID = 301;
+            skill.SkillName = "TimeStop";
+            skill.Damage = 0f;
+            skill.Cooldown = 0.1f;
+            skill.SkillType = SkillType.InstantArea;
+            skill.ProjectilePrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Projectiles/TimeStop_Effect.prefab");
             skill.UseBubbleEffect = false;
             return skill;
         }
@@ -258,14 +273,42 @@ namespace ClubGame.PlayModeTests
             Assert.AreEqual(0, UnityEngine.Object.FindObjectsByType<Projectile>(FindObjectsSortMode.None).Length,
                 "HitDuration 경과 후 프로젝타일이 반환/비활성화되어야 함");
         }
+
+        [UnityTest]
+        public IEnumerator InstantAreaSkill_SpawnsEffectAndStunsEnemy()
+        {
+            _timeStopSkill = CreateTimeStopSkill();
+            EquipSkill(0, _timeStopSkill);
+            InvokeUseSkill(0);
+
+            // Spawn proof: scan all GameObjects for the effect clone.
+            // CRITICAL: Object.Instantiate appends "(Clone)" to the clone name, so the real name
+            // is "TimeStop_Effect (Clone)" — use StartsWith, NEVER exact equality.
+            // (TimeStopEffect is an Assembly-CSharp type, not referenceable from this asmdef —
+            //  that is why we scan by GameObject name instead of FindObjectsByType<TimeStopEffect>.)
+            int spawned = 0;
+            foreach (var go in UnityEngine.Object.FindObjectsByType<GameObject>(FindObjectsSortMode.None))
+                if (go.name.StartsWith("TimeStop_Effect")) spawned++;
+            Assert.AreEqual(1, spawned, "InstantArea 스킬 사용 직후 TimeStop_Effect 효과 오브젝트가 1개 스폰되어야 함");
+
+            Assert.AreEqual(0, _bubbleAffectable.StunCount, "Start() 실행 전에는 아직 스턴이 적용되지 않아야 함");
+
+            yield return new WaitForSeconds(0.2f); // wait for Start() -> ApplyEffect()
+
+            Assert.AreEqual(1, _bubbleAffectable.StunCount,
+                "InstantArea 스킬이 범위 내 적에게 스턴을 정확히 한 번 적용해야 함 (OverlapCircleAll at player origin, radius 20)");
+
+            yield return new WaitForSeconds(2.0f); // wait for lifeTime 1.5 self-destroy — avoid polluting next test
+        }
     }
 
     public class TestBubbleAffectable : MonoBehaviour, IBubbleAffectable
     {
         public int ApplyCount;
         public Projectile.BubbleType LastBubbleType;
+        public int StunCount;
 
-        public void ApplyStun(float duration) { }
+        public void ApplyStun(float duration) { StunCount++; }
 
         public void ApplyBubbleEffect(Projectile.BubbleType type)
         {

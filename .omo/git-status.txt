@@ -1,0 +1,59 @@
+﻿ M .omo/boulder.json
+ M .omo/notepads/magic-skill-vfx/2026-08-03-session.md
+ M .omo/plans/magic-skill-vfx.md
+ M Assets/Editor/DataImportMenu.cs
+ M Assets/Prefabs/Projectiles/FireBallProjectile.prefab
+ M Assets/Prefabs/Projectiles/IceBlastProjectile.prefab
+ M Assets/Prefabs/Projectiles/ThunderBoltProjectile.prefab
+ M Assets/Script/Combat/Projectile.cs
+ M Assets/Script/Combat/SpriteVFXAnimator.cs
+ M Assets/Tests/EditMode/SkillDataIntegrityTests.cs
+ M Assets/Tests/PlayMode/SkillExecutionTests.cs
+ M FILE_MAP.md
+ M tiger/datafiles/skill/magicskill.csv
+?? .omo/evidence/task-1-magic-skill-vfx.xml
+?? .omo/evidence/task-1-qa-fail.xml
+?? .omo/evidence/task-2-magic-skill-vfx-playmode.xml
+?? .omo/evidence/task-2-magic-skill-vfx.xml
+?? .omo/evidence/task-2-qa-fail-playmode.xml
+?? .omo/evidence/task-3-editmode.txt
+?? .omo/evidence/task-3-editmode.xml
+?? .omo/evidence/task-3-failure-notes.txt
+?? .omo/evidence/task-3-magic-skill-vfx.txt
+?? .omo/evidence/task-4-magic-skill-vfx.txt
+?? .omo/evidence/task-5-editmode.xml
+?? .omo/evidence/task-5-playmode.xml
+?? .omo/evidence/task-5-qa-fail-editmode.xml
+?? .omo/evidence/task-5-qa-rerun-editmode.xml
+?? .omo/evidence/task-F3-runtime.xml
+?? .omo/git-status.txt
+?? .omo/run-continuation/ses_0340b18abffewWg3x5ZGP85lae.json
+?? .omo/run-continuation/ses_0340b3c52ffeDoCqWu9BLEnB5f.json
+?? .omo/run-continuation/ses_0340b77e3ffehyOfbLkAliByIe.json
+?? .omo/run-continuation/ses_0340ba13bffeJ6zZoaVQnp2uDH.json
+?? .omo/run-continuation/ses_0341e418affeGO1XclceAsdizO.json
+?? .omo/run-continuation/ses_03434bf8affe8RgBvXpVe928ZC.json
+?? .omo/run-continuation/ses_034466042ffeo1LxbYh4QrKbj3.json
+?? .omo/run-continuation/ses_03459913cffe4S71LDq0MilpLl.json
+?? .omo/run-continuation/ses_03484a4b6ffeKyyB5bg82sgGmF.json
+?? .omo/run-continuation/ses_0348826fdffeKrWLx32G24bLOC.json
+?? .omo/run-continuation/ses_034883d2dffexAAJ3Ds095fHGT.json
+?? .omo/run-continuation/ses_034888d4cffejs2PMZhuotbaPB.json
+?? .omo/run-continuation/ses_034a6993bffesGaxEC0nXRSXZ5.json
+?? .omo/run-continuation/ses_034adf170ffeBZoGdmeAOnqsN0.json
+?? Assets/Editor/MagicVFXBuilder.cs
+?? Assets/Editor/MagicVFXBuilder.cs.meta
+?? Assets/Prefabs/Projectiles/AcidProjectile.prefab
+?? Assets/Prefabs/Projectiles/AcidProjectile.prefab.meta
+?? Assets/Prefabs/Projectiles/DarkBoltProjectile.prefab
+?? Assets/Prefabs/Projectiles/DarkBoltProjectile.prefab.meta
+?? Assets/Prefabs/Projectiles/HolyProjectile.prefab
+?? Assets/Prefabs/Projectiles/HolyProjectile.prefab.meta
+?? Assets/Resources/SkillData/224_DarkBolt.asset
+?? Assets/Resources/SkillData/224_DarkBolt.asset.meta
+?? Assets/Resources/SkillData/225_Holy.asset
+?? Assets/Resources/SkillData/225_Holy.asset.meta
+?? Assets/Resources/SkillData/226_Acid.asset
+?? Assets/Resources/SkillData/226_Acid.asset.meta
+?? Assets/Script/Combat/SpriteVFXAnimator.cs.meta
+?? Assets/Tests/EditMode/SpriteVFXAnimatorTests.cs.meta

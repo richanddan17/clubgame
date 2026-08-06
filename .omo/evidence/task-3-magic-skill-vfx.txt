@@ -1,0 +1,63 @@
+task-3-magic-skill-vfx — GREEN BUILD EVIDENCE
+=============================================
+Date: 2026-08-04
+Builder: Assets/Editor/MagicVFXBuilder.cs (new)
+Unity: D:\coding\6000.3.12f1\Editor\Unity.exe (batchmode)
+
+RESULT: BuildAndVerifyAllMagicVFX exit code 0; error CS 0; VerifyAllMagicVFX PASSED 6/6.
+
+VERIFIED FRAME COUNTS (glob 2026-08-04; all match plan ranges):
+  Skill  Prefab                Start  Loop  Hit   | plan Start/Loop/Hit
+  221    FireBallProjectile    3      4     8     | 3/4/8
+  222    IceBlastProjectile    3      10    8     | 3/10/8
+  223    ThunderBoltProjectile 0(*)   11    3     | 0/11/3
+  224    DarkBoltProjectile    0(*)   4     8     | 0/4/8
+  225    HolyProjectile        2      8     7     | 2/8/7
+  226    AcidProjectile        0(*)   12    6     | 0/12/6
+  (*) start intentionally EMPTY per plan (223/224/226).
+
+DISCREPANCIES (flagged, none blocking):
+  1. Acid hit frames: plan wrote "Acid VFX 02Ending{1..6}.png"; actual filenames are
+     "Acid VFX 02 Ending{1..6}.png" (with a space) — same 6 files, prefix corrected in builder.
+  2. Separated PNGs are imported as Multiple-mode sprites (textureType 8, spriteMode 2);
+     many frames contain N connected-component sub-sprites (e.g. Fire-bomb1=5, Lightning8=8,
+     Hit Effect 01 *=7, Dark-Bolt8=10). LoadAssetAtPath<Sprite> returns the FIRST sub-sprite
+     per PNG (e.g. "Fire-bomb1_0") => 1 sprite per PNG, counts preserved. Visual fidelity risk
+     for F3 (frames render as one slice); remediating requires re-slicing = meta change = out of
+     scope (plan forbids). Per-frame piece counts: see notepad appendix.
+
+BUILD LOG PER SKILL (first/last loaded frame names confirm natural numeric order):
+  221 start 3 (Fire-bomb1_0..Fire-bomb3_0) loop 4 (Fire-bomb4_0..Fire-bomb7_0) hit 8 (Fire-bomb8_0..Fire-bomb15_0)
+  222 start 3 (VFX 1 Start1_0..3_0) loop 10 (Repeatable1_0..10_0) hit 8 (VFX 1 Hit1_0..8_0)
+  223 loop 11 (Lightning1_0..11_0) hit 3 (Hit Effect 01 1_0..3_0)
+  224 loop 4 (Dark-Bolt1_0..4_0) hit 8 (Dark-Bolt5_0..12_0)
+  225 start 2 (Initial1_0..2_0) loop 8 (Repeatable1_0..8_0) hit 7 (Impact1_0..7_0)
+  226 loop 12 (Repeatable1_0..12_0) hit 6 (Ending1_0..6_0)
+
+PREFAB STRUCTURE (template = FireBallProjectile.prefab; verified in saved YAML):
+  Transform localScale (3,3,1); SpriteRenderer sortingOrder 10, initial sprite = first loop frame;
+  CircleCollider2D isTrigger radius 0.2; Projectile speed 15 lifeTime 3 (private, via SerializedObject);
+  SpriteVFXAnimator startFrames/loopFrames/hitFrames/fps 12 (private, via SerializedObject).
+
+EXISTING 3 UPDATED IN PLACE (GUID stable):
+  FireBallProjectile   guid 703a1409083f4d37b0b4925407dafd8f
+  IceBlastProjectile   guid 8848af9573f94566931e5824012b1f93
+  ThunderBoltProjectile guid 98c92f04b93743ab9449d1312f3e3d3b
+  NOTE: IceBlastProjectile previously pointed its initial sprite at Ice VFX 2 Active.png
+  (TimeStop pack); builder now sets it to Ice VFX 1 Repeatable1_0 (first loop frame). Texture metas untouched.
+
+NEW 3 CREATED (files + .meta on disk):
+  DarkBoltProjectile   guid 94bbea5897d984d43ac61cb3aa92e595
+  HolyProjectile       guid 19ba22d2d26a6d248a7ff728d8920d39
+  AcidProjectile       guid 81d6c65737314f541a1f2082d2830c2b
+
+COMMANDS:
+  Compile: Unity.exe -batchmode -quit -projectPath "D:\coding\github c\clubgame" -logFile "...\task-3-compile.log"  -> exit 0, 0 error CS
+  Build+verify: Unity.exe -batchmode -quit -executeMethod MagicVFXBuilder.BuildAndVerifyAllMagicVFX -projectPath "..." -logFile "...\task-3-magic-skill-vfx.log" -> exit 0
+  (Start-Process -ArgumentList SINGLE STRING with embedded quotes; mutex guard polled tasklist before each run.)
+
+EVIDENCE FILES:
+  .omo/evidence/task-3-compile.log (0 error CS)
+  .omo/evidence/task-3-magic-skill-vfx.log (full build+verify log)
+  .omo/evidence/task-3-magic-skill-vfx.txt (this file)
+  .omo/evidence/task-3-failure-notes.txt (idempotency + regeneration QA)
