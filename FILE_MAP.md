@@ -100,4 +100,31 @@
 - (Todo 4, 2026-08-06) LinkSkillPrefabs 배치 + 무결성 스위트 15-스킬 end-state:
   - `Assets/Resources/SkillData/227_TimeWarp.asset`: `ProjectilePrefab` 링크 — `{fileID: 5684612262389042782, guid: 6a0f50631e104e9458759451f1ef339f, type: 3}` (TimeWarp_Effect.prefab). `DataImportMenu.LinkSkillPrefabs` 배치 실행, 로그 `Linked=14` (13→14).
   - `Assets/Tests/EditMode/SkillDataIntegrityTests.cs` (변경): `CanonicalAssetNames` +`"227_TimeWarp.asset"`(14개) / `SkillInventoryClean` 루트 14→15 / `SkillIdsUnique` 14→15 / `TimeStopUntouched` +SkillType==InstantArea 단언 / 신규 `InstantAreaSkillsWired` (301+227: 타입·프리팹 경로·TimeStopEffect 스크립트 존재 — MonoScript↔m_Script SerializedObject 비교). `CanonicalPrefabLinks`는 13개 유지(227 미등록).
-  - 증거: `task-4-timestop-style-magic-skills-link.log`, `task-4-timestop-style-magic-skills-compile.log`, `task-4-timestop-style-magic-skills.xml`(EditMode 17/17), `task-4-timestop-style-magic-skills-playmode.xml`(PlayMode 5/5), `task-4-qa-fail.xml`, `task-4-qa-fail-301.xml` (+ rerun XMLs).
+-   증거: `task-4-timestop-style-magic-skills-link.log`, `task-4-timestop-style-magic-skills-compile.log`, `task-4-timestop-style-magic-skills.xml`(EditMode 17/17), `task-4-timestop-style-magic-skills-playmode.xml`(PlayMode 5/5), `task-4-qa-fail.xml`, `task-4-qa-fail-301.xml` (+ rerun XMLs).
+
+---
+
+## 부록: Brackeys 마법 스킬 8종 (2026-08-06, brackeys-skills 플랜)
+
+- (Todo 1, 2026-08-06) BrackeysVFXBuilder + 프리팹 8종 (ID 231-238, 전부 Projectile):
+  - `Assets/Editor/BrackeysVFXBuilder.cs` (신규, 507줄): Brackeys 단일텍스처 슬라이스 시트(13종)에서 `^{Prefix}_(\d+)$` 정규식 필터 + `int.Parse` 자연 정렬 + `[First..Last]` 0-based 슬라이스(경계 초과 클램프+경고)로 Loop/Hit 프레임을 로드해 투사체 프리팹을 생성하는 에디터 빌더. 스킬별 스케일 `s = clamp(21/maxFramePx, 0.05, 1.0)` (FireBall 7×7px × scale 3 = 0.21 유닛 정합 — blind scale 3 상속 금지), Loop = 처음 min(시트프레임, 60)프레임(5초@12fps 상한), Hit = [0..29], fps 12, startFrames 빈 배열, F8 시각 연속성 게이트(자연정렬+연속+첫≠마지막, 위반 시 throw). 멱등 — 기존 프리팹 제자리 갱신(GUID 유지). 배치 진입점 `BrackeysVFXBuilder.BuildAndVerifyAllBrackeysVFX`, 메뉴 `Custom Tools/tiger/Magic VFX/Build Brackeys VFX Prefabs`.
+  - 프리팹 8종 `Assets/Prefabs/Projectiles/{FireOrb,FireRing,ElectricRing,Vortex,LightStreak,WavyBolt,Charge,BloodBolt}Projectile.prefab` (+.meta): SpriteRenderer sortingOrder 10 / CircleCollider2D isTrigger radius 0.2 / Projectile(speed 15, lifeTime 3 — 템플릿 기본값, 런타임 속도는 CSV ProjectileSpeed로 덮어씀) / SpriteVFXAnimator(loop=처음≤60프레임, hit=30, fps 12, autoPlay). 빌드+자체 검증 `8/8 prefabs OK` 로그 (증거: `.omo/evidence/task-1-brackeys-skills.log`).
+
+- (Todo 2, 2026-08-06) magicskill.csv 8행 + prefabMap 8건 + ImportSkillDataOnly:
+  - `tiger/datafiles/skill/magicskill.csv`: 227행 뒤에 8행 추가 `231,FireOrb,40,30,3.0,Projectile,None,15,0,0` … `238,BloodBolt,35,28,3.2,Projectile,None,15,0,0` (밸런스 밴드 내).
+  - `Assets/Editor/DataImportMenu.cs` (변경): `prefabMap[231..238]` 8건 추가 (prefabMap 총 22건). `ImportSkillDataOnly` 배치 실행 — 로그 "Skill Data Import Complete!".
+  - 에셋 8개 `Assets/Resources/SkillData/{231_FireOrb..238_BloodBolt}.asset` (+.meta) 생성 — 루트 23개. 필드 CSV 일치 검증됨 (SkillType 0=Projectile, UseBubbleEffect 0) (증거: `.omo/evidence/task-2-brackeys-skills.log`).
+
+- (Todo 4, 2026-08-06) LinkSkillPrefabs 배치 (Linked=22):
+  - `Assets/Resources/SkillData/{231..238}_*.asset`: `ProjectilePrefab` 링크 — guid 전수 교차 검증 완료 (프리팹 meta guid 8/8 일치). `DataImportMenu.LinkSkillPrefabs` 배치 실행, 로그 `Linked=22` (14→22) (증거: `.omo/evidence/task-4-brackeys-skills-link.log`).
+
+- (Todo 3, 2026-08-06) PlayMode 임팩트 테스트 `BrackeysVFX_PlaysHitAndDelaysDeactivation`:
+  - `Assets/Tests/PlayMode/SkillExecutionTests.cs` (변경): 231 스킬 발사 → 적 충돌 → 히트 VFX 재생 → 비활성화 지연 증명 (Passed 4.059s). 즉 F3 헤드리스 자동화 = 231 발사→적 충돌→히트 VFX→파괴 증명을 담당 (증거: `.omo/evidence/task-3-brackeys-skills-playmode.xml`, PlayMode 6/6).
+  - F3의 사용자 수동 확인(에디터에서 8종 드래그해 Loop·Hit 애니메이션 눈 확인)은 게이트 결정에 포함되지 않고 후속 절차로 사용자 몫.
+
+- (Todo 5, 2026-08-06) EditMode 무결성 스위트 확장 + 플레이크 수정 + QA(A)/(B) 실패 주입 검증:
+  - `Assets/Tests/EditMode/SkillDataIntegrityTests.cs` (변경): `CanonicalAssetNames` 14→22 / `CanonicalPrefabLinks` 13→21 / `SkillInventoryClean` 15→23 / `SkillIdsUnique` 15→23, 신규 `BrackeysVFXAnimatorWired` (케이스 231-238: 루프=처음 min(시트,60) 프레임·hit=30·fps 12·startFrames 빈 배열·sortingOrder 10·스케일 캐노니컬).
+  - `Assets/Tests/EditMode/SpriteVFXAnimatorTests.cs` (변경, 플레이크 수정): `ForceFrames()`에서 `SetField(animator, "_timer", frameTime - Time.deltaTime + 1e-6f)` — EditMode에서도 dt가 1/fps(≈83ms)를 넘으면 `Update()`의 `while (_timer >= frameTime)` 루프가 한 번에 여러 프레임을 진행해 `_frameIndex % N`이 어긋나는 비결정적 실패 제거. 수정 전 실패 이력 15건, 수정 후 `LoopOnlyWhenStartFramesEmpty` 연속 Passed.
+  - QA(A) 실패 주입 (증거: `.omo/evidence/task-5-brackeys-skills-qa-fail.xml`): `CanonicalPrefabLinks[231]` → `WrongProjectile.prefab` 변조 → EditMode 17/18 — `CanonicalSkillsWired`만 실패(`ID 231 스킬의 ProjectilePrefab 경로가 캐노니컬 링크와 다릅니다`), `LoopOnlyWhenStartFramesEmpty` Passed. 이후 경로 복구.
+  - QA(B) 실패 주입 (증거: `.omo/evidence/task-5-brackeys-skills-qa-fail-b.xml`): 빌더에서 231 hit 스테이지 제거 변조 → 재빌드 시 빌더 자체 Verify 실패(scale (0.13) != (0.07692308)) 확인, 231 prefab hitFrames=[] 재빌드 → EditMode 17/18 — `BrackeysVFXAnimatorWired`만 실패(`ID 231 프리팹의 hitFrames 가 30이 아닙니다. Expected: 30`). 이후 빌더 원복 + 재빌드 → `VerifyAllBrackeysVFX PASSED: 8/8`, 231 loop=45 hit=30 scale=(0.077,0.077,1) (증거: `.omo/evidence/task-5-brackeys-skills-qab-restore-build.log`).
+  - 최종 green (증거: `.omo/evidence/task-5-brackeys-skills-editmode-final.xml` EditMode 18/18, `.omo/evidence/task-5-brackeys-skills-playmode-final.xml` PlayMode 6/6, 둘 다 EXIT=0).

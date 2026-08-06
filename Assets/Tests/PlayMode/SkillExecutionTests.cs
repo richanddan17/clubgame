@@ -274,6 +274,80 @@ namespace ClubGame.PlayModeTests
                 "HitDuration 경과 후 프로젝타일이 반환/비활성화되어야 함");
         }
 
+        private static SkillData CreateBrackeysFireOrbSkill()
+        {
+            SkillData skill = ScriptableObject.CreateInstance<SkillData>();
+            skill.ID = 231;
+            skill.SkillName = "FireOrb";
+            skill.Damage = 40f;
+            skill.Cooldown = 0.1f;
+            skill.SkillType = SkillType.Projectile;
+            skill.ProjectilePrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Projectiles/FireOrbProjectile.prefab");
+            skill.ProjectileSpeed = 15f;
+            skill.UseBubbleEffect = false;
+            return skill;
+        }
+
+        [UnityTest]
+        public IEnumerator BrackeysVFX_PlaysHitAndDelaysDeactivation()
+        {
+            GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Projectiles/FireOrbProjectile.prefab");
+            SpriteVFXAnimator prefabVfx = prefab != null ? prefab.GetComponentInChildren<SpriteVFXAnimator>(true) : null;
+            if (prefab == null || prefabVfx == null)
+            {
+                Assert.Ignore("231 prefab not built yet");
+            }
+            float hitDuration = prefabVfx.HitDuration;
+
+            SkillData brackeysFireOrb = CreateBrackeysFireOrbSkill();
+            EquipSkill(0, brackeysFireOrb);
+            InvokeUseSkill(0);
+
+            Assert.AreEqual(1, UnityEngine.Object.FindObjectsByType<Projectile>(FindObjectsSortMode.None).Length, "FireOrb 사용 직후 Projectile이 1개 존재해야 함");
+
+            yield return new WaitForSeconds(0.2f);
+
+            Assert.Less(_enemyHealth.CurrentHealth, _enemyHealth.MaxHealth, "FireOrb에 맞은 적의 체력이 감소해야 함(대미지 정상)");
+            Assert.AreEqual(1, UnityEngine.Object.FindObjectsByType<Projectile>(FindObjectsSortMode.None).Length,
+                "임팩트 직후에는 VFX 히트 연출이 재생되는 동안 프로젝타일이 즉시 사라지면 안 됨(지연 Deactivate)");
+
+            yield return new WaitForSeconds(hitDuration + 0.5f);
+
+            Assert.AreEqual(0, UnityEngine.Object.FindObjectsByType<Projectile>(FindObjectsSortMode.None).Length,
+                "HitDuration 경과 후 프로젝타일이 반환/비활성화되어야 함");
+
+            ScriptableObject.DestroyImmediate(brackeysFireOrb);
+        }
+
+        [UnityTest]
+        public IEnumerator EffectScale_MultipliesSpawnedProjectileScale()
+        {
+            GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Projectiles/FireOrbProjectile.prefab");
+            SpriteVFXAnimator prefabVfx = prefab != null ? prefab.GetComponentInChildren<SpriteVFXAnimator>(true) : null;
+            if (prefab == null || prefabVfx == null)
+            {
+                Assert.Ignore("231 prefab not built yet");
+            }
+            float hitDuration = prefabVfx.HitDuration;
+            float bakedScale = prefab.transform.localScale.x;
+
+            SkillData brackeysFireOrb = CreateBrackeysFireOrbSkill();
+            brackeysFireOrb.EffectScale = 2f;
+            EquipSkill(0, brackeysFireOrb);
+            InvokeUseSkill(0);
+
+            Projectile[] projectiles = UnityEngine.Object.FindObjectsByType<Projectile>(FindObjectsSortMode.None);
+            Assert.AreEqual(1, projectiles.Length, "EffectScale 적용 후 스폰된 Projectile이 1개 존재해야 함");
+            Assert.AreEqual(bakedScale * 2f, projectiles[0].transform.localScale.x, 0.0001f,
+                "EffectScale 배율이 스폰된 투사체 localScale.x에 곱해져야 함");
+            Assert.AreEqual(bakedScale * 2f, projectiles[0].transform.localScale.y, 0.0001f,
+                "EffectScale 배율이 스폰된 투사체 localScale.y에 곱해져야 함");
+
+            yield return new WaitForSeconds(hitDuration + 0.5f); // VFX 지연 Deactivate 대기 — 다음 테스트 오염 방지
+
+            ScriptableObject.DestroyImmediate(brackeysFireOrb);
+        }
+
         [UnityTest]
         public IEnumerator InstantAreaSkill_SpawnsEffectAndStunsEnemy()
         {

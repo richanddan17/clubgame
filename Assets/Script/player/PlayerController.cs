@@ -234,6 +234,7 @@ public class PlayerController : MonoBehaviour
                 GameObject projObj = Instantiate(skill.ProjectilePrefab, combatSettings.FirePoint.position, Quaternion.Euler(0, 0, angle));
                 if (projObj.TryGetComponent<Projectile>(out var proj))
                     proj.Initialize(skill.Damage, _isFacingRight, skill.ProjectileSpeed, null, gameObject, skill.BubbleEffect, skill.UseBubbleEffect);
+                ApplyEffectScale(projObj, skill.EffectScale);
                 spawned = true;
                 break;
 
@@ -247,6 +248,7 @@ public class PlayerController : MonoBehaviour
                 GameObject meleeObj = Instantiate(skill.ProjectilePrefab, meleeSpawnPos, Quaternion.Euler(0, 0, angle));
                 if (meleeObj.TryGetComponent<MeleeHitbox>(out var hitbox))
                     hitbox.Initialize(skill.Damage, gameObject, skill.HitboxLifetime, skill.MeleeRange, skill.UseBubbleEffect, skill.BubbleEffect);
+                ApplyEffectScale(meleeObj, skill.EffectScale);
                 spawned = true;
                 break;
 
@@ -259,6 +261,7 @@ public class PlayerController : MonoBehaviour
                 GameObject aoeObj = Instantiate(skill.ProjectilePrefab, transform.position, Quaternion.identity);
                 if (aoeObj.TryGetComponent<MeleeHitbox>(out var aoeHitbox))
                     aoeHitbox.Initialize(skill.Damage, gameObject, skill.HitboxLifetime, skill.MeleeRange, skill.UseBubbleEffect, skill.BubbleEffect);
+                ApplyEffectScale(aoeObj, skill.EffectScale);
                 spawned = true;
                 break;
 
@@ -268,7 +271,8 @@ public class PlayerController : MonoBehaviour
                     Debug.LogWarning($"[Skill] '{skill.SkillName}' has no area effect prefab assigned. (slot {slotIndex})");
                     return;
                 }
-                Instantiate(skill.ProjectilePrefab, transform.position, Quaternion.identity);
+                GameObject areaObj = Instantiate(skill.ProjectilePrefab, transform.position, Quaternion.identity);
+                ApplyEffectScale(areaObj, skill.EffectScale);
                 spawned = true;
                 break;
         }
@@ -278,6 +282,13 @@ public class PlayerController : MonoBehaviour
             _skillLastUsed[slotIndex] = Time.time;
             if (SkillHUDManager.Instance != null) SkillHUDManager.Instance.TriggerCooldown(slotIndex);
         }
+    }
+
+    private static void ApplyEffectScale(GameObject obj, float scale)
+    {
+        if (obj == null || Mathf.Approximately(scale, 1f)) return;
+        Vector3 s = obj.transform.localScale;
+        obj.transform.localScale = new Vector3(s.x * scale, s.y * scale, s.z);
     }
 
     public void UpdateSkillHUD()

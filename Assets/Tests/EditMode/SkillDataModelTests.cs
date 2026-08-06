@@ -14,6 +14,7 @@ public class SkillDataModelTests
         Assert.AreEqual(120f, data.MeleeArc);
         Assert.AreEqual(0.15f, data.HitboxLifetime);
         Assert.AreEqual(3f, data.AoERadius);
+        Assert.AreEqual(1f, data.EffectScale);
         Assert.IsFalse(data.UseBubbleEffect);
     }
 }

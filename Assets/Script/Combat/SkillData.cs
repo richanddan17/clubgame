@@ -13,6 +13,10 @@ public class SkillData : ScriptableObject
     public Sprite Icon;
     public GameObject ProjectilePrefab;
 
+    [Header("이펙트 크기 배율")]
+    [Tooltip("1 = 프리팹 기본 크기. 이 값을 바꾸면 스킬 이펙트(투사체/히트박스/광역 VFX)의 크기가 곱해집니다.")]
+    public float EffectScale = 1f;
+
     [Header("멀티샷 설정 (산탄 등)")]
     public int projectileCount = 1;
     public float spreadAngle = 0f;

@@ -322,6 +322,14 @@ public class DataImportMenu : EditorWindow
         prefabMap[225] = "Assets/Prefabs/Projectiles/HolyProjectile.prefab";
         prefabMap[226] = "Assets/Prefabs/Projectiles/AcidProjectile.prefab";
         prefabMap[227] = "Assets/Prefabs/Projectiles/TimeWarp_Effect.prefab";
+        prefabMap[231] = "Assets/Prefabs/Projectiles/FireOrbProjectile.prefab";
+        prefabMap[232] = "Assets/Prefabs/Projectiles/FireRingProjectile.prefab";
+        prefabMap[233] = "Assets/Prefabs/Projectiles/ElectricRingProjectile.prefab";
+        prefabMap[234] = "Assets/Prefabs/Projectiles/VortexProjectile.prefab";
+        prefabMap[235] = "Assets/Prefabs/Projectiles/LightStreakProjectile.prefab";
+        prefabMap[236] = "Assets/Prefabs/Projectiles/WavyBoltProjectile.prefab";
+        prefabMap[237] = "Assets/Prefabs/Projectiles/ChargeProjectile.prefab";
+        prefabMap[238] = "Assets/Prefabs/Projectiles/BloodBoltProjectile.prefab";
 
         // Iterate ONLY root SkillData assets directly under Assets/Resources/SkillData
         // (skip subfolder assets like Ranged/Melee/Magic/*).

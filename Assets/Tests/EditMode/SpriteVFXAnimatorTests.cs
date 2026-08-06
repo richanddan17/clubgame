@@ -75,14 +75,22 @@ public class SpriteVFXAnimatorTests
         InvokeLifecycle(animator, "OnEnable");
     }
 
-    /// <summary>_timer 를 정확히 1/fps 로 세팅 후 Update 를 1회 호출해 프레임을 1개씩 결정적으로 진행한다.</summary>
+    /// <summary>
+    /// Update 를 1회 호출해 프레임을 정확히 1개씩 진행한다.
+    /// EditMode 에서도 Time.deltaTime 은 0 이 아닐 수 있다. 에디터 히치로 한 프레임이 1/fps(예: 83ms)를
+    /// 넘으면 Update 의 while 루프가 한 번에 여러 프레임을 진행해 _frameIndex % N 이 어긋나 테스트가
+    /// 비결정적으로 실패한다. 따라서 deltaTime 을 미리 차감해 Update 내부에서 _timer 가 정확히
+    /// frameTime 이 되도록 보정한다 (같은 에디터 프레임 안에서는 deltaTime 값이 동일함).
+    /// </summary>
     private static void ForceFrames(SpriteVFXAnimator animator, int count)
     {
         float fps = (float)GetField(animator, "fps");
         float frameTime = 1f / fps;
         for (int i = 0; i < count; i++)
         {
-            SetField(animator, "_timer", frameTime);
+            // Update() 는 _timer += Time.deltaTime 후 while (_timer >= frameTime) 로 진행하므로
+            // 미리 deltaTime 을 빼 주면 정확히 1프레임만 진행된다. (+1e-6f: 부동소수점 하향 오차 대비 버퍼)
+            SetField(animator, "_timer", frameTime - Time.deltaTime + 1e-6f);
             InvokeLifecycle(animator, "Update");
         }
     }
