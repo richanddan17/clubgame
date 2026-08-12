@@ -226,7 +226,7 @@ MonoBehaviour:
   moveSpeed: 4
   detectionRange: 8
   attackRange: 1.5
-  attackDamage: 20
+  attackDamage: 1
   undergroundDuration: 4
   stunDuration: 2
   playerStunDuration: 2

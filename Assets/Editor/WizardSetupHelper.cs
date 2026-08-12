@@ -26,7 +26,7 @@ public class WizardSetupHelper : EditorWindow
         wizardData.ID = 105;
         wizardData.EnemyName = "Wizard2";
         wizardData.HP = 80f;
-        wizardData.Damage = 15f;
+        wizardData.Damage = 1f;
         wizardData.Speed = 2.5f;
         wizardData.DetectionRange = 12f;
         wizardData.AttackInterval = 2.5f;
@@ -86,7 +86,7 @@ public class WizardSetupHelper : EditorWindow
         rangedEnemy.data = wizardData;
         
         // 근접 공격 능력치 설정
-        rangedEnemy.meleeDamage = 25f;
+        rangedEnemy.meleeDamage = 1f;
         rangedEnemy.meleeRange = 2.0f;
         rangedEnemy.meleeOffset = new Vector2(1.2f, 0.5f);
 
@@ -95,7 +95,7 @@ public class WizardSetupHelper : EditorWindow
         DestroyImmediate(wizard);
 
         AssetDatabase.Refresh();
-        Debug.Log("Wizard2 프리팹 및 전용 데이터(HP 80, DMG 15) 설정 완료!");
-        EditorUtility.DisplayDialog("Success", "Wizard2 설정 완료!\nHP: 80, Damage: 15", "OK");
+        Debug.Log("Wizard2 프리팹 및 전용 데이터(HP 80, DMG 1) 설정 완료!");
+        EditorUtility.DisplayDialog("Success", "Wizard2 설정 완료!\nHP: 80, Damage: 1", "OK");
     }
 }

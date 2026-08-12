@@ -238,7 +238,7 @@ MonoBehaviour:
   firePoint: {fileID: 8141564118640718314}
   speedMultiplier: 1
   damageMultiplier: 1
-  meleeDamage: 25
+  meleeDamage: 1
   meleeRange: 2
   meleeOffset: {x: 1.2, y: 0.5}
 --- !u!1 &6308108237338742679

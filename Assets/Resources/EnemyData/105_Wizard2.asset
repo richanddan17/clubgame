@@ -16,7 +16,7 @@ MonoBehaviour:
   EnemyName: Wizard2
   HP: 120
   Speed: 1.5
-  Damage: 20
+  Damage: 1
   DetectionRange: 25
   AttackRange: 15
   AttackInterval: 2.5

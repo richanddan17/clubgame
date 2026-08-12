@@ -238,7 +238,7 @@ public class RangedEnemy : MonoBehaviour, IBubbleAffectable
 
     // 애니메이션 이벤트에서 호출할 함수
     [Header("근접 공격(휘두르기) 설정")]
-    public float meleeDamage = 25f;
+    public float meleeDamage = 1f;
     public float meleeRange = 2.0f;
     public Vector2 meleeOffset = new Vector2(1.2f, 0.5f);
 

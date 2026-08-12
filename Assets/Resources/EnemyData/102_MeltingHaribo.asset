@@ -16,7 +16,7 @@ MonoBehaviour:
   EnemyName: MeltingHaribo
   HP: 100
   Speed: 2.2
-  Damage: 15
+  Damage: 1
   DetectionRange: 12
   AttackRange: 2.5
   AttackInterval: 1.5

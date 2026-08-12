@@ -16,7 +16,7 @@ MonoBehaviour:
   EnemyName: PoppingCandyBat
   HP: 30
   Speed: 4
-  Damage: 10
+  Damage: 1
   DetectionRange: 20
   AttackRange: 1.5
   AttackInterval: 1.5

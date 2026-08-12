@@ -13,7 +13,7 @@ public class MeltingHaribo : MonoBehaviour, IBubbleAffectable
     public float moveSpeed = 4f;
     public float detectionRange = 8f;
     public float attackRange = 1.5f;
-    public float attackDamage = 20f;
+    public float attackDamage = 1f;
     public float undergroundDuration = 4f;
     public float stunDuration = 2f;
     public float gravityScale = 3.5f;

@@ -4,7 +4,7 @@ public class PoppingBullet : MonoBehaviour
 {
     [Header("Settings")]
     public float speed = 10f;
-    public float damage = 30f;
+    public float damage = 1f;
     public float lifeTime = 5f;
     public string poolTag = "PoppingBullet";
 

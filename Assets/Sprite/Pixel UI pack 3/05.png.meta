@@ -26,9 +26,6 @@ TextureImporter:
   - first:
       213: 3590649358251884346
     second: 05_7
-  - first:
-      213: 2769619269573066063
-    second: 05_8
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -61,7 +58,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -299,28 +296,6 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
-    - serializedVersion: 2
-      name: 05_8
-      rect:
-        serializedVersion: 2
-        x: 0
-        y: 4
-        width: 289
-        height: 8
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: f4dbaf53d0aaf6620800000000000000
-      internalID: 2769619269573066063
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
     outline: []
     customData: 
     physicsShape: []
@@ -343,7 +318,6 @@ TextureImporter:
       05_5: -2962639829586011719
       05_6: 7013541907120590525
       05_7: 3590649358251884346
-      05_8: 2769619269573066063
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

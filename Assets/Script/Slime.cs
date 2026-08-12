@@ -56,7 +56,7 @@ public class Slime : MonoBehaviour
 
     [Header("공격 설정")]
     public float attackRange = 1.5f;
-    public float attackDamage = 10f;
+    public float attackDamage = 1f;
     public float attackCooldown = 1.2f;
     private float _nextAttackTime;
 

@@ -16,7 +16,7 @@ MonoBehaviour:
   EnemyName: Orc
   HP: 200
   Speed: 1.2
-  Damage: 25
+  Damage: 1
   DetectionRange: 15
   AttackRange: 3
   AttackInterval: 3

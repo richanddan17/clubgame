@@ -16,7 +16,7 @@ MonoBehaviour:
   EnemyName: ElitePoppingCandyBat
   HP: 80
   Speed: 5
-  Damage: 15
+  Damage: 1
   DetectionRange: 25
   AttackRange: 2
   AttackInterval: 1.2
