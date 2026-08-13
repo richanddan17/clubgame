@@ -1,0 +1,2 @@
+Configuration is invalid at C:\Users\midme\.config\opencode\opencode.jsonc
+↳ Expected string | undefined, got {"opencode/gpt-5-nano":"gpt-5-nano","opencode/gpt-5.4-nano":"gpt-5.4-nano","opencode/claude-opus-4-7":"claude-opus-4-7","opencode/gemini-3-flash":"deepseek-v4-flash-free"} model

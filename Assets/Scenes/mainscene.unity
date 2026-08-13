@@ -426,7 +426,68 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+<<<<<<< HEAD
 --- !u!1 &734727593
+=======
+--- !u!1001 &706434107
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 7407700295360949425, guid: 22a5ea2aa7fbc5044a3a2e085f4f8921, type: 3}
+      propertyPath: m_Name
+      value: MeltingHaribo
+      objectReference: {fileID: 0}
+    - target: {fileID: 9082283309429767439, guid: 22a5ea2aa7fbc5044a3a2e085f4f8921, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 4.8747377
+      objectReference: {fileID: 0}
+    - target: {fileID: 9082283309429767439, guid: 22a5ea2aa7fbc5044a3a2e085f4f8921, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -1.163365
+      objectReference: {fileID: 0}
+    - target: {fileID: 9082283309429767439, guid: 22a5ea2aa7fbc5044a3a2e085f4f8921, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9082283309429767439, guid: 22a5ea2aa7fbc5044a3a2e085f4f8921, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9082283309429767439, guid: 22a5ea2aa7fbc5044a3a2e085f4f8921, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9082283309429767439, guid: 22a5ea2aa7fbc5044a3a2e085f4f8921, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9082283309429767439, guid: 22a5ea2aa7fbc5044a3a2e085f4f8921, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9082283309429767439, guid: 22a5ea2aa7fbc5044a3a2e085f4f8921, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9082283309429767439, guid: 22a5ea2aa7fbc5044a3a2e085f4f8921, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9082283309429767439, guid: 22a5ea2aa7fbc5044a3a2e085f4f8921, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 22a5ea2aa7fbc5044a3a2e085f4f8921, type: 3}
+--- !u!1 &723139010
+>>>>>>> skilldata
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2655,7 +2716,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 63e1ec1262f034b4c867fc49675831ca, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Health
+  m_EditorClassIdentifier: ClubGame.Combat::Health
 --- !u!1 &2136770004
 GameObject:
   m_ObjectHideFlags: 0
@@ -2702,6 +2763,10 @@ SceneRoots:
   - {fileID: 2136770005}
   - {fileID: 108525108}
   - {fileID: 82891252}
+<<<<<<< HEAD
   - {fileID: 1819502033}
   - {fileID: 734727595}
   - {fileID: 867856692}
+=======
+  - {fileID: 706434107}
+>>>>>>> skilldata

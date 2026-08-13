@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="18" result="Failed(Child)" total="18" passed="17" failed="1" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-08-06 11:47:08Z" end-time="2026-08-06 11:47:12Z" duration="3.7245925">
+  <test-suite type="TestSuite" id="1000" name="clubgame" fullname="clubgame" runstate="Runnable" testcasecount="18" result="Failed" site="Child" start-time="2026-08-06 11:47:08Z" end-time="2026-08-06 11:47:12Z" duration="3.724593" total="18" passed="17" failed="1" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <failure>
+      <message><![CDATA[One or more child tests had errors]]></message>
+    </failure>
+    <test-suite type="Assembly" id="1022" name="ClubGame.EditModeTests.dll" fullname="D:/coding/github c/clubgame/Library/ScriptAssemblies/ClubGame.EditModeTests.dll" runstate="Runnable" testcasecount="18" result="Failed" site="Child" start-time="2026-08-06 11:47:08Z" end-time="2026-08-06 11:47:12Z" duration="3.703366" total="18" passed="17" failed="1" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="17372" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <failure>
+        <message><![CDATA[One or more child tests had errors]]></message>
+      </failure>
+      <test-suite type="TestFixture" id="1001" name="SkillDataIntegrityTests" fullname="SkillDataIntegrityTests" classname="SkillDataIntegrityTests" runstate="Runnable" testcasecount="10" result="Failed" site="Child" start-time="2026-08-06 11:47:08Z" end-time="2026-08-06 11:47:11Z" duration="3.422751" total="10" passed="9" failed="1" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <failure>
+          <message><![CDATA[One or more child tests had errors]]></message>
+        </failure>
+        <test-case id="1006" name="BrackeysVFXAnimatorWired" fullname="SkillDataIntegrityTests.BrackeysVFXAnimatorWired" methodname="BrackeysVFXAnimatorWired" classname="SkillDataIntegrityTests" runstate="Runnable" seed="1271407088" result="Passed" start-time="2026-08-06 11:47:08Z" end-time="2026-08-06 11:47:11Z" duration="2.735022" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1004" name="CanonicalSkillsWired" fullname="SkillDataIntegrityTests.CanonicalSkillsWired" methodname="CanonicalSkillsWired" classname="SkillDataIntegrityTests" runstate="Runnable" seed="995199775" result="Failed" start-time="2026-08-06 11:47:11Z" end-time="2026-08-06 11:47:11Z" duration="0.079472" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <failure>
+            <message><![CDATA[  ID 231 스킬의 ProjectilePrefab 경로가 캐노니컬 링크와 다릅니다.
+  Expected string length 49 but was 51. Strings differ at index 27.
+  Expected: "Assets/Prefabs/Projectiles/WrongProjectile.prefab"
+  But was:  "Assets/Prefabs/Projectiles/FireOrbProjectile.prefab"
+  --------------------------------------^
+]]></message>
+            <stack-trace><![CDATA[at SkillDataIntegrityTests.CanonicalSkillsWired () [0x0005f] in D:\coding\github c\clubgame\Assets\Tests\EditMode\SkillDataIntegrityTests.cs:122
+]]></stack-trace>
+          </failure>
+        </test-case>
+        <test-case id="1010" name="InstantAreaSkillsWired" fullname="SkillDataIntegrityTests.InstantAreaSkillsWired" methodname="InstantAreaSkillsWired" classname="SkillDataIntegrityTests" runstate="Runnable" seed="177120806" result="Passed" start-time="2026-08-06 11:47:11Z" end-time="2026-08-06 11:47:11Z" duration="0.124360" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1005" name="MagicVFXAnimatorWired" fullname="SkillDataIntegrityTests.MagicVFXAnimatorWired" methodname="MagicVFXAnimatorWired" classname="SkillDataIntegrityTests" runstate="Runnable" seed="410744107" result="Passed" start-time="2026-08-06 11:47:11Z" end-time="2026-08-06 11:47:11Z" duration="0.018687" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1008" name="PlayerEquipsGumMaster" fullname="SkillDataIntegrityTests.PlayerEquipsGumMaster" methodname="PlayerEquipsGumMaster" classname="SkillDataIntegrityTests" runstate="Runnable" seed="1920685706" result="Passed" start-time="2026-08-06 11:47:11Z" end-time="2026-08-06 11:47:11Z" duration="0.204986" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1011" name="PresetsResolveToRoot" fullname="SkillDataIntegrityTests.PresetsResolveToRoot" methodname="PresetsResolveToRoot" classname="SkillDataIntegrityTests" runstate="Runnable" seed="742199796" result="Passed" start-time="2026-08-06 11:47:11Z" end-time="2026-08-06 11:47:11Z" duration="0.052644" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1003" name="SkillIdsUnique" fullname="SkillDataIntegrityTests.SkillIdsUnique" methodname="SkillIdsUnique" classname="SkillDataIntegrityTests" runstate="Runnable" seed="1302261749" result="Passed" start-time="2026-08-06 11:47:11Z" end-time="2026-08-06 11:47:11Z" duration="0.146633" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1002" name="SkillInventoryClean" fullname="SkillDataIntegrityTests.SkillInventoryClean" methodname="SkillInventoryClean" classname="SkillDataIntegrityTests" runstate="Runnable" seed="1727053664" result="Passed" start-time="2026-08-06 11:47:11Z" end-time="2026-08-06 11:47:11Z" duration="0.020683" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1007" name="SkillPrefabStructure" fullname="SkillDataIntegrityTests.SkillPrefabStructure" methodname="SkillPrefabStructure" classname="SkillDataIntegrityTests" runstate="Runnable" seed="30503294" result="Passed" start-time="2026-08-06 11:47:11Z" end-time="2026-08-06 11:47:11Z" duration="0.009648" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1009" name="TimeStopUntouched" fullname="SkillDataIntegrityTests.TimeStopUntouched" methodname="TimeStopUntouched" classname="SkillDataIntegrityTests" runstate="Runnable" seed="2079277582" result="Passed" start-time="2026-08-06 11:47:11Z" end-time="2026-08-06 11:47:11Z" duration="0.000645" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+      </test-suite>
+      <test-suite type="TestFixture" id="1012" name="SkillDataModelTests" fullname="SkillDataModelTests" classname="SkillDataModelTests" runstate="Runnable" testcasecount="1" result="Passed" start-time="2026-08-06 11:47:11Z" end-time="2026-08-06 11:47:12Z" duration="0.091522" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-case id="1013" name="FreshSkillData_HasExpectedDefaults" fullname="SkillDataModelTests.FreshSkillData_HasExpectedDefaults" methodname="FreshSkillData_HasExpectedDefaults" classname="SkillDataModelTests" runstate="Runnable" seed="959956550" result="Passed" start-time="2026-08-06 11:47:12Z" end-time="2026-08-06 11:47:12Z" duration="0.000926" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+      </test-suite>
+      <test-suite type="TestFixture" id="1014" name="SpriteVFXAnimatorTests" fullname="SpriteVFXAnimatorTests" classname="SpriteVFXAnimatorTests" runstate="Runnable" testcasecount="7" result="Passed" start-time="2026-08-06 11:47:12Z" end-time="2026-08-06 11:47:12Z" duration="0.185599" total="7" passed="7" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-case id="1020" name="DestroyOnHitEndDestroysGameObject" fullname="SpriteVFXAnimatorTests.DestroyOnHitEndDestroysGameObject" methodname="DestroyOnHitEndDestroysGameObject" classname="SpriteVFXAnimatorTests" runstate="Runnable" seed="80649434" result="Passed" start-time="2026-08-06 11:47:12Z" end-time="2026-08-06 11:47:12Z" duration="0.102182" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1019" name="FpsGuardResetsNonPositiveFps" fullname="SpriteVFXAnimatorTests.FpsGuardResetsNonPositiveFps" methodname="FpsGuardResetsNonPositiveFps" classname="SpriteVFXAnimatorTests" runstate="Runnable" seed="1367528282" result="Passed" start-time="2026-08-06 11:47:12Z" end-time="2026-08-06 11:47:12Z" duration="0.072016" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1016" name="LoopOnlyWhenStartFramesEmpty" fullname="SpriteVFXAnimatorTests.LoopOnlyWhenStartFramesEmpty" methodname="LoopOnlyWhenStartFramesEmpty" classname="SpriteVFXAnimatorTests" runstate="Runnable" seed="1424850806" result="Passed" start-time="2026-08-06 11:47:12Z" end-time="2026-08-06 11:47:12Z" duration="0.002549" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1021" name="NoSpriteRendererIsNullSafe" fullname="SpriteVFXAnimatorTests.NoSpriteRendererIsNullSafe" methodname="NoSpriteRendererIsNullSafe" classname="SpriteVFXAnimatorTests" runstate="Runnable" seed="638469157" result="Passed" start-time="2026-08-06 11:47:12Z" end-time="2026-08-06 11:47:12Z" duration="0.002003" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1018" name="PlayHitGuardWhenHitFramesEmpty" fullname="SpriteVFXAnimatorTests.PlayHitGuardWhenHitFramesEmpty" methodname="PlayHitGuardWhenHitFramesEmpty" classname="SpriteVFXAnimatorTests" runstate="Runnable" seed="1096958962" result="Passed" start-time="2026-08-06 11:47:12Z" end-time="2026-08-06 11:47:12Z" duration="0.001116" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1017" name="PlayHitSwitchesToHitAndDone" fullname="SpriteVFXAnimatorTests.PlayHitSwitchesToHitAndDone" methodname="PlayHitSwitchesToHitAndDone" classname="SpriteVFXAnimatorTests" runstate="Runnable" seed="966468826" result="Passed" start-time="2026-08-06 11:47:12Z" end-time="2026-08-06 11:47:12Z" duration="0.001370" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1015" name="StartToLoopAutoTransition" fullname="SpriteVFXAnimatorTests.StartToLoopAutoTransition" methodname="StartToLoopAutoTransition" classname="SpriteVFXAnimatorTests" runstate="Runnable" seed="832720207" result="Passed" start-time="2026-08-06 11:47:12Z" end-time="2026-08-06 11:47:12Z" duration="0.001807" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <output><![CDATA[Saving results to: C:/Users/midme/AppData/LocalLow/DefaultCompany/clubgame\TestResults.xml
+]]></output>
+        </test-case>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

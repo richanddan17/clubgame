@@ -1,0 +1,8 @@
+﻿Todo 3 post-QA: quick EditMode suite (optional gate) - 2 runs
+Run 1: 15 tests, 14 passed / 1 failed = SpriteVFXAnimatorTests.LoopOnlyWhenStartFramesEmpty
+       (KNOWN transient frame-timing flake documented in 2026-08-03 notepad; time-sensitive,
+        unrelated to MagicVFXBuilder/prefabs - test builds runtime GameObjects, touches no prefabs)
+       SkillDataIntegrityTests: 7/7 passed on run 1
+Run 2 (re-run to confirm transient): 15/15 PASSED, exit code 0
+Result: PASS - no regression from Todo 3 changes
+Files: task-3-editmode.xml, task-3-editmode.log

@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using System;
 using System.Collections.Generic;
 
 /// <summary>
@@ -53,6 +54,9 @@ public class PlayerController : MonoBehaviour
     private bool _isChargeMode = false;
     private bool _isActivelyCharging = false;
 
+    // 스킬 슬롯별 마지막 사용 시각 (쿨타임 게이트용)
+    private float[] _skillLastUsed;
+
     // 특수 능력 및 쿨타임
     private float[] _abilityCooldowns = { 5f, 5f, 8f }; 
     private float[] _lastUsedTime = { -10f, -10f, -10f };
@@ -79,6 +83,10 @@ public class PlayerController : MonoBehaviour
         _startPosition = transform.position;
 
         SetupPhysics();
+
+        if (_skillLastUsed == null || _skillLastUsed.Length != combatSettings.EquippedSkills.Count)
+            Array.Resize(ref _skillLastUsed, combatSettings.EquippedSkills.Count);
+        for (int i = 0; i < _skillLastUsed.Length; i++) _skillLastUsed[i] = -10f;
         
         if (combatSettings.FirePoint == null)
             combatSettings.FirePoint = transform.Find("FirePoint") ?? transform;
@@ -198,9 +206,13 @@ public class PlayerController : MonoBehaviour
     private void UseSkill(int slotIndex)
     {
         if (combatSettings.EquippedSkills.Count <= slotIndex) return;
-        
+
         SkillData skill = combatSettings.EquippedSkills[slotIndex];
-        if (skill == null || skill.ProjectilePrefab == null) return;
+        if (skill == null) return;
+
+        // 슬롯별 쿨타임 게이트 (차단 시 쿨타임/리소스 소모 없음)
+        if (_skillLastUsed == null || slotIndex >= _skillLastUsed.Length) return;
+        if (Time.time - _skillLastUsed[slotIndex] < skill.Cooldown) return;
 
         Vector3 mousePos = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
         mousePos.z = 0f;
@@ -209,16 +221,74 @@ public class PlayerController : MonoBehaviour
         Vector2 direction = (mousePos - combatSettings.FirePoint.position).normalized;
         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
 
-        GameObject projObj;
-        if (ObjectPooler.Instance != null)
-            projObj = ObjectPooler.Instance.SpawnFromPool("Projectile", combatSettings.FirePoint.position, Quaternion.Euler(0, 0, angle));
-        else
-            projObj = Instantiate(skill.ProjectilePrefab, combatSettings.FirePoint.position, Quaternion.Euler(0, 0, angle));
+        bool spawned = false;
 
-        if (projObj != null && projObj.TryGetComponent<Projectile>(out var proj))
-            proj.Initialize(skill.Damage, _isFacingRight, 15f, null, gameObject, Projectile.BubbleType.Blue, false);
+        switch (skill.SkillType)
+        {
+            case SkillType.Projectile:
+                if (skill.ProjectilePrefab == null)
+                {
+                    Debug.LogWarning($"[Skill] '{skill.SkillName}' has no ProjectilePrefab assigned. (slot {slotIndex})");
+                    return;
+                }
+                GameObject projObj = Instantiate(skill.ProjectilePrefab, combatSettings.FirePoint.position, Quaternion.Euler(0, 0, angle));
+                if (projObj.TryGetComponent<Projectile>(out var proj))
+                    proj.Initialize(skill.Damage, _isFacingRight, skill.ProjectileSpeed, null, gameObject, skill.BubbleEffect, skill.UseBubbleEffect);
+                ApplyEffectScale(projObj, skill.EffectScale);
+                spawned = true;
+                break;
 
-        if (SkillHUDManager.Instance != null) SkillHUDManager.Instance.TriggerCooldown(slotIndex);
+            case SkillType.Melee:
+                if (skill.ProjectilePrefab == null)
+                {
+                    Debug.LogWarning($"[Skill] '{skill.SkillName}' has no melee hitbox prefab assigned. (slot {slotIndex})");
+                    return;
+                }
+                Vector3 meleeSpawnPos = combatSettings.FirePoint.position + (Vector3)(direction * (skill.MeleeRange * 0.6f));
+                GameObject meleeObj = Instantiate(skill.ProjectilePrefab, meleeSpawnPos, Quaternion.Euler(0, 0, angle));
+                if (meleeObj.TryGetComponent<MeleeHitbox>(out var hitbox))
+                    hitbox.Initialize(skill.Damage, gameObject, skill.HitboxLifetime, skill.MeleeRange, skill.UseBubbleEffect, skill.BubbleEffect);
+                ApplyEffectScale(meleeObj, skill.EffectScale);
+                spawned = true;
+                break;
+
+            case SkillType.MeleeAoE:
+                if (skill.ProjectilePrefab == null)
+                {
+                    Debug.LogWarning($"[Skill] '{skill.SkillName}' has no AoE hitbox prefab assigned. (slot {slotIndex})");
+                    return;
+                }
+                GameObject aoeObj = Instantiate(skill.ProjectilePrefab, transform.position, Quaternion.identity);
+                if (aoeObj.TryGetComponent<MeleeHitbox>(out var aoeHitbox))
+                    aoeHitbox.Initialize(skill.Damage, gameObject, skill.HitboxLifetime, skill.MeleeRange, skill.UseBubbleEffect, skill.BubbleEffect);
+                ApplyEffectScale(aoeObj, skill.EffectScale);
+                spawned = true;
+                break;
+
+            case SkillType.InstantArea:
+                if (skill.ProjectilePrefab == null)
+                {
+                    Debug.LogWarning($"[Skill] '{skill.SkillName}' has no area effect prefab assigned. (slot {slotIndex})");
+                    return;
+                }
+                GameObject areaObj = Instantiate(skill.ProjectilePrefab, transform.position, Quaternion.identity);
+                ApplyEffectScale(areaObj, skill.EffectScale);
+                spawned = true;
+                break;
+        }
+
+        if (spawned)
+        {
+            _skillLastUsed[slotIndex] = Time.time;
+            if (SkillHUDManager.Instance != null) SkillHUDManager.Instance.TriggerCooldown(slotIndex);
+        }
+    }
+
+    private static void ApplyEffectScale(GameObject obj, float scale)
+    {
+        if (obj == null || Mathf.Approximately(scale, 1f)) return;
+        Vector3 s = obj.transform.localScale;
+        obj.transform.localScale = new Vector3(s.x * scale, s.y * scale, s.z);
     }
 
     public void UpdateSkillHUD()

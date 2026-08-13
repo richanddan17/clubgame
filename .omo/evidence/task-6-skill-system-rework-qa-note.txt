@@ -1,0 +1,62 @@
+Task 6: Skill System Rework - EditMode data-integrity suite (QA failure-proof evidence)
+========================================================================================
+Date: 2026-08-03
+Unity: 6000.3.12f1 batchmode (D:\coding\6000.3.12f1\Editor\Unity.exe)
+Test file: Assets/Tests/EditMode/SkillDataIntegrityTests.cs (reuses Todo-1 asmdef ClubGame.EditModeTests -> references ClubGame.Combat)
+Run template: Unity.exe -batchmode -runTests -projectPath "D:\coding\github c\clubgame" -testPlatform EditMode -testResults <file>.xml -logFile <file>.log
+
+== RUN HISTORY ==
+Run 1 (initial, WITH -nographics + -quit): no tests executed at all (exit 0, no XML written).
+  Root cause: -quit fires on first idle after startup; with the new test file forcing a full
+  recompile + domain reload, the editor quit before the test run started. Also -nographics was
+  unnecessary. Switched to the plan's exact template (no -quit, no -nographics) -> tests run.
+
+Run 2 (first real attempt, exit 2 -> FAILED 1/8):
+  FAILED: SkillDataIntegrityTests.PlayerEquipsGumMaster
+    message: PlayerController에 EquippedSkills 필드가 없습니다.
+  Root cause (REAL DATA, not a weakened assertion): the plan spec said "PlayerController ->
+  EquippedSkills", but the actual code nests it: PlayerController has
+  [SerializeField] private CombatSettings combatSettings; and EquippedSkills lives INSIDE the
+  nested [System.Serializable] CombatSettings class (PlayerController.cs:26-31). The prefab YAML
+  confirms it (EquippedSkills: is nested under combatSettings:). The plan's own Todo-4 reference
+  already documents this ("SerializedObject.FindProperty(\"combatSettings\").FindPropertyRelative(\"EquippedSkills\")").
+  FIX: test now reads so.FindProperty("combatSettings").FindPropertyRelative("EquippedSkills").
+  This is correcting the plan expectation to match actual code structure, NOT weakening it.
+
+Run 3 (after fix, exit 0 -> GREEN 8/8): result="Passed" total=8 passed=8 failed=0
+
+Run 4 (QA FAILURE-PROOF, exit 2 -> FAILED 1/8), result XML: .omo/evidence/task-6-skill-system-rework-qa-fail.xml
+  Corrupted one assertion: CanonicalSkillsWired expectedBubble = id==211 || id==212 || id==213 || id==222
+  (i.e. asserted 211 GumShot bubble is Red - which is WRONG; real data has UseBubbleEffect=false for 211).
+  Proof: test-run result="Failed(Child)" failed=1; the failing test-case was
+  SkillDataIntegrityTests.CanonicalSkillsWired with message "ID 211 스킬의 UseBubbleEffect 가 기대값(True)과 다릅니다".
+  => The suite genuinely catches corrupt skill data; it is not vacuously green.
+
+Run 5 (QA revert + final GREEN, exit 0): same assertion reverted to id==212||id==213||id==222, re-ran -> Passed 8/8.
+  Final evidence XML: .omo/evidence/task-6-skill-system-rework.xml
+
+== FINAL RESULT (verbatim from .omo/evidence/task-6-skill-system-rework.xml) ==
+<test-run ... testcasecount="8" result="Passed" total="8" passed="8" failed="0" inconclusive="0" skipped="0" ...>
+Executed test-case names (8):
+  SkillDataIntegrityTests.SkillInventoryClean            Passed
+  SkillDataIntegrityTests.SkillIdsUnique                 Passed
+  SkillDataIntegrityTests.CanonicalSkillsWired           Passed
+  SkillDataIntegrityTests.SkillPrefabStructure           Passed
+  SkillDataIntegrityTests.PlayerEquipsGumMaster          Passed
+  SkillDataIntegrityTests.TimeStopUntouched              Passed
+  SkillDataIntegrityTests.PresetsResolveToRoot           Passed
+  SkillDataModelTests.FreshSkillData_HasExpectedDefaults Passed (Todo-1 existing test, untouched)
+
+== DOCUMENTED DEVIATIONS from the plan spec (both are fact-checked, NOT weakened) ==
+1. Test 6 TimeStopUntouched asserts SkillName == "Time Stop" (with a space), NOT "TimeStop".
+   The verified end-state context (Todo-5) states SkillName=Time Stop; the serialized asset
+   301_TimeStop.asset contains "SkillName: Time Stop". The plan text "SkillName=TimeStop" was a
+   shorthand for the FILE name (301_TimeStop.asset / asset m_Name), not the field value.
+   Also independently verified: 301_TimeStop.asset is 738 bytes, SHA256
+   7A50766F76D16B831107C527F659F96F6F3F61B4487B1E0B8FE09ABDF1BDDDE3 (matches plan context).
+2. Test 5 PlayerEquipsGumMaster accesses EquippedSkills via PlayerController.combatSettings
+   (nested serialized class), not directly on PlayerController (see Run 2 analysis above).
+
+== SCOPE CHECK ==
+Only file created/modified outside .omo/evidence/: Assets/Tests/EditMode/SkillDataIntegrityTests.cs
+(no changes to Assets/Script, Assets/Editor, Assets/Resources, Assets/Prefabs, CSVs, or Todo-1 tests).

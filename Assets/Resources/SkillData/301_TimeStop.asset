@@ -21,3 +21,4 @@ MonoBehaviour:
   ProjectilePrefab: {fileID: 3420815432109876543, guid: b9d01243179246949b292e1024fb9f38, type: 3}
   projectileCount: 1
   spreadAngle: 0
+  SkillType: 3

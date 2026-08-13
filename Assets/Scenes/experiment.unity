@@ -1187,12 +1187,24 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5918841862803961086, guid: 0d25e10f315caa24fb6de1bc8afb0b2e, type: 3}
       propertyPath: combatSettings.EquippedSkills.Array.size
-      value: 1
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 5918841862803961086, guid: 0d25e10f315caa24fb6de1bc8afb0b2e, type: 3}
       propertyPath: 'combatSettings.EquippedSkills.Array.data[0]'
       value: 
-      objectReference: {fileID: 11400000, guid: 443b08b5bde4fdb47aa3dfdd050e2a8f, type: 2}
+      objectReference: {fileID: 11400000, guid: 5bb62cc75b1923a44b6b6a3a95fe203e, type: 2}
+    - target: {fileID: 5918841862803961086, guid: 0d25e10f315caa24fb6de1bc8afb0b2e, type: 3}
+      propertyPath: 'combatSettings.EquippedSkills.Array.data[1]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 9143285936adb5e4e919d0af7ea0d17f, type: 2}
+    - target: {fileID: 5918841862803961086, guid: 0d25e10f315caa24fb6de1bc8afb0b2e, type: 3}
+      propertyPath: 'combatSettings.EquippedSkills.Array.data[2]'
+      value: 
+      objectReference: {fileID: 11400000, guid: c584193614ef58747bf01176bc2d58f1, type: 2}
+    - target: {fileID: 5918841862803961086, guid: 0d25e10f315caa24fb6de1bc8afb0b2e, type: 3}
+      propertyPath: 'combatSettings.EquippedSkills.Array.data[3]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 16b0ecc11de0d9247bf83471a55868d4, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

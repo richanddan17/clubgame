@@ -1,0 +1,29 @@
+﻿Task 3 independent verification (misleading_success_output probe) - TimeWarp_Effect prefab + 227 icon
+==================================================================================================
+Date: 2026-08-06  Session: opencode:ses_02a4dfe77ffeIev6l5pP92RYW3
+
+BUILD RESULT
+  Compile check (task-3-compile.log): exit 0, error CS count = 0
+  Build run (task-3-timestop-style-magic-skills.log): exit 0, PASSED line present:
+    "PASSED: TimeWarp_Effect.prefab built (15 frames, fps=12, radius=15, stun=3, life=1.5, icon set)"
+
+PREFAB YAML CHECKS (Assets/Prefabs/Projectiles/TimeWarp_Effect.prefab, 140 lines)
+  [x] m_Name: TimeWarp_Effect (root GameObject, 4 components)
+  [x] Transform m_LocalScale: {x: 5, y: 5, z: 1}
+  [x] SpriteRenderer m_SortingOrder: 20
+  [x] SpriteRenderer m_Sprite: {fileID: 7241654760395862158, guid: 3014f866b966d1240bfb57efd1ac6ac0, type: 3} (209 sheet)
+  [x] TimeStopEffect m_Script guid: 713e57099bbd717488c4b272836d43ec -> radius: 15, stunDuration: 3, lifeTime: 1.5
+  [x] SimpleSpriteAnimator m_Script guid: d844848d6c8749245820249fbcd9b4a1 -> frames: 15, fps: 12, loop: 0
+
+FRAME ORDER (cross-checked against 209 sheet .meta internalIDToNameTable, Unity 6 format "213: <id>" / "second: <name>")
+  Mapped 15/15 sprites; frame fileIDs in prefab resolve to numeric order:
+  _0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14  -> NUMERIC_ORDER=OK
+  (Gotcha: Unity 6 meta stores sprite ids under "213:" keys with names on "second:" lines - not "internalID:"/"name:" of older formats.)
+
+227 ASSET ICON (Assets/Resources/SkillData/227_TimeWarp.asset)
+  Icon: {fileID: 7241654760395862158, guid: 3014f866b966d1240bfb57efd1ac6ac0, type: 3}  -> references 209 sheet guid 3014f866b966d1240bfb57efd1ac6ac0 (fileID == first sprite _0, as returned by LoadAssetAtPath<Sprite>)
+
+PREFAB META
+  guid: 6a0f50631e104e9458759451f1ef339f
+
+RESULT: ALL CHECKS PASSED
