@@ -8,16 +8,18 @@
       "plan_name": "brackeys-skills",
       "status": "completed",
       "started_at": "2026-08-06T09:06:44.278Z",
-      "updated_at": "2026-08-06T12:15:00.000Z",
+      "updated_at": "2026-08-17T11:50:05.484Z",
       "session_ids": [
         "opencode:ses_02a4dfe77ffeIev6l5pP92RYW3",
         "opencode:ses_029abad86ffeEE38Wt9JXY5wJG",
-        "opencode:ses_029ab6bc2ffes6nQYTdCnwx5B2"
+        "opencode:ses_029ab6bc2ffes6nQYTdCnwx5B2",
+        "opencode:ses_ff09f9376ffep0pRmcfwDQxgvM"
       ],
       "session_origins": {
         "opencode:ses_02a4dfe77ffeIev6l5pP92RYW3": "direct",
         "opencode:ses_029abad86ffeEE38Wt9JXY5wJG": "appended",
-        "opencode:ses_029ab6bc2ffes6nQYTdCnwx5B2": "appended"
+        "opencode:ses_029ab6bc2ffes6nQYTdCnwx5B2": "appended",
+        "opencode:ses_ff09f9376ffep0pRmcfwDQxgvM": "direct"
       },
       "agent": "atlas",
       "task_sessions": {
@@ -38,9 +40,13 @@
         "todo:3": {
           "task_key": "todo:3",
           "task_label": "3",
-          "task_title": "PlayMode 임팩트 테스트 BrackeysVFX_PlaysHitAndDelaysDeactivation (6/6 green)",
+          "task_title": "PlayMode 임팩트 테스트 1종 (231 FireOrb — VFX 보유 프리팹)",
+          "session_id": "opencode:ses_ff0889d07ffefl6enjjdOIj40c",
+          "agent": "Sisyphus-Junior",
+          "category": "unspecified-high",
           "status": "completed",
-          "updated_at": "2026-08-06T12:00:00.000Z"
+          "updated_at": "2026-08-17T11:49:30.320Z",
+          "started_at": "2026-08-17T11:37:36.292Z"
         },
         "todo:4": {
           "task_key": "todo:4",
@@ -56,22 +62,26 @@
           "status": "completed",
           "updated_at": "2026-08-06T12:00:00.000Z"
         }
-      }
+      },
+      "ended_at": "2026-08-17T11:50:05.484Z",
+      "elapsed_ms": 960201206
     }
   },
   "active_plan": "D:\\coding\\github c\\clubgame\\.omo\\plans\\brackeys-skills.md",
   "started_at": "2026-08-06T09:06:44.278Z",
   "status": "completed",
-  "updated_at": "2026-08-06T12:15:00.000Z",
+  "updated_at": "2026-08-17T11:50:05.484Z",
   "session_ids": [
     "opencode:ses_02a4dfe77ffeIev6l5pP92RYW3",
     "opencode:ses_029abad86ffeEE38Wt9JXY5wJG",
-    "opencode:ses_029ab6bc2ffes6nQYTdCnwx5B2"
+    "opencode:ses_029ab6bc2ffes6nQYTdCnwx5B2",
+    "opencode:ses_ff09f9376ffep0pRmcfwDQxgvM"
   ],
   "session_origins": {
     "opencode:ses_02a4dfe77ffeIev6l5pP92RYW3": "direct",
     "opencode:ses_029abad86ffeEE38Wt9JXY5wJG": "appended",
-    "opencode:ses_029ab6bc2ffes6nQYTdCnwx5B2": "appended"
+    "opencode:ses_029ab6bc2ffes6nQYTdCnwx5B2": "appended",
+    "opencode:ses_ff09f9376ffep0pRmcfwDQxgvM": "direct"
   },
   "plan_name": "brackeys-skills",
   "task_sessions": {
@@ -92,9 +102,13 @@
     "todo:3": {
       "task_key": "todo:3",
       "task_label": "3",
-      "task_title": "PlayMode 임팩트 테스트 BrackeysVFX_PlaysHitAndDelaysDeactivation (6/6 green)",
+      "task_title": "PlayMode 임팩트 테스트 1종 (231 FireOrb — VFX 보유 프리팹)",
+      "session_id": "opencode:ses_ff0889d07ffefl6enjjdOIj40c",
+      "agent": "Sisyphus-Junior",
+      "category": "unspecified-high",
       "status": "completed",
-      "updated_at": "2026-08-06T12:00:00.000Z"
+      "updated_at": "2026-08-17T11:49:30.320Z",
+      "started_at": "2026-08-17T11:37:36.292Z"
     },
     "todo:4": {
       "task_key": "todo:4",
@@ -111,5 +125,7 @@
       "updated_at": "2026-08-06T12:00:00.000Z"
     }
   },
-  "agent": "atlas"
+  "agent": "atlas",
+  "ended_at": "2026-08-17T11:50:05.484Z",
+  "elapsed_ms": 960201206
 }
