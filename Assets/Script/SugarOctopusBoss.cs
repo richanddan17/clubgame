@@ -3,47 +3,26 @@ using System.Collections;
 
 /// <summary>
 /// 첫 번째 보스: 설탕 문어 (Sugar Octopus)
+/// BossBase를 상속하여 페이즈 전환 시스템을 자동으로 사용합니다.
 /// </summary>
-public class SugarOctopusBoss : MonoBehaviour
+public class SugarOctopusBoss : BossBase
 {
-    public enum BossState { Idle, TentacleAttack, SugarSpray, PhaseTransition, Dead }
+    private enum SugarState { Idle, TentacleAttack, SugarSpray }
 
-    [Header("능력치")]
-    public float maxHP = 500f;
+    [Header("Sugar Octopus Specific")]
     public float attackInterval = 3f;
-
-    [Header("공격 설정")]
     public GameObject sugarProjectilePrefab;
     public Transform[] tentacleSpawnPoints;
     public GameObject tentaclePrefab;
 
-    private BossState _currentState = BossState.Idle;
-    private Health _health;
-    private Transform _player;
+    private SugarState _currentState = SugarState.Idle;
 
-    void Awake()
+    protected override IEnumerator BossBehaviorRoutine()
     {
-        _health = GetComponent<Health>();
-        if (_health != null)
+        yield return new WaitForSeconds(2f);
+
+        while (!_isDead)
         {
-            _health.Initialize(maxHP);
-            _health.OnDie.AddListener(OnBossDie);
-        }
-    }
-
-    void Start()
-    {
-        _player = GameObject.FindGameObjectWithTag("Player")?.transform;
-        StartCoroutine(BossLogicRoutine());
-    }
-
-    IEnumerator BossLogicRoutine()
-    {
-        yield return new WaitForSeconds(2f); // 등장 대기
-
-        while (_currentState != BossState.Dead)
-        {
-            // 패턴 선택
             float rand = Random.value;
             if (rand < 0.5f)
                 yield return PerformTentacleAttack();
@@ -54,14 +33,20 @@ public class SugarOctopusBoss : MonoBehaviour
         }
     }
 
-    IEnumerator PerformTentacleAttack()
+    protected override void OnPhaseTransition(int newPhase)
     {
-        _currentState = BossState.TentacleAttack;
+        Debug.Log($"Sugar Octopus: Phase {newPhase}!");
+        // 페이즈마다 공격 속도 증가
+        attackInterval = Mathf.Max(1f, attackInterval - 0.5f);
+    }
+
+    private IEnumerator PerformTentacleAttack()
+    {
+        _currentState = SugarState.TentacleAttack;
         Debug.Log("Sugar Octopus: Tentacle Attack!");
-        
+
         if (tentacleSpawnPoints.Length > 0 && tentaclePrefab != null)
         {
-            // 플레이어 근처 또는 고정 위치에 촉수 생성
             foreach (var sp in tentacleSpawnPoints)
             {
                 Instantiate(tentaclePrefab, sp.position, Quaternion.identity);
@@ -70,12 +55,12 @@ public class SugarOctopusBoss : MonoBehaviour
         }
 
         yield return new WaitForSeconds(1f);
-        _currentState = BossState.Idle;
+        _currentState = SugarState.Idle;
     }
 
-    IEnumerator PerformSugarSpray()
+    private IEnumerator PerformSugarSpray()
     {
-        _currentState = BossState.SugarSpray;
+        _currentState = SugarState.SugarSpray;
         Debug.Log("Sugar Octopus: Sugar Spray!");
 
         if (sugarProjectilePrefab != null)
@@ -89,14 +74,6 @@ public class SugarOctopusBoss : MonoBehaviour
         }
 
         yield return new WaitForSeconds(1.5f);
-        _currentState = BossState.Idle;
-    }
-
-    private void OnBossDie()
-    {
-        _currentState = BossState.Dead;
-        StopAllCoroutines();
-        Debug.Log("Sugar Octopus Defeated! Clue dropped.");
-        // 여기서 중요한 단서(Clue) 아이템 드랍 로직 추가 가능
+        _currentState = SugarState.Idle;
     }
 }

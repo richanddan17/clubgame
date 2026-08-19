@@ -127,4 +127,32 @@
   - `Assets/Tests/EditMode/SpriteVFXAnimatorTests.cs` (변경, 플레이크 수정): `ForceFrames()`에서 `SetField(animator, "_timer", frameTime - Time.deltaTime + 1e-6f)` — EditMode에서도 dt가 1/fps(≈83ms)를 넘으면 `Update()`의 `while (_timer >= frameTime)` 루프가 한 번에 여러 프레임을 진행해 `_frameIndex % N`이 어긋나는 비결정적 실패 제거. 수정 전 실패 이력 15건, 수정 후 `LoopOnlyWhenStartFramesEmpty` 연속 Passed.
   - QA(A) 실패 주입 (증거: `.omo/evidence/task-5-brackeys-skills-qa-fail.xml`): `CanonicalPrefabLinks[231]` → `WrongProjectile.prefab` 변조 → EditMode 17/18 — `CanonicalSkillsWired`만 실패(`ID 231 스킬의 ProjectilePrefab 경로가 캐노니컬 링크와 다릅니다`), `LoopOnlyWhenStartFramesEmpty` Passed. 이후 경로 복구.
   - QA(B) 실패 주입 (증거: `.omo/evidence/task-5-brackeys-skills-qa-fail-b.xml`): 빌더에서 231 hit 스테이지 제거 변조 → 재빌드 시 빌더 자체 Verify 실패(scale (0.13) != (0.07692308)) 확인, 231 prefab hitFrames=[] 재빌드 → EditMode 17/18 — `BrackeysVFXAnimatorWired`만 실패(`ID 231 프리팹의 hitFrames 가 30이 아닙니다. Expected: 30`). 이후 빌더 원복 + 재빌드 → `VerifyAllBrackeysVFX PASSED: 8/8`, 231 loop=45 hit=30 scale=(0.077,0.077,1) (증거: `.omo/evidence/task-5-brackeys-skills-qab-restore-build.log`).
-  - 최종 green (증거: `.omo/evidence/task-5-brackeys-skills-editmode-final.xml` EditMode 18/18, `.omo/evidence/task-5-brackeys-skills-playmode-final.xml` PlayMode 6/6, 둘 다 EXIT=0).
+   - 최종 green (증거: `.omo/evidence/task-5-brackeys-skills-editmode-final.xml` EditMode 18/18, `.omo/evidence/task-5-brackeys-skills-playmode-final.xml` PlayMode 6/6, 둘 다 EXIT=0).
+
+---
+
+## 부록: 레벨 기믹 시스템 (2026-08-19, level-gimmicks 플랜)
+
+### 新規 Gimmick 폴더 (`Assets/Script/Gimmick/`)
+- `GimmickBase.cs`: 기믹 추상 베이스 클래스 (MonoBehaviour). `isActiveByDefault`, `Activate()`, `Deactivate()`, `OnPlayerEnter()`, `OnPlayerExit()`.
+- `GimmickData.cs`: ScriptableObject — `gimmickName`, `activationDelay`, `isActiveByDefault`.
+- `ClubGame.Gimmick.asmdef`: Gimmick 전용 어셈블리 (`ClubGame.Combat` 참조).
+- `MovingPlatform.cs`: waypoint 기반 이동. **Delta 방식** — `OnTriggerEnter2D`에서 `PlayerController.SetOnMovingPlatform()` 호출, Update에서 플레이어 위치에 Δpos 직접 적용 (parenting 아님). 루프/대기 지원. Gizmos 시각화.
+- `Hazard.cs`: 함정. `isInstantKill` 분기, `damageInterval`로 연속 히트 방지. `OnTriggerEnter2D` + `OnTriggerStay2D`.
+- `Switch.cs`: E키 토글 스위치. `OnTriggerEnter2D`로 플레이어 감지, `Keyboard.current.eKey`로 토글. 연결된 `Door.SetOpen()` 호출.
+- `Door.cs`: Transform openPosition으로 Lerp 이동. `SetOpen(bool)` public API. Gizmos로 열린/닫힌 위치 시각화.
+- `Checkpoint.cs`: `OnTriggerEnter2D` → `PlayerController.SetRespawnPoint()` 호출. 스프라이트/색상 변경으로 시각 피드백.
+- `SpringPad.cs`: `OnTriggerEnter2D` → `PlayerController.ApplySpringForce(28f)`. GimmickBase 상속.
+- `BossBase.cs`: 추상 클래스. `BossPhase` 시스템 — `phaseThresholdHP[]`, `Health.OnHealthChanged` 구독 → HP% 자동 페이즈 전환. `abstract BossBehaviorRoutine()` + `abstract OnPhaseTransition(int)`.
+- `SugarOctopusBoss.cs` (변경): `BossBase` 상속. 기존 코루틴 패턴 유지, `BossState` enum → private `SugarState`으로 변경, `OnPhaseTransition`에서 `attackInterval` 감소 보너스.
+
+### PlayerController 변경 (`Assets/Script/player/PlayerController.cs`)
+- **필드 추가**: `static Vector2 _respawnPoint`, `Vector2 _lastPlatformPosition`, `Transform _currentPlatform`
+- **Awake**: `_respawnPoint = _startPosition` 초기화
+- **FixedUpdate**: `ApplyMovement()` 후 `_currentPlatform` delta 적용
+- **Respawn()**: `_startPosition` → `_respawnPoint` 사용
+- **새 메서드**: `SetOnMovingPlatform()`, `ClearMovingPlatform()`, `ApplySpringForce()`, `SetRespawnPoint()`, `GetRespawnPoint()`
+
+### 테스트 (`Assets/Tests/EditMode/`)
+- `ClubGame.EditModeTests.asmdef` (변경): `ClubGame.Gimmick` 참조 추가
+- `GimmickTests.cs` (신규): 12개 EditMode 단위 테스트 — 컴포넌트 생성, 타입 상속 관계, 추상 클래스 검증

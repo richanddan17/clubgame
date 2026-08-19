@@ -48,6 +48,11 @@ public class PlayerController : MonoBehaviour
     private Vector3 _originalScale;
     private Vector3 _startPosition;
 
+    // 기믹 연동
+    private static Vector2 _respawnPoint;
+    private Vector2 _lastPlatformPosition;
+    private Transform _currentPlatform;
+
     private int _currentColorIndex = 0;
     private float _lastFireTime;
     private float _chargeStartTime;
@@ -81,6 +86,7 @@ public class PlayerController : MonoBehaviour
         _health = GetComponent<Health>();
         _originalScale = transform.localScale;
         _startPosition = transform.position;
+        _respawnPoint = _startPosition;
 
         SetupPhysics();
 
@@ -121,6 +127,14 @@ public class PlayerController : MonoBehaviour
     {
         if (_health.IsDead) return;
         ApplyMovement();
+
+        // 이동식 플랫폼 delta 적용
+        if (_currentPlatform != null)
+        {
+            Vector2 platformDelta = (Vector2)_currentPlatform.position - _lastPlatformPosition;
+            transform.position += (Vector3)platformDelta;
+            _lastPlatformPosition = _currentPlatform.position;
+        }
     }
     #endregion
 
@@ -468,11 +482,39 @@ public class PlayerController : MonoBehaviour
     }
     private void Respawn()
     {
-        transform.position = _startPosition;
+        transform.position = _respawnPoint;
         _health.Initialize(_health.MaxHealth);
         _isFacingRight = true;
         transform.rotation = Quaternion.Euler(0, 0, 0);
         _animator?.Rebind();
+    }
+    #endregion
+
+    #region Gimmick Integration
+    public void SetOnMovingPlatform(Transform platform)
+    {
+        _currentPlatform = platform;
+        _lastPlatformPosition = platform.position;
+    }
+
+    public void ClearMovingPlatform()
+    {
+        _currentPlatform = null;
+    }
+
+    public void ApplySpringForce(float force)
+    {
+        _rb.linearVelocity = new Vector2(_rb.linearVelocity.x, force);
+    }
+
+    public void SetRespawnPoint(Vector2 point)
+    {
+        _respawnPoint = point;
+    }
+
+    public Vector2 GetRespawnPoint()
+    {
+        return _respawnPoint;
     }
     #endregion
 }
